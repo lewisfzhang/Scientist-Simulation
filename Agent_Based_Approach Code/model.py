@@ -55,17 +55,48 @@ class Scientist(Agent):
         # Array keeping track of how much effort this scientist has invested in each idea
         self.effort_invested = np.zeros(model.total_ideas)
         
+        # Array to keep track of which ideas from which time periods can be worked on
+        self.avail_ideas = np.zeros(model.total_ideas)
+        
     def step(self):
         print(self.returns_matrix)
 
         # Check scientist's age in the current time period
         self.current_age = model.schedule.time - self.birth_time
 
-        if self.current_age == 0 or self.current_age == 1:
+        if self.current_age == 0:       # Young scientist
+            idea_periods = np.arange(model.total_ideas)//model.ideas_per_time
+            
+            # Can work on ideas in the current or previous time period
+            self.avail_ideas = np.logical_or(idea_periods == model.schedule.time, \
+                idea_periods == (model.schedule.time - 1))
+            
+            # Determine if scientists have yet to pay investment costs for available ideas
+            # Effort invested among available ideas
+            self.eff_inv_avail_ideas = self.effort_invested[self.avail_ideas]
+            # Whether a scientist has invested no effort into an idea
+            no_effort_inv = (self.eff_inv_avail_ideas == 0)
+            
+            
+            # Pull total (cumulative) effort across all scientists for available ideas
+            self.effort_avail_ideas = self.total_effort[self.avail_ideas]
+            # Want to pull returns for expending an additional unit of effort for an idea
+            self.effort_avail_ideas += 1
+            
+            # Pull marginal returns for available ideas
+            self.avail_returns = self.returns_matrix[self.avail_ideas, self.effort_avail_ideas]
+            
+        
+        if self.current_age == 1:       # Old scientist
+            idea_periods = np.arange(model.total_ideas)//model.ideas_per_time
+            
+            # Can work on ideas in the current or previous two periods
+            self.avail_ideas = np.logical_or(np.logical_or(idea_periods == model.schedule.time, \
+                idea_periods == (model.schedule.time - 1)), idea_periods == (model.schedule.time - 2))
+            
             # Determine how much effort a scientist has in the current time period
             self.curr_period_effort = self.start_effort - self.start_effort_decay * self.current_age
 
-            # Insert code for optimizing effort allocation among ideas
         else:
             # Scientists are alive and able to do things for only two time periods
             pass
