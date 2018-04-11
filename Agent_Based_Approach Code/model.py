@@ -76,7 +76,9 @@ class Scientist(Agent):
             self.eff_inv_avail_ideas = self.effort_invested[self.avail_ideas]
             # Whether a scientist has invested no effort into an idea
             no_effort_inv = (self.eff_inv_avail_ideas == 0)
-            
+            # Calculate current investment costs based on prior investments
+            # For avail ideas, matrix has invest costs or 0 if scientist has already invested effort
+            self.curr_k = no_effort_inv * self.k[self.avail_ideas]
             
             # Pull total (cumulative) effort across all scientists for available ideas
             self.effort_avail_ideas = self.total_effort[self.avail_ideas]
@@ -85,6 +87,16 @@ class Scientist(Agent):
             
             # Pull marginal returns for available ideas
             self.avail_returns = self.returns_matrix[self.avail_ideas, self.effort_avail_ideas]
+            
+            # Calculate "true" marginal returns (i.e. marginal return - invest cost)
+            self.true_returns = self.avail_returns - self.curr_k
+            
+            # Select idea with the maximum, true return
+            max_return = np.amax(self.true_returns)
+            index_of_max, = np.where(self.true_returns == max_return)
+            
+            ### NOTE: Need to factor in edge case where there are multiple ideas with max return
+            ### NOTE: Need to factor in when ideas hit maximum effort invested
             
         
         if self.current_age == 1:       # Old scientist
