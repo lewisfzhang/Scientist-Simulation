@@ -25,6 +25,24 @@ def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
         returns_list.append(returns)
     return(np.array(returns_list))
 
+# Function to calculate "marginal" returns for available ideas, taking into account invest costs
+# Input:
+# 1) avail_ideas - array that indexes which ideas are available to a given scientist
+# 2) effort_avail_ideas - array that contains cumulative effort already expended by all scientists on avail ideas
+# 3) marginal_effort - array of "equivalent" marginal efforts, which equals
+#    the max, current investment cost plus one minus individual investment costs for available ideas
+#
+# Output: array of dim = avail_ideas that has associated marginal returns
+def calc_cum_returns(scientist):
+    final_returns_avail_ideas = []
+    for idea in scientist.avail_ideas:
+        start_index = scientist.total_effort[idea]
+        stop_index = start_index + scientist.marginal_effort[idea]
+        returns = scientist.returns_matrix[idea, np.arange(start_index, stop_index)]
+        total_return = sum(returns)
+        final_returns_avail_ideas.append(total_return)
+    return(np.asarray(final_returns_avail_ideas))
+
 class Scientist(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -58,6 +76,9 @@ class Scientist(Agent):
         # Array to keep track of which ideas from which time periods can be worked on
         self.avail_ideas = np.zeros(model.total_ideas)
         
+        # Create array to keep track of total effort allocated to each idea
+        self.total_effort = model.total_effort
+        
     def step(self):
         print(self.returns_matrix)
 
@@ -71,31 +92,32 @@ class Scientist(Agent):
             self.avail_ideas = np.logical_or(idea_periods == model.schedule.time, \
                 idea_periods == (model.schedule.time - 1))
             
-            # Determine if scientists have yet to pay investment costs for available ideas
-            # Effort invested among available ideas
-            self.eff_inv_avail_ideas = self.effort_invested[self.avail_ideas]
+            ##### HEURISTIC FOR CHOOSING WHICH IDEA TO INVEST IN #####
+            
+            # Determine if scientists have yet to pay investment costs
             # Whether a scientist has invested no effort into an idea
-            no_effort_inv = (self.eff_inv_avail_ideas == 0)
+            no_effort_inv = (self.effort_invested == 0)
             # Calculate current investment costs based on prior investments
-            # For avail ideas, matrix has invest costs or 0 if scientist has already invested effort
-            self.curr_k = no_effort_inv * self.k[self.avail_ideas]
+            # Matrix has invest costs or 0 if scientist has already invested effort
+            self.curr_k = no_effort_inv * self.k
             
-            # Pull total (cumulative) effort across all scientists for available ideas
-            self.effort_avail_ideas = self.total_effort[self.avail_ideas]
-            # Want to pull returns for expending an additional unit of effort for an idea
-            self.effort_avail_ideas += 1
+            # Want to pull returns for expending self.increment units of effort,
+            # where increment equals the max invest cost across all ideas that
+            # haven't been invested in yet plus 1
+            self.increment = max(self.curr_k) + 1
             
-            # Pull marginal returns for available ideas
-            self.avail_returns = self.returns_matrix[self.avail_ideas, self.effort_avail_ideas]
+            # Array with equivalent "marginal" efforts across ideas
+            # For idea with the max invest cost, marginal_effort will equal 1
+            # All others - marginal_effort is equal to increment minus invest cost, if any
+            self.marginal_effort = self.increment - self.curr_k
             
-            # Calculate "true" marginal returns (i.e. marginal return - invest cost)
-            self.true_returns = self.avail_returns - self.curr_k
-            
+            # Array (dim = num(avail_ideas)x1) that has the cumulative returns for increment efforts in ideas
+            self.cum_returns = calc_cum_returns(self)
+                        
             # Select idea with the maximum, true return
-            max_return = np.amax(self.true_returns)
-            index_of_max, = np.where(self.true_returns == max_return)
+
             
-            ### NOTE: Need to factor in edge case where there are multiple ideas with max return
+            ### NOTE: Need to program edge case when multiple ideas have the same return
             ### NOTE: Need to factor in when ideas hit maximum effort invested
             
         
