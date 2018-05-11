@@ -1,10 +1,11 @@
 # To Do List:
 # 1) Update old scientist code - DONE
-# 2) Figure out how to code base case (time period 0)
+# 2) Figure out how to code base case (time period 0) - DONE
 # 3) Code edge case in which 80% of effort has been invested in only 1 idea - DONE
-# 4) Double check with Michelle that model needs to be passed to agent step
-# 5) Ask Michelle about referencing model class
+# 4) Double check with Michelle that model needs to be passed to agent step - DONE
+# 5) Ask Michelle about referencing model class - DONE
 # 6) TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# 7) Need to update code to deal with invest cutoff issue
 #
 
 
@@ -48,10 +49,15 @@ def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
 # 2) max_return - scalar that is the perceived return of the associated, chosen idea
     
 def calc_cum_returns(scientist, model):
-    final_returns_avail_ideas = []
+    print("Unique ID: ", scientist.unique_id)
+    print("Age of scientist: ", scientist.current_age)
+    print("Time period: ", model.schedule.time)
+    print("Current investment costs for all ideas: ", scientist.curr_k)
+    final_returns_avail_ideas = np.array([])
     # Limit on the amount of effort that a scientist can invest in a single idea
     # in one time period
-    invest_cutoff = round(scientist.start_effort * 0.8)
+    # 5/11: Set at 1 because code to deal with invest cutoff edge case not in place
+    invest_cutoff = round(scientist.start_effort * 1)
     
     for idea in np.where(scientist.avail_ideas == True)[0]:
         # OR Conditions
@@ -60,25 +66,45 @@ def calc_cum_returns(scientist, model):
         # 2nd) Ensures that effort invested in ideas doesn't go over max invest
         # 3rd) Prevents scientists from investing further in an idea if the
         # scientist has already invested at or above the investment cutoff
-        effort_left = scientist.max_investment[idea] - model.total_effort[idea]
-        if scientist.marginal_effort[idea] <= 0 or scientist.marginal_effort[idea] > effort_left or \
+        
+        # effort_left_in_idea - how much more effort can be invested in an idea
+        # given what all the scientists have already invested and the max possible
+        # investment
+        effort_left_in_idea = scientist.max_investment[idea] - model.total_effort[idea]
+        print("idea #: ", idea)
+        print("effort_left_in_idea:", effort_left_in_idea)
+        if scientist.marginal_effort[idea] <= 0 or scientist.marginal_effort[idea] > effort_left_in_idea or \
             scientist.eff_inv_in_period[idea] >= invest_cutoff:
-            final_returns_avail_ideas.append(0)
+            print("Amount invested in idea in period:", scientist.eff_inv_in_period[idea])
+            print("marginal effort:", scientist.marginal_effort[idea])
+            print("invest cutoff:", invest_cutoff)
+            final_returns_avail_ideas = np.append(final_returns_avail_ideas, 0)
         else:
-            start_index = model.total_effort[idea]
-            stop_index = start_index + scientist.marginal_effort[idea]
+            print("No restrictions on investing in this idea")
+            start_index = int(model.total_effort[idea])
+            stop_index = int(start_index + scientist.marginal_effort[idea])
             returns = scientist.returns_matrix[idea, np.arange(start_index, stop_index)]
             total_return = sum(returns)
-            final_returns_avail_ideas.append(total_return)
+            final_returns_avail_ideas = np.append(final_returns_avail_ideas, total_return)
     
+    print("avail_effort: ", scientist.avail_effort)           
+    print("final_returns_avail_ideas: ", final_returns_avail_ideas)
+    print("Current investment costs: ", scientist.curr_k[np.where(scientist.avail_ideas == True)[0]])
+    print("Increment: ", scientist.increment)
     max_return = max(final_returns_avail_ideas)
+    print("max_returns: ", max_return)
+    print(np.where(final_returns_avail_ideas == max_return))
     idx_max_return = np.where(final_returns_avail_ideas == max_return)[0]
+    print("idx_max_return: ", idx_max_return)
+    print(len(idx_max_return))
     # Resolves edge case in which there are multiple max returns
+    print("")
     if len(idx_max_return > 1):
-        return(np.random.choice(idx_max_return)[0], max_return)
+        return(np.random.choice(idx_max_return), max_return)
     else:
         return(idx_max_return[0], max_return)
-
+    
+    
 class Scientist(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -97,14 +123,17 @@ class Scientist(Agent):
         
         # Parameters determining perceived returns for ideas
         self.sds = poisson(4, model.total_ideas)
+        # Ensures that none of the standard devs are equal to 0
+        self.sds += 1
         self.means = poisson(25, model.total_ideas)
         
         # Create the ideas/returns matrix
         self.returns_matrix = \
-            create_return_matrix(model.total_ideas, max(model.max_investment), sds, means)
+            create_return_matrix(model.total_ideas, max(model.max_investment), self.sds, self.means)
         
-        # Records when the scientist was born
-        self.birth_time = model.schedule.time
+        # Records when the scientist was born; unique_id allows us to select
+        # a subset of scientists to be "alive" in each time period
+        self.birth_order = unique_id
         
         # Array keeping track of how much effort this scientist has invested in each idea
         self.effort_invested = np.zeros(model.total_ideas)
@@ -126,18 +155,23 @@ class Scientist(Agent):
         # Array to keep track of effort invested ONLY during the current time period
         self.eff_inv_in_period = np.zeros(model.total_ideas)
         
-    def step(self, model):
-        print(self.returns_matrix)
+        self.model = model
 
+        
+    def step(self):
+        
         # Check scientist's age in the current time period
-        self.current_age = model.schedule.time - self.birth_time
+        # NOTE: model time begins at 0
+        # NOTE: +3 ensures that we correctly calculate the current age, given
+        # that scientists aren't born in time periods 0 and 1
+        self.current_age = (self.model.schedule.time - self.birth_order) + 3
 
         if self.current_age == 0:       # Young scientist
-            idea_periods = np.arange(model.total_ideas)//model.ideas_per_time
+            idea_periods = np.arange(self.model.total_ideas)//self.model.ideas_per_time
             
             # Can work on ideas in the current or previous time period
-            self.avail_ideas = np.logical_or(idea_periods == model.schedule.time, \
-                idea_periods == (model.schedule.time - 1))
+            self.avail_ideas = np.logical_or(idea_periods == self.model.schedule.time, \
+                idea_periods == (self.model.schedule.time - 1))
             
             while self.avail_effort > 0:
                 ##### HEURISTIC FOR CHOOSING WHICH IDEA TO INVEST IN #####
@@ -151,7 +185,7 @@ class Scientist(Agent):
                 # Want to pull returns for expending self.increment units of effort,
                 # where increment equals the max invest cost across all ideas that
                 # haven't been invested in yet plus 1
-                self.increment = max(self.curr_k) + 1
+                self.increment = max(self.curr_k[self.avail_ideas]) + 1
                 # Edge case in which scientist doesn't have enough effort to invest in idea with greatest invest cost
                 if self.avail_effort < self.increment:
                     self.increment = self.avail_effort
@@ -162,21 +196,21 @@ class Scientist(Agent):
                 self.marginal_effort = self.increment - self.curr_k
                 
                 # Selects idea that gives the max return given equivalent "marginal" efforts
-                self.idea_choice, self.max_return = calc_cum_returns(self, model)
+                self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
                 
                 # Update parameters after idea selection and effort expenditure
-                model.total_effort[self.idea_choice] += self.increment
+                self.model.total_effort[self.idea_choice] += self.increment
                 self.effort_invested[self.idea_choice] += self.increment
                 self.eff_inv_in_period[self.idea_choice] += self.increment
                 self.avail_effort -= self.increment
                 self.perceived_returns[self.idea_choice] += self.max_return
         
         if self.current_age == 1:       # Old scientist
-            idea_periods = np.arange(model.total_ideas)//model.ideas_per_time
+            idea_periods = np.arange(self.model.total_ideas)//self.model.ideas_per_time
             
             # Can work on ideas in the current or previous two periods
-            self.avail_ideas = np.logical_or(np.logical_or(idea_periods == model.schedule.time, \
-                idea_periods == (model.schedule.time - 1)), idea_periods == (model.schedule.time - 2))
+            self.avail_ideas = np.logical_or(np.logical_or(idea_periods == self.model.schedule.time, \
+                idea_periods == (self.model.schedule.time - 1)), idea_periods == (self.model.schedule.time - 2))
             
             # Determine available effort based on rate of decay for old scientists
             # Added the top line so that calc_cum_returns would take into account
@@ -196,7 +230,7 @@ class Scientist(Agent):
                 # Want to pull returns for expending self.increment units of effort,
                 # where increment equals the max invest cost across all ideas that
                 # haven't been invested in yet plus 1
-                self.increment = max(self.curr_k) + 1
+                self.increment = max(self.curr_k[self.avail_ideas]) + 1
                 # Edge case in which scientist doesn't have enough effort to invest in idea with greatest invest cost
                 if self.avail_effort < self.increment:
                     self.increment = self.avail_effort
@@ -207,10 +241,10 @@ class Scientist(Agent):
                 self.marginal_effort = self.increment - self.curr_k
                 
                 # Selects idea that gives the max return given equivalent "marginal" efforts
-                self.idea_choice, self.max_return = calc_cum_returns(self)
+                self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
                 
                 # Update parameters after idea selection and effort expenditure
-                model.total_effort[self.idea_choice] += self.increment
+                self.model.total_effort[self.idea_choice] += self.increment
                 self.effort_invested[self.idea_choice] += self.increment
                 self.eff_inv_in_period[self.idea_choice] += self.increment
                 self.avail_effort -= self.increment
@@ -228,15 +262,20 @@ class Scientist(Agent):
 
 class ScientistModel(Model):
     def __init__(self, N, ideas_per_time, time_periods):
-        self.num_scientists = N
+        self.num_scientists = N * time_periods
         
-        self.total_ideas = ideas_per_time * time_periods
+        self.ideas_per_time = ideas_per_time
+        
+        self.total_ideas = ideas_per_time * (time_periods + 2)
         
         # Store the max investment allowed in any idea
         self.max_investment = poisson(lam=50, size=self.total_ideas)
         
         # Store parameters for true idea return distribution
         self.true_sds = poisson(4, size=self.total_ideas)
+        # Ensures that none of the standard devs are equal to 0
+        self.true_sds += 1
+        
         self.true_means = poisson(25, size=self.total_ideas)
 
         # Create array to keep track of total effort allocated to each idea
@@ -245,7 +284,7 @@ class ScientistModel(Model):
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model
         self.schedule = RandomActivation(self)
-        for i in range(self.num_scientists):
+        for i in range(4, self.num_scientists + 4):
             a = Scientist(i, self)
             self.schedule.add(a)
         
