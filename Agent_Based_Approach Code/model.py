@@ -96,13 +96,12 @@ def calc_cum_returns(scientist, model):
     print(np.where(final_returns_avail_ideas == max_return))
     idx_max_return = np.where(final_returns_avail_ideas == max_return)[0]
     print("idx_max_return: ", idx_max_return)
-    print(len(idx_max_return))
     # Resolves edge case in which there are multiple max returns
     print("")
     if len(idx_max_return > 1):
-        return(np.random.choice(idx_max_return), max_return)
+        return(np.random.choice(idx_max_return) + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas), max_return)
     else:
-        return(idx_max_return[0], max_return)
+        return(idx_max_return[0] + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas), max_return)
     
     
 class Scientist(Agent):
@@ -269,7 +268,7 @@ class ScientistModel(Model):
         self.total_ideas = ideas_per_time * (time_periods + 2)
         
         # Store the max investment allowed in any idea
-        self.max_investment = poisson(lam=50, size=self.total_ideas)
+        self.max_investment = poisson(lam=15, size=self.total_ideas)
         
         # Store parameters for true idea return distribution
         self.true_sds = poisson(4, size=self.total_ideas)
@@ -297,3 +296,4 @@ class ScientistModel(Model):
         # Call data collector to keep track of variables at each model step
         self.datacollector.collect(self)
         self.schedule.step()
+        print("Total effort (across scientists) invested in each idea:", self.total_effort)
