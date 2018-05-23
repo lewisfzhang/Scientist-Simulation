@@ -198,10 +198,10 @@ class Scientist(Agent):
                 self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
                 
                 # Update parameters after idea selection and effort expenditure
-                self.model.total_effort[self.idea_choice] += self.increment
-                self.effort_invested[self.idea_choice] += self.increment
-                self.eff_inv_in_period[self.idea_choice] += self.increment
-                self.avail_effort -= self.increment
+                self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.eff_inv_in_period[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.avail_effort -= self.marginal_effort[self.idea_choice]
                 self.perceived_returns[self.idea_choice] += self.max_return
         
         if self.current_age == 1:       # Old scientist
@@ -243,10 +243,10 @@ class Scientist(Agent):
                 self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
                 
                 # Update parameters after idea selection and effort expenditure
-                self.model.total_effort[self.idea_choice] += self.increment
-                self.effort_invested[self.idea_choice] += self.increment
-                self.eff_inv_in_period[self.idea_choice] += self.increment
-                self.avail_effort -= self.increment
+                self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.eff_inv_in_period[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.avail_effort -= self.marginal_effort[self.idea_choice]
                 self.perceived_returns[self.idea_choice] += self.max_return 
         
         else:
@@ -268,7 +268,7 @@ class ScientistModel(Model):
         self.total_ideas = ideas_per_time * (time_periods + 2)
         
         # Store the max investment allowed in any idea
-        self.max_investment = poisson(lam=15, size=self.total_ideas)
+        self.max_investment = poisson(lam=8, size=self.total_ideas)
         
         # Store parameters for true idea return distribution
         self.true_sds = poisson(4, size=self.total_ideas)

@@ -1,0 +1,758 @@
+Total effort (across scientists) invested in each idea: [ 0.  0.  0.  0.  0.]
+Unique ID:  4
+Age of scientist:  0
+Time period:  1
+Current investment costs for all ideas:  [1 2 0 2 1]
+idea #:  0
+effort_left_in_idea: 8.0
+No restrictions on investing in this idea
+idea #:  1
+effort_left_in_idea: 6.0
+No restrictions on investing in this idea
+avail_effort:  5
+final_returns_avail_ideas:  [ 0.00301842  0.00522013]
+Current investment costs:  [1 2]
+Increment:  3
+max_returns:  0.00522012569356
+(array([1]),)
+idx_max_return:  [1]
+
+Unique ID:  4
+Age of scientist:  0
+Time period:  1
+Current investment costs for all ideas:  [1 0 0 2 1]
+idea #:  0
+effort_left_in_idea: 8.0
+No restrictions on investing in this idea
+idea #:  1
+effort_left_in_idea: 3.0
+No restrictions on investing in this idea
+avail_effort:  2
+final_returns_avail_ideas:  [ 0.00247262  0.00548614]
+Current investment costs:  [1 0]
+Increment:  2
+max_returns:  0.00548614162953
+(array([1]),)
+idx_max_return:  [1]
+
+Total effort (across scientists) invested in each idea: [ 0.  5.  0.  0.  0.]
+Unique ID:  5
+Age of scientist:  0
+Time period:  2
+Current investment costs for all ideas:  [5 3 3 1 2]
+idea #:  1
+effort_left_in_idea: 1.0
+No restrictions on investing in this idea
+idea #:  2
+effort_left_in_idea: 5.0
+No restrictions on investing in this idea
+avail_effort:  8
+final_returns_avail_ideas:  [ 0.00035997  0.01212843]
+Current investment costs:  [3 3]
+Increment:  4
+max_returns:  0.0121284349843
+(array([1]),)
+idx_max_return:  [1]
+
+Unique ID:  5
+Age of scientist:  0
+Time period:  2
+Current investment costs for all ideas:  [5 3 0 1 2]
+idea #:  1
+effort_left_in_idea: 1.0
+No restrictions on investing in this idea
+idea #:  2
+effort_left_in_idea: 1.0
+Amount invested in idea in period: 4.0
+marginal effort: 4
+invest cutoff: 8
+avail_effort:  4
+final_returns_avail_ideas:  [ 0.00035997  0.        ]
+Current investment costs:  [3 0]
+Increment:  4
+max_returns:  0.000359965068681
+(array([0]),)
+idx_max_return:  [0]
+
+Unique ID:  4
+Age of scientist:  1
+Time period:  2
+Current investment costs for all ideas:  [1 0 0 2 1]
+idea #:  0
+effort_left_in_idea: 8.0
+No restrictions on investing in this idea
+idea #:  1
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 4
+idea #:  2
+effort_left_in_idea: 1.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 4
+avail_effort:  4
+final_returns_avail_ideas:  [ 0.00247262  0.          0.        ]
+Current investment costs:  [1 0 0]
+Increment:  2
+max_returns:  0.00247262315663
+(array([0]),)
+idx_max_return:  [0]
+
+Unique ID:  4
+Age of scientist:  1
+Time period:  2
+Current investment costs for all ideas:  [0 0 0 2 1]
+idea #:  0
+effort_left_in_idea: 6.0
+No restrictions on investing in this idea
+idea #:  1
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 4
+idea #:  2
+effort_left_in_idea: 1.0
+No restrictions on investing in this idea
+avail_effort:  2
+final_returns_avail_ideas:  [ 0.00066582  0.          0.0018881 ]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.00188809803713
+(array([2]),)
+idx_max_return:  [2]
+
+Unique ID:  4
+Age of scientist:  1
+Time period:  2
+Current investment costs for all ideas:  [0 0 0 2 1]
+idea #:  0
+effort_left_in_idea: 6.0
+No restrictions on investing in this idea
+idea #:  1
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 4
+idea #:  2
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 4
+avail_effort:  1
+final_returns_avail_ideas:  [ 0.00066582  0.          0.        ]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.000665823574728
+(array([0]),)
+idx_max_return:  [0]
+
+Total effort (across scientists) invested in each idea: [ 3.  9.  5.  0.  0.]
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 1 2]
+idea #:  1
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: 2.0
+No restrictions on investing in this idea
+avail_effort:  7
+final_returns_avail_ideas:  [  0.00000000e+00   0.00000000e+00   1.37095721e-06]
+Current investment costs:  [0 0 1]
+Increment:  2
+max_returns:  1.37095720686e-06
+(array([2]),)
+idx_max_return:  [2]
+
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 0 2]
+idea #:  1
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 7
+avail_effort:  5
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 0 2]
+idea #:  1
+effort_left_in_idea: -4.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 7
+avail_effort:  4
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 0 2]
+idea #:  1
+effort_left_in_idea: -4.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 7
+avail_effort:  3
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 0 2]
+idea #:  1
+effort_left_in_idea: -4.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 7
+avail_effort:  2
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  5
+Age of scientist:  1
+Time period:  3
+Current investment costs for all ideas:  [5 0 0 0 2]
+idea #:  1
+effort_left_in_idea: -5.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 7
+idea #:  3
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 7
+avail_effort:  1
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  0
+Time period:  3
+Current investment costs for all ideas:  [3 4 3 4 1]
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 10
+idea #:  3
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 10
+avail_effort:  10
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [3 4]
+Increment:  5
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  6
+Age of scientist:  0
+Time period:  3
+Current investment costs for all ideas:  [3 4 3 0 1]
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 10
+idea #:  3
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 5.0
+marginal effort: 4
+invest cutoff: 10
+avail_effort:  5
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [3 0]
+Increment:  4
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  6
+Age of scientist:  0
+Time period:  3
+Current investment costs for all ideas:  [3 4 3 0 1]
+idea #:  2
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 0.0
+marginal effort: -2
+invest cutoff: 10
+idea #:  3
+effort_left_in_idea: -10.0
+Amount invested in idea in period: 9.0
+marginal effort: 1
+invest cutoff: 10
+avail_effort:  1
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [3 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Total effort (across scientists) invested in each idea: [  3.  12.   7.  12.   0.]
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 1 1]
+idea #:  3
+effort_left_in_idea: -10.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: 2.0
+No restrictions on investing in this idea
+avail_effort:  12
+final_returns_avail_ideas:  [ 0.          0.00046796]
+Current investment costs:  [1 1]
+Increment:  2
+max_returns:  0.000467956725633
+(array([1]),)
+idx_max_return:  [1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 1 0]
+idea #:  3
+effort_left_in_idea: -10.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 2.0
+marginal effort: 2
+invest cutoff: 12
+avail_effort:  10
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [1 0]
+Increment:  2
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -12.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: 0.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  8
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -12.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  7
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -13.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  6
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -14.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -1.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  5
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -14.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -2.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  4
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -15.0
+Amount invested in idea in period: 5.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -2.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  3
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -15.0
+Amount invested in idea in period: 5.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 5.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  2
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  7
+Age of scientist:  0
+Time period:  4
+Current investment costs for all ideas:  [1 1 2 0 0]
+idea #:  3
+effort_left_in_idea: -16.0
+Amount invested in idea in period: 6.0
+marginal effort: 1
+invest cutoff: 12
+idea #:  4
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 5.0
+marginal effort: 1
+invest cutoff: 12
+avail_effort:  1
+final_returns_avail_ideas:  [ 0.  0.]
+Current investment costs:  [0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1]),)
+idx_max_return:  [0 1]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 1]
+idea #:  2
+effort_left_in_idea: -2.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -17.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  9
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 1]
+Increment:  2
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 1]
+idea #:  2
+effort_left_in_idea: -4.0
+Amount invested in idea in period: 2.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -17.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  7
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 1]
+Increment:  2
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 1]
+idea #:  2
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 4.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -17.0
+Amount invested in idea in period: 0.0
+marginal effort: 2
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -3.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  5
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 1]
+Increment:  2
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 0]
+idea #:  2
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -17.0
+Amount invested in idea in period: 0.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -5.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  3
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 0]
+idea #:  2
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -18.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -5.0
+Amount invested in idea in period: 2.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  2
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Unique ID:  6
+Age of scientist:  1
+Time period:  4
+Current investment costs for all ideas:  [3 4 0 0 0]
+idea #:  2
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 4.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  3
+effort_left_in_idea: -18.0
+Amount invested in idea in period: 1.0
+marginal effort: 1
+invest cutoff: 9
+idea #:  4
+effort_left_in_idea: -6.0
+Amount invested in idea in period: 3.0
+marginal effort: 1
+invest cutoff: 9
+avail_effort:  1
+final_returns_avail_ideas:  [ 0.  0.  0.]
+Current investment costs:  [0 0 0]
+Increment:  1
+max_returns:  0.0
+(array([0, 1, 2]),)
+idx_max_return:  [0 1 2]
+
+Total effort (across scientists) invested in each idea: [  3.  12.  11.  20.   9.]
