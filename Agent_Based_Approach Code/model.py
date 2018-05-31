@@ -15,6 +15,7 @@ from mesa.datacollection import DataCollector
 import random
 import numpy as np
 from numpy.random import poisson, logistic
+import sys
 
 # Sigmoid function
 def logistic_cdf(x, loc, scale):
@@ -36,6 +37,21 @@ def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
         returns_list.append(returns)
     return(np.array(returns_list))
 
+# Program to return the second largest number in an array (will return the max
+# if there are more than one max numbers)
+def second_largest(numbers):
+    count = 0
+    m1 = m2 = float('-inf')
+    for x in numbers:
+        count += 1
+        if x > m2:
+            if x >= m1:
+                m1, m2 = x, m1            
+            else:
+                m2 = x
+    return m2 if count >= 2 else None
+
+
 # Function to calculate "marginal" returns for available ideas, taking into account invest costs
 # Input:
 # 1) avail_ideas - array that indexes which ideas are available to a given scientist
@@ -56,8 +72,7 @@ def calc_cum_returns(scientist, model):
     final_returns_avail_ideas = np.array([])
     # Limit on the amount of effort that a scientist can invest in a single idea
     # in one time period
-    # 5/11: Set at 1 because code to deal with invest cutoff edge case not in place
-    invest_cutoff = round(scientist.start_effort * 1)
+    invest_cutoff = round(scientist.start_effort * 0.6)
 
     
     for idea in np.where(scientist.avail_ideas == True)[0]:
@@ -65,17 +80,14 @@ def calc_cum_returns(scientist, model):
         # 1st) Edge case in which scientist doesn't have enough effort to invest in
         # an idea given the investment cost
         # 2nd) Ensures that effort invested in ideas doesn't go over max invest
-        # 3rd) Prevents scientists from investing further in an idea if the
-        # scientist has already invested at or above the investment cutoff
         print("idea #: ", idea)
         print("effort_left_in_idea:", scientist.effort_left_in_idea[idea])
-        if scientist.marginal_effort[idea] <= 0 or scientist.effort_left_in_idea[idea] == 0 or \
-            scientist.eff_inv_in_period[idea] >= invest_cutoff:
+        if scientist.marginal_effort[idea] <= 0 or scientist.effort_left_in_idea[idea] == 0:
             print("Amount invested in idea in period:", scientist.eff_inv_in_period[idea])
             print("marginal effort:", scientist.marginal_effort[idea])
 #            print("invest cutoff:", invest_cutoff)
             final_returns_avail_ideas = np.append(final_returns_avail_ideas, 0)
-        
+
         # For instances in which a scientist's marginal effort exceeds the 
         # effort left in a given idea, calculate the returns for investing
         # exactly the effort left
@@ -92,6 +104,7 @@ def calc_cum_returns(scientist, model):
             returns = scientist.returns_matrix[idea, np.arange(start_index, stop_index)]
             total_return = sum(returns)
             final_returns_avail_ideas = np.append(final_returns_avail_ideas, total_return)
+
     
     print("avail_effort: ", scientist.avail_effort)           
     print("final_returns_avail_ideas: ", final_returns_avail_ideas)
@@ -102,12 +115,65 @@ def calc_cum_returns(scientist, model):
     print(np.where(final_returns_avail_ideas == max_return))
     idx_max_return = np.where(final_returns_avail_ideas == max_return)[0]
     print("idx_max_return: ", idx_max_return)
-    # Resolves edge case in which there are multiple max returns
     print("")
-    if len(idx_max_return > 1):
-        return(np.random.choice(idx_max_return) + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas), max_return)
+    # Resolves edge case in which there are multiple max returns. In this case,
+    # check if each idea associated with the max return has reached the
+    # investment cutoff. If it has reached the cutoff, remove it from the array
+    # of ideas with max returns. Then randomly choose among the remaining ideas
+    if len(idx_max_return) > 1:
+#        print("Entered if statement. idx_max_return should be > 1")
+#        print("idx_max_return: ", idx_max_return)
+#        print("length of idx_max_return: ", len(idx_max_return))
+        upd_idx_max = np.array([])
+        for idx in np.nditer(idx_max_return):
+            idea_choice = idx + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas)
+            if scientist.eff_inv_in_period[idea_choice] >= invest_cutoff:
+                continue
+            else:
+                upd_idx_max = np.append(upd_idx_max, idea_choice)
+#        if upd_idx_max.size == 0:
+#            print("final_returns_avail_ideas: ", final_returns_avail_ideas)
+#            print("idx_max_return: ", idx_max_return)
+#            print("eff_inv_in_period:", scientist.eff_inv_in_period)
+#            sys.exit("upd_idx_max is empty")
+        idea_choice = int(np.random.choice(upd_idx_max))
+        print("Hit investment cutoff!")
+        print("Effort invested in current period: ", scientist.eff_inv_in_period)
+        print("Next idea choice: ", idea_choice)
+        print("Second max return (equal to original max): ", max_return)
+        return(idea_choice, max_return)
     else:
-        return(idx_max_return[0] + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas), max_return)
+        idea_choice = idx_max_return[0] + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas)
+        # Prevents scientists from investing further in a single idea if the
+        # scientist has already invested at or above the investment cutoff.
+        if scientist.eff_inv_in_period[idea_choice] >= invest_cutoff:
+            second_max = second_largest(final_returns_avail_ideas)
+            # second_max equal to 0 implies that the scientist can't invest
+            # in any other ideas due to 1) ideas reaching max investment or 
+            # 2) ideas having too high of an investment cost given the 
+            # scientist's current available effort. In this edge case, the
+            # scientist is allowed to continue investing in an idea past
+            # the investment cutoff
+            if second_max == 0:
+                print("Just kidding. Can't invest in other ideas")
+                return idea_choice, max_return
+            else:
+                idx_second_max = np.where(final_returns_avail_ideas == second_max)[0]
+                if len(idx_second_max) > 1:
+                    idea_choice = int(np.random.choice(idx_second_max)) + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas)
+                    print("Hit investment cutoff!")
+                    print("Effort invested in current period: ", scientist.eff_inv_in_period)
+                    print("Next idea choice: ", idea_choice)
+                    print("Second max return: ", second_max)
+                    return(idea_choice, second_max)
+                else:
+                    idea_choice = idx_second_max[0] + [(model.schedule.time + 1)*(model.ideas_per_time)] - len(final_returns_avail_ideas)
+                    print("Hit investment cutoff!")
+                    print("Effort invested in current period: ", scientist.eff_inv_in_period)
+                    print("Next idea choice: ", idea_choice)
+                    print("Second max return: ", second_max)
+                    return(idea_choice, second_max)
+        return(idea_choice, max_return)
     
     
 class Scientist(Agent):
@@ -215,6 +281,7 @@ class Scientist(Agent):
                 
                 # Selects idea that gives the max return given equivalent "marginal" efforts
                 self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
+
                 
                 # Accounts for the edge case in which max_return = 0 (implying that a
                 # scientist either can't invest in any ideas [due to investment
@@ -238,7 +305,7 @@ class Scientist(Agent):
                 # time period should be affected by paid investment costs.
                 self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
                 self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
-                self.eff_inv_in_period[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.eff_inv_in_period[self.idea_choice] += self.increment
                 self.avail_effort -= self.increment
                 self.perceived_returns[self.idea_choice] += self.max_return
         
@@ -255,6 +322,9 @@ class Scientist(Agent):
             self.start_effort = self.start_effort - self.start_effort_decay * self.current_age
             self.avail_effort = self.start_effort
         
+            # Reset effort invested in the current time period
+            self.eff_inv_in_period[:] = 0
+            
             while self.avail_effort > 0:
                 ##### HEURISTIC FOR CHOOSING WHICH IDEA TO INVEST IN #####
                 
@@ -314,19 +384,15 @@ class Scientist(Agent):
                 # time period should be affected by paid investment costs.
                 self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
                 self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
-                self.eff_inv_in_period[self.idea_choice] += self.marginal_effort[self.idea_choice]
+                self.eff_inv_in_period[self.idea_choice] += self.increment
                 self.avail_effort -= self.increment
                 self.perceived_returns[self.idea_choice] += self.max_return
         
         else:
             # Scientists are alive and able to do things for only two time periods
             pass
-
-        # Reset available effort at the end of each time period
-        # self.avail_effort = self.start_effort
         
-        # Reset effort invested in the current time period
-        self.eff_inv_in_period[:] = 0
+
 
 class ScientistModel(Model):
     def __init__(self, N, ideas_per_time, time_periods):
@@ -337,7 +403,7 @@ class ScientistModel(Model):
         self.total_ideas = ideas_per_time * (time_periods + 2)
         
         # Store the max investment allowed in any idea
-        self.max_investment = poisson(lam=8, size=self.total_ideas)
+        self.max_investment = poisson(lam=10, size=self.total_ideas)
         
         # Store parameters for true idea return distribution
         self.true_sds = poisson(4, size=self.total_ideas)
