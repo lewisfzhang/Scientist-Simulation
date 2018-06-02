@@ -16,6 +16,8 @@ f = open("output.txt", "w")
 sys.stdout = f
 
 test_model = ScientistModel(N = 2, ideas_per_time = 1, time_periods = 3)
+# NOTE: To iterate once through a model, the number of steps should be time
+# periods + 2
 for i in range(5):   
     test_model.step()
 
