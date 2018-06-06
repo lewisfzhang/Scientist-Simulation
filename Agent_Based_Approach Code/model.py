@@ -102,10 +102,11 @@ def calc_cum_returns(scientist, model):
             final_returns_avail_ideas = np.append(final_returns_avail_ideas, total_return)
 
 
-    # Finds the maximum return over all the available ideas
+    # Scalar: finds the maximum return over all the available ideas
     max_return = max(final_returns_avail_ideas)
 
-    # Finds the index of the maximum return over all the available ideas
+    # Array: finds the index of the maximum return over all the available ideas
+    # Could be 1D array
     idx_max_return = np.where(final_returns_avail_ideas == max_return)[0]
 
     # Resolves edge case in which there are multiple max returns. In this case,
@@ -161,6 +162,11 @@ def calc_cum_returns(scientist, model):
 
             # The nested edge case where the scientist doesn't have any other ideas to invest in
             # due to other restrictions
+            # These restrictions include:
+            # 1) all other ideas have reached maximum investment and/or
+            # 2) a scientist's marginal effort for all other ideas is <= 0, 
+            # implying that the scientist doesn't have enough effort to pay
+            # the investment cost
             if second_max == 0:
                 # Bypass the restriction on the investment cutoff in this case
                 return idea_choice, max_return
