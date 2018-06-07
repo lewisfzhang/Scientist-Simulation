@@ -5,26 +5,26 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
 from numpy.random import poisson
-import input
+import input_file
 from mesa.batchrunner import BatchRunner
 import matplotlib.pyplot as plt
 
 use_server = True  # toggle between batch files and server (1 run)
-use_slider = True  # only True when use_server is also True
+use_slider = False  # only True when use_server is also True
 
-# import variables from input
-time_periods = input.time_periods
-ideas_per_time = input.ideas_per_time
-N = input.N
-max_investment_lam = input.max_investment_lam
-true_sds_lam = input.true_sds_lam
-true_means_lam = input.true_means_lam
+# import variables from input_file
+time_periods = input_file.time_periods
+ideas_per_time = input_file.ideas_per_time
+N = input_file.N
+max_investment_lam = input_file.max_investment_lam
+true_sds_lam = input_file.true_sds_lam
+true_means_lam = input_file.true_means_lam
 
-start_effort_lam = input.start_effort_lam
-start_effort_decay = input.start_effort_decay
-k_lam = input.k_lam
-sds_lam = input.sds_lam
-means_lam = input.means_lam
+start_effort_lam = input_file.start_effort_lam
+start_effort_decay = input_file.start_effort_decay
+k_lam = input_file.k_lam
+sds_lam = input_file.sds_lam
+means_lam = input_file.means_lam
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
 if not use_server:

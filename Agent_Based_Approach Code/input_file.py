@@ -1,4 +1,7 @@
-# input.py
+# input_file.py
+
+# for optimizations
+prop_invest_limit = 0.6
 
 # model variables
 time_periods = 3

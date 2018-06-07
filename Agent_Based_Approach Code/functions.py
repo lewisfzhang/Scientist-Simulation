@@ -2,11 +2,12 @@
 
 import numpy as np
 
+# returns the average of the total effort invested in all ideas by time period
 def get_average_effort(model):
     arr = model.total_effort
     return sum(arr)/len(arr)
 
-
+# returns the sum of the total effort invested in all ideas by time period
 def get_total_effort(model):
     arr = model.total_effort
     return sum(arr)
