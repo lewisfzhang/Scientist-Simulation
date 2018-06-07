@@ -3,7 +3,7 @@ from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 import numpy as np
 from numpy.random import poisson
-
+import input
 
 # Input: Parameters for the logistic cumulative distribution function
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
@@ -194,11 +194,11 @@ class Scientist(Agent):
         
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
-        self.start_effort = poisson(lam=10)
+        self.start_effort = input.start_effort
 
         # Scalar: rate of decay for start_effort of old scientists; currently
         # set at 1 but can be adjusted as necessary
-        self.start_effort_decay = 1
+        self.start_effort_decay = input.start_effort_decay
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
@@ -207,12 +207,12 @@ class Scientist(Agent):
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
         # additional investment
-        self.k = poisson(lam=2, size=model.total_ideas)
+        self.k = input.k
         
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
-        self.sds = poisson(4, model.total_ideas)
-        self.means = poisson(25, model.total_ideas)
+        self.sds = input.sds
+        self.means = input.means
         # Ensures that none of the standard devs are equal to 0
         # NOTE: May be worth asking Jay if there is a better way to handle this
         self.sds += 1
@@ -375,21 +375,21 @@ class ScientistModel(Model):
         
         # Scalar: indicates the total number of scientists in the model
         # N is the number of scientists per time period
-        self.num_scientists = N * time_periods
+        self.num_scientists = input.N * input.time_periods
         
         # Scalar: number of ideas unique to each time period
-        self.ideas_per_time = ideas_per_time
+        self.ideas_per_time = input.ideas_per_time
         
         # Scalar: total number of ideas in the model. +2 is used to account
         # for first two, non-steady state time periods
-        self.total_ideas = ideas_per_time * (time_periods + 2)
+        self.total_ideas = input.ideas_per_time*(input.time_periods+2)
         
         # Array: stores the max investment allowed for each idea
-        self.max_investment = poisson(lam=10, size=self.total_ideas)
+        self.max_investment = input.max_investment
         
         # Array: store parameters for true idea return distribution
-        self.true_sds = poisson(4, size=self.total_ideas)
-        self.true_means = poisson(25, size=self.total_ideas)
+        self.true_sds = input.true_sds
+        self.true_means = input.true_means
         
         # Ensures that none of the standard devs are equal to 0
         self.true_sds += 1

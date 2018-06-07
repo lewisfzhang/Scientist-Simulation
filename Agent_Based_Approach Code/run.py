@@ -11,6 +11,7 @@ Created on Fri Apr 27 14:05:55 2018
 # os.chdir("C:/Users/zstemple/Documents/GitHub/Scientist-Simulation/Agent_Based_Approach Code")
 # import sys
 from model import *
+import input
 
 # orig_stdout = sys.stdout
 # f = open("output.txt", "w")
