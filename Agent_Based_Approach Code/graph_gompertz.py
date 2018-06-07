@@ -13,5 +13,5 @@ fig, ax = plt.subplots(1,1)
 
 
 x = np.linspace(0,50)
-ax.plot(x, logistic.cdf(x, loc = 25, scale = 10), 'r-', lw=5, alpha=0.6, label= 'gompertz cdf')
+ax.plot(x, logistic.cdf(x, loc = 25, scale = 1), 'r-', lw=5, alpha=0.6, label= 'gompertz cdf')
 plt.show()
