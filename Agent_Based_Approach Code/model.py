@@ -3,53 +3,11 @@ from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 import numpy as np
 from numpy.random import poisson
-import input
+from functions import *  # anything not directly tied to Mesa objects
 
-# Input: Parameters for the logistic cumulative distribution function
-# Output: Value at x of the logistic cdf defined by the location and scale parameter
-def logistic_cdf(x, loc, scale):
-    return 1/(1+np.exp((loc-x)/scale))
-
-
-# Input: 
-# 1) num_ideas (scalar): number of ideas to create the return matrix for
-# 2) max_of_max_inv (scalar): the maximum of all the maximum investment limits over all ideas
-# 3) sds (array): the standard deviation parameters of the return curve of each idea
-# 4) means (array): the mean parameters of the return curve of each idea
-# Output:
-# A matrix that is has dimension n x m where n = num_ideas and m = max_of_max_inv
-# where each cell (i,j) contains the return based on the logistic cumulative 
-# distribution function of the i-th idea and the j-th extra unit of effort
-def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
-    # Creates array of the effort units to calculate returns for
-    x = np.arange(max_of_max_inv + 1)
-    returns_list = []
-    for i in range(num_ideas):
-        # Calculates the return for an idea for all amounts of effort units
-        returns = logistic_cdf(x, loc=means[i], scale=sds[i])
-        # Stacks arrays horizontally
-        to_subt_temp = np.hstack((0, returns[:-1]))
-        # Calculates return per unit of effort
-        returns = returns - to_subt_temp
-        returns_list.append(returns)
-    return np.array(returns_list)
-
-
-# Input: 
-# 1) numbers (array): contains the numbers we are picking the second largest from
-# Output:
-# The second largest number out of the array 
-def second_largest(numbers):
-    count = 0
-    m1 = m2 = float('-inf')
-    for x in numbers:
-        count += 1
-        if x > m2:
-            if x >= m1:
-                m1, m2 = x, m1            
-            else:
-                m2 = x
-    return m2 if count >= 2 else None
+def get_average_effort(model):
+    arr = model.total_effort
+    return sum(arr)/len(arr)
 
 
 # Function to calculate "marginal" returns for available ideas, taking into account investment costs
@@ -194,11 +152,11 @@ class Scientist(Agent):
         
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
-        self.start_effort = input.start_effort
+        self.start_effort = poisson(lam=model.start_effort_lam)
 
         # Scalar: rate of decay for start_effort of old scientists; currently
         # set at 1 but can be adjusted as necessary
-        self.start_effort_decay = input.start_effort_decay
+        self.start_effort_decay = model.start_effort_decay
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
@@ -207,12 +165,12 @@ class Scientist(Agent):
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
         # additional investment
-        self.k = input.k
+        self.k = poisson(lam=model.k_lam, size=model.total_ideas)
         
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
-        self.sds = input.sds
-        self.means = input.means
+        self.sds = poisson(lam=model.sds_lam, size=model.total_ideas)
+        self.means = poisson(lam=model.sds_lam, size=model.total_ideas)
         # Ensures that none of the standard devs are equal to 0
         # NOTE: May be worth asking Jay if there is a better way to handle this
         self.sds += 1
@@ -371,25 +329,38 @@ class Scientist(Agent):
 
 
 class ScientistModel(Model):
-    def __init__(self, N, ideas_per_time, time_periods):
-        
+    def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables
+                 start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam):   #AgentModel variables
+        # for batch runs
+        self.running = True
+
+        # store variables into Scientist(Agent) objects
+        self.start_effort_lam = start_effort_lam
+        self.start_effort_decay = start_effort_decay
+        self.k_lam = k_lam
+        self.sds_lam = sds_lam
+        self.means_lam = means_lam
+
+        self.time_periods = time_periods
+        self.N = N
+
         # Scalar: indicates the total number of scientists in the model
         # N is the number of scientists per time period
-        self.num_scientists = input.N * input.time_periods
+        self.num_scientists = N * time_periods
         
         # Scalar: number of ideas unique to each time period
-        self.ideas_per_time = input.ideas_per_time
+        self.ideas_per_time = ideas_per_time
         
         # Scalar: total number of ideas in the model. +2 is used to account
         # for first two, non-steady state time periods
-        self.total_ideas = input.ideas_per_time*(input.time_periods+2)
+        self.total_ideas = ideas_per_time*(time_periods+2)
         
         # Array: stores the max investment allowed for each idea
-        self.max_investment = input.max_investment
+        self.max_investment = poisson(lam=max_investment_lam, size=self.total_ideas)
         
         # Array: store parameters for true idea return distribution
-        self.true_sds = input.true_sds
-        self.true_means = input.true_means
+        self.true_sds = poisson(lam=true_sds_lam, size=self.total_ideas)
+        self.true_means = poisson(lam=true_means_lam, size=self.total_ideas)
         
         # Ensures that none of the standard devs are equal to 0
         self.true_sds += 1
@@ -397,21 +368,31 @@ class ScientistModel(Model):
         # Array: keeps track of total effort allocated to each idea across all
         # scientists
         self.total_effort = np.zeros(self.total_ideas)
-        
+
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
         # in which young and old scientists get to invest in ideas is random)
         self.schedule = RandomActivation(self)
+
+        # counts number of times/steps
+        self.count_time = 0
+
         for i in range(4, self.num_scientists + 4):
             a = Scientist(i, self)
             self.schedule.add(a)
         
         # Create data collector method for keeping track of variables over time
         self.datacollector = DataCollector(
-            model_reporters={"Total effort": "total_effort"},
+            model_reporters={"Average Effort": get_average_effort},
             agent_reporters={"Effort invested": "effort_invested", "Perceived returns": "perceived_returns"})
-        
+
     def step(self):
+        if self.count_time == self.time_periods+2:
+            raise SystemExit()
+        else:
+            self.count_time += 1
+
         # Call data collector to keep track of variables at each model step
         self.datacollector.collect(self)
         self.schedule.step()
+

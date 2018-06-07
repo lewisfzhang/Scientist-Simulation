@@ -6,18 +6,30 @@ import numpy as np
 
 from numpy.random import poisson
 
-# model
-time_periods = 3
+# model variables
+time_periods = 10
 ideas_per_time = 1
 N = 2
-total_ideas = ideas_per_time*(time_periods+2)  # calculated as constant
-max_investment = poisson(lam=10, size=total_ideas)
-true_sds = poisson(4, size=total_ideas)
-true_means = poisson(25, size=total_ideas)
+max_investment_lam = 10
+true_sds_lam = 4
+true_means_lam = 25
 
-# agent
-start_effort = poisson(lam=10)
+# # model poisson curves
+# max_investment = poisson(lam=max_investment_lam, size=total_ideas)
+# true_sds = poisson(lam=true_sds_lam, size=total_ideas)
+# true_means = poisson(lam=true_means_lam, size=total_ideas)
+
+
+# agent constants
+start_effort_lam = 10
 start_effort_decay = 1
-k = poisson(lam=2, size=total_ideas)
-sds = poisson(4, total_ideas)
-means = poisson(25, total_ideas)
+k_lam = 2
+sds_lam = 4
+means_lam = 25
+
+# agent variables
+# start_effort = poisson(lam=start_effort_lam)
+# start_effort_decay = 1
+# k = poisson(lam=k_lam, size=total_ideas)
+# sds = poisson(lam=sds_lam, size=total_ideas)
+# means = poisson(lam=sds_lam, size=total_ideas)
