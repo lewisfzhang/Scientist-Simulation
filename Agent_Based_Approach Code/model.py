@@ -5,6 +5,11 @@ import numpy as np
 from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
 
+# This file has 3 parts
+# 1. optimization in calc_cum_returns
+# 2. Agent class from Mesa
+# 3. Model class from Mesa
+
 def get_average_effort(model):
     arr = model.total_effort
     return sum(arr)/len(arr)
