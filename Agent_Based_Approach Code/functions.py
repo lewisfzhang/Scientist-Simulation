@@ -1,6 +1,7 @@
 # functions.py
 
 import numpy as np
+import input_file
 
 # returns the sum of the total effort invested in all ideas by time period
 def get_total_effort(model):
@@ -11,6 +12,10 @@ def get_total_effort(model):
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
 def logistic_cdf(x, loc, scale):
     return 1/(1+np.exp((loc-x)/scale))
+
+# round to 5 decimal places and returns the immutable tuple object for datacollector
+def rounded_tuple(array):
+    return tuple(map(lambda x: isinstance(x, float) and round(x, 2) or x, tuple(array)))
 
 # Input:
 # 1) num_ideas (scalar): number of ideas to create the return matrix for
@@ -50,3 +55,15 @@ def second_largest(numbers):
             else:
                 m2 = x
     return m2 if count >= 2 else None
+
+# for counting number of html pages generated
+def page_counter():
+    input_file.count += 1
+    return input_file.count
+
+def flatten_list_of_numpy(numpy_list):
+    flatten_list = []
+    for np_array_idx in range(len(numpy_list)):
+        for idx, val in enumerate(numpy_list[np_array_idx]):
+            flatten_list.append(val)
+    return flatten_list

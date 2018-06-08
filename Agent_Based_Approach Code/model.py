@@ -43,8 +43,6 @@ class Scientist(Agent):
         self.perceived_returns_matrix = create_return_matrix(model.total_ideas, max(model.max_investment),
                                                              self.sds, self.means)
 
-        self.actual_returns_matrix = create_return_matrix(model.total_ideas, max(model.max_investment),
-                                                          self.model.true_sds, self.model.true_means)
         # Each scientist is assigned a unique ID. We also use unique IDs to determine
         # scientists' ages and thus which scientists are alive in a given time period
         # and which ideas they can invest in
@@ -62,7 +60,7 @@ class Scientist(Agent):
         # Array: keeps track of total, perceived returns for each idea given
         # a scientist's level of investment in that idea
         self.perceived_returns = np.zeros(model.total_ideas)
-        
+
         # Array: creates a copy of the max investment array from model class;
         # this contains the max amount of effort that can be invested in each
         # idea across all scientists
@@ -71,14 +69,17 @@ class Scientist(Agent):
         
         # Array: keeps track of effort invested ONLY during the current time period
         # NOTE: resets to 0 after each time period and DOES include investment costs
-        self.eff_inv_in_period = np.zeros(model.total_ideas)
-        
+        self.eff_inv_in_period_increment = np.zeros(model.total_ideas)
+
+        self.eff_inv_in_period_marginal = np.zeros(model.total_ideas)
+
         # Allows scientists to access model variables
         self.model = model
 
         # Array: keeping track of all the returns of investing in each available ideas
-        self.final_returns_avail_ideas = np.array([])
+        self.final_perceived_returns_avail_ideas = np.array([])
         self.final_k_avail_ideas = np.array([])
+        self.final_actual_returns_avail_ideas = np.array([])
 
     # code reusability: code for each age of scientist into a single function
     def investing(self):
@@ -131,7 +132,6 @@ class Scientist(Agent):
             # cost barriers or an idea reaching max investment]). Effort
             # is lost and doesn't carry over to the next period
             if self.max_return == 0:
-                print("i ran")
                 self.avail_effort = 0
                 continue
 
@@ -149,7 +149,8 @@ class Scientist(Agent):
             # paid investment costs for the other variables
             self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
             self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
-            self.eff_inv_in_period[self.idea_choice] += self.increment
+            self.eff_inv_in_period_marginal[self.idea_choice] += self.marginal_effort[self.idea_choice]
+            self.eff_inv_in_period_increment[self.idea_choice] += self.increment
             self.avail_effort -= self.increment
             self.perceived_returns[self.idea_choice] += self.max_return  # constant in 2-period lifespan scientists
 
@@ -157,7 +158,8 @@ class Scientist(Agent):
         print("\ncurrent age", self.current_age, "   id", self.unique_id, "    step", self.model.schedule.time,
               "\navail ideas array:",self.avail_ideas.tolist(),
               "\ntotal effort invested array:", self.effort_invested.tolist(),
-              "\neffort invested in time period:", self.eff_inv_in_period.tolist())
+              "\neffort invested in time period (increment):", self.eff_inv_in_period_increment.tolist(),
+              "\neffort invested in time period (marginal):", self.eff_inv_in_period_marginal.tolist())
 
     def step(self):
         # Check a scientist's age in the current time period
@@ -185,6 +187,7 @@ class Scientist(Agent):
             # ideas. The rest of the array has 0s
             self.avail_ideas = np.logical_or(idea_periods == self.model.schedule.time,
                 idea_periods == (self.model.schedule.time - 1))
+
             self.investing()
 
         # Old scientist
@@ -205,22 +208,27 @@ class Scientist(Agent):
                 self.start_effort = self.start_effort - self.start_effort_decay * self.current_age
                 self.avail_effort = self.start_effort
             # Reset effort invested in the current time period
-            self.eff_inv_in_period[:] = 0
+            self.eff_inv_in_period_increment[:] = 0
+            self.eff_inv_in_period_marginal[:] = 0
 
+            print(self.avail_effort)
             self.investing()
 
         # scientists not born yet
         else:
-            self.eff_inv_in_period[:] = 0
+            self.eff_inv_in_period_increment[:] = 0
+            self.eff_inv_in_period_marginal[:] = 0
             self.perceived_returns[:] = 0
 
         # conversions to tuple so dataframe updates (not sure why this happens with numpy arrays)
         self.model.total_effort_tuple = tuple(self.model.total_effort)
         self.effort_invested_tuple = tuple(self.effort_invested)
-        self.eff_inv_in_period_tuple = tuple(self.eff_inv_in_period)
-        self.perceived_returns_tuple = tuple(map(lambda x: isinstance(x, float) and round(x,5) or x, tuple(self.perceived_returns)))
+        self.eff_inv_in_period_increment_tuple = tuple(self.eff_inv_in_period_increment)
+        self.eff_inv_in_period_marginal_tuple = tuple(self.eff_inv_in_period_marginal)
+        self.perceived_returns_tuple = rounded_tuple(self.perceived_returns)
         self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
-        self.final_returns_avail_ideas_tuple = tuple(map(lambda x: isinstance(x, float) and round(x,5) or x, tuple(self.final_returns_avail_ideas)))
+        self.final_perceived_returns_avail_ideas_tuple = rounded_tuple(self.final_perceived_returns_avail_ideas)
+        self.final_actual_returns_avail_ideas = rounded_tuple(self.final_actual_returns_avail_ideas)
 
 class ScientistModel(Model):
     def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables
@@ -263,6 +271,9 @@ class ScientistModel(Model):
         
         # Ensures that none of the standard devs are equal to 0
         self.true_sds += 1
+
+        self.actual_returns_matrix = create_return_matrix(self.total_ideas, max(self.max_investment),
+                                                          self.true_sds, self.true_means)
         
         # Array: keeps track of total effort allocated to each idea across all
         # scientists
@@ -283,7 +294,9 @@ class ScientistModel(Model):
         # Create data collector method for keeping track of variables over time
         self.datacollector = DataCollector(
             model_reporters={"Total Effort Sum": get_total_effort, "Total Effort List": "total_effort_tuple"},
-            agent_reporters={"Total effort invested": "effort_invested_tuple", "Effort invested in period": "eff_inv_in_period_tuple",
+            agent_reporters={"Total effort invested": "effort_invested_tuple",
+                             "Effort invested in period (increment)": "eff_inv_in_period_increment_tuple",
+                             "Effort invested in period (marginal)": "eff_inv_in_period_marginal_tuple",
                              "Perceived returns": "perceived_returns_tuple"})
 
     def step(self):

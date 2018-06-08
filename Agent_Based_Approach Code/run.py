@@ -1,5 +1,6 @@
 # run.py
 
+from functions import *
 from model import *
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import ChartModule
@@ -9,6 +10,7 @@ import input_file
 from mesa.batchrunner import BatchRunner
 import matplotlib.pyplot as plt
 import numpy as np
+from run_graphs import *
 import math
 
 use_server = False  # toggle between batch files and server (1 run)
@@ -37,48 +39,55 @@ all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":
                             "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
 
 if use_standard:
-    # run process
+    # initialize model object
     model = ScientistModel(time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,
                            start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, seed)
     for i in range(time_periods+2):
         model.step()
 
-    # effort = model.datacollector.get_agent_vars_dataframe()
-    # print("\n\nVariables\n",all_params,"\n\n\nDATAFRAME (AGENT)\n",effort.to_string())
+    # agent dataframe
+    effort = model.datacollector.get_agent_vars_dataframe()
+    print("\n\nVariables\n",all_params,"\n\n\nDATAFRAME (AGENT)\n",effort.to_string())
 
+    # model dataframe
     ideas = model.datacollector.get_model_vars_dataframe()
+    # ideas.to_html('web/test'+page_counter()+'.html')
     print("\n\n\nDATAFRAME (MODEL)\n",ideas.to_string())
 
-    # cost vs return imshow
-    agent_k = []
-    pre_agent_k = [a.final_k_avail_ideas for a in model.schedule.agents]
-    for np_array_idx in range(len(pre_agent_k)):
-        for idx, val in enumerate(pre_agent_k[np_array_idx]):
-            agent_k.append(val)
-    agent_perceived_return = []
-    pre_agent_perceived_return = [a.final_returns_avail_ideas for a in model.schedule.agents]
-    for np_array_idx in range(len(pre_agent_perceived_return)):
-        for idx, val in enumerate(pre_agent_perceived_return[np_array_idx]):
-            agent_perceived_return.append(val)
-    k_scale = int(max(agent_k)) + 2
-    return_scale = int(max(agent_perceived_return)) + 2
-    num_cells = len(agent_k)  # should be equal to length of perceived returns
-    fig, ax = plt.subplots(figsize=(10, 10))
-    im_graph = np.zeros((10,10))
-    for i in range(num_cells):
-        x = int(10*agent_k[i]/k_scale)  # int(round(agent_k[i],0))
-        y = int(10*agent_perceived_return[i]/return_scale)  # int(round(agent_perceived_return[i],0))
-        im_graph[x][y] += 1
-    ax.imshow(im_graph, cmap=plt.cm.Reds, interpolation='nearest', extent=[0,k_scale,0,return_scale])
-    ax.set_aspect(0.03)
-    plt.xlabel('k')
-    plt.ylabel('perceived returns (1/1000)')
-    plt.title('for all available ideas across all scientists,time periods (unbiased)')
+    # collect data from individual variables for plotting
+    agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
+    agent_perceived_return_avail_ideas = [a.final_perceived_returns_avail_ideas for a in model.schedule.agents]
+    agent_actual_return_avail_ideas = [a.final_actual_returns_avail_ideas for a in model.schedule.agents]
+
+    plt.figure(randint(1000,9999))
+    test = flatten_list_of_numpy(agent_k_avail_ideas)
+    print(test)
+    plt.hist(test)
+
+    # cost vs perceived return for all available ideas graph
+    im_graph(agent_k_avail_ideas, agent_perceived_return_avail_ideas, "k", "perceived returns (1/1000)",
+             "cost vs perceived return for all available ideas across all scientists,time periods (unbiased)")
+
+    # cost vs actual return for all available ideas graph
+    im_graph(agent_k_avail_ideas, agent_actual_return_avail_ideas, "k", "perceived returns (1/1000)",
+             "cost vs actual return for all available ideas across all scientists,time periods (unbiased)")
+
+    # scatterplot of residuals for all available ideas graph
+    # format: scatterplot(actual,perceived) | resid = actual-perceived
+    scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas,
+                "TP","Residual","Residuals for all available ideas (actual-perceived)")
+
+    # cost vs perceived return for all INVESTED ideas graph
+
+    # cost vs actual return for all INVESTED ideas graph
+
+    # scatterplot of residuals for all INVESTED ideas graph
+
+    # Marginal Effort vs Idea (Young vs Old)
+
     plt.show()
 
-    # scatterplot of residuals
 
-    # Marginal Effort vs TP for Each Idea
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
 if use_batch:
