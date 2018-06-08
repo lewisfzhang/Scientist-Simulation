@@ -12,6 +12,9 @@ def get_total_effort(model):
     arr = model.total_effort
     return sum(arr)
 
+# returns the average investment cost across all ideas
+def get_avg_investment(model):
+    arr = model.total_effort
 
 # Input: Parameters for the logistic cumulative distribution function
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
