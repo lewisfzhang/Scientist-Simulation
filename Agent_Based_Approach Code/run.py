@@ -8,6 +8,8 @@ from numpy.random import poisson
 import input_file
 from mesa.batchrunner import BatchRunner
 import matplotlib.pyplot as plt
+import numpy as np
+import math
 
 use_server = False  # toggle between batch files and server (1 run)
 use_slider = False  # only True when use_server is also True
@@ -29,6 +31,11 @@ k_lam = input_file.k_lam
 sds_lam = input_file.sds_lam
 means_lam = input_file.means_lam
 
+all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N,
+                            "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
+                            "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
+                            "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
+
 if use_standard:
     # run process
     model = ScientistModel(time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,
@@ -36,8 +43,42 @@ if use_standard:
     for i in range(time_periods+2):
         model.step()
 
-    effort = model.datacollector.get_agent_vars_dataframe()
-    print(effort.to_string())
+    # effort = model.datacollector.get_agent_vars_dataframe()
+    # print("\n\nVariables\n",all_params,"\n\n\nDATAFRAME (AGENT)\n",effort.to_string())
+
+    ideas = model.datacollector.get_model_vars_dataframe()
+    print("\n\n\nDATAFRAME (MODEL)\n",ideas.to_string())
+
+    # cost vs return imshow
+    agent_k = []
+    pre_agent_k = [a.final_k_avail_ideas for a in model.schedule.agents]
+    for np_array_idx in range(len(pre_agent_k)):
+        for idx, val in enumerate(pre_agent_k[np_array_idx]):
+            agent_k.append(val)
+    agent_perceived_return = []
+    pre_agent_perceived_return = [a.final_returns_avail_ideas for a in model.schedule.agents]
+    for np_array_idx in range(len(pre_agent_perceived_return)):
+        for idx, val in enumerate(pre_agent_perceived_return[np_array_idx]):
+            agent_perceived_return.append(val)
+    k_scale = int(max(agent_k)) + 2
+    return_scale = int(max(agent_perceived_return)) + 2
+    num_cells = len(agent_k)  # should be equal to length of perceived returns
+    fig, ax = plt.subplots(figsize=(10, 10))
+    im_graph = np.zeros((10,10))
+    for i in range(num_cells):
+        x = int(10*agent_k[i]/k_scale)  # int(round(agent_k[i],0))
+        y = int(10*agent_perceived_return[i]/return_scale)  # int(round(agent_perceived_return[i],0))
+        im_graph[x][y] += 1
+    ax.imshow(im_graph, cmap=plt.cm.Reds, interpolation='nearest', extent=[0,k_scale,0,return_scale])
+    ax.set_aspect(0.03)
+    plt.xlabel('k')
+    plt.ylabel('perceived returns (1/1000)')
+    plt.title('for all available ideas across all scientists,time periods (unbiased)')
+    plt.show()
+
+    # scatterplot of residuals
+
+    # Marginal Effort vs TP for Each Idea
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
 if use_batch:
@@ -84,10 +125,7 @@ if use_server:
     server = ModularServer(ScientistModel,
                            [chart1],
                            "Scientist Model",
-                           {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N,
-                            "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
-                            "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
-                            "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed})
+                           all_params)
 
     server.port = 8521  # The default
     server.launch()

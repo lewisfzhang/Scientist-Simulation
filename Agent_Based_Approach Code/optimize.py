@@ -24,7 +24,7 @@ import input_file
 def calc_cum_returns(scientist, model):
     # Array: keeping track of all the returns of investing in each available ideas
     final_returns_avail_ideas = np.array([])
-
+    final_k_avail_ideas = np.array([])
     # Scalar: limit on the amount of effort that a scientist can invest in a single idea
     # in one time period
     invest_cutoff = round(scientist.start_effort * input_file.prop_invest_limit)
@@ -33,6 +33,7 @@ def calc_cum_returns(scientist, model):
     # condition checks ideas where scientist.avail_ideas is TRUE
     for idea in np.where(scientist.avail_ideas)[0]:
 
+        final_k_avail_ideas = np.append(final_k_avail_ideas, scientist.k[idea])
         # OR Conditions
         # 1st) Edge case in which scientist doesn't have enough effort to invest in
         # an idea given the investment cost
@@ -46,7 +47,7 @@ def calc_cum_returns(scientist, model):
         elif scientist.marginal_effort[idea] > scientist.effort_left_in_idea[idea]:
             start_index = int(model.total_effort[idea])
             stop_index = int(start_index + scientist.effort_left_in_idea[idea])
-            returns = scientist.returns_matrix[idea, np.arange(start_index, stop_index)]
+            returns = scientist.perceived_returns_matrix[idea, np.arange(start_index, stop_index)]
             total_return = sum(returns)
             final_returns_avail_ideas = np.append(final_returns_avail_ideas, total_return)
 
@@ -54,12 +55,18 @@ def calc_cum_returns(scientist, model):
         else:
             start_index = int(model.total_effort[idea])
             stop_index = int(start_index + scientist.marginal_effort[idea])
-            returns = scientist.returns_matrix[idea, np.arange(start_index, stop_index)]
+            returns = scientist.perceived_returns_matrix[idea, np.arange(start_index, stop_index)]
             total_return = sum(returns)
             final_returns_avail_ideas = np.append(final_returns_avail_ideas, total_return)
 
     # that way, I can delete elements in the copy
+    # scale because returns are so small (range of distribution curves is from 0-1
+    final_returns_avail_ideas = 1000*final_returns_avail_ideas
     final_returns_avail_ideas_copy = np.copy(final_returns_avail_ideas)
+
+    # update back
+    scientist.final_returns_avail_ideas = final_returns_avail_ideas
+    scientist.final_k_avail_ideas = final_k_avail_ideas
 
     while True:
         # Scalar: finds the maximum return over all the available ideas

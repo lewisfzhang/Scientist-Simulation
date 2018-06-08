@@ -28,6 +28,7 @@ class Scientist(Agent):
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
         # additional investment
+        # (so each scientist has different cost for each idea)
         self.k = poisson(lam=model.k_lam, size=model.total_ideas)
 
         # Arrays: parameters determining perceived returns for ideas, which are
@@ -39,9 +40,11 @@ class Scientist(Agent):
         self.sds += 1
 
         # Create the ideas/returns matrix
-        self.returns_matrix = \
-            create_return_matrix(model.total_ideas, max(model.max_investment), self.sds, self.means)
-        
+        self.perceived_returns_matrix = create_return_matrix(model.total_ideas, max(model.max_investment),
+                                                             self.sds, self.means)
+
+        self.actual_returns_matrix = create_return_matrix(model.total_ideas, max(model.max_investment),
+                                                          self.model.true_sds, self.model.true_means)
         # Each scientist is assigned a unique ID. We also use unique IDs to determine
         # scientists' ages and thus which scientists are alive in a given time period
         # and which ideas they can invest in
@@ -72,7 +75,11 @@ class Scientist(Agent):
         
         # Allows scientists to access model variables
         self.model = model
-        self.effort_invested_total=0
+
+        # Array: keeping track of all the returns of investing in each available ideas
+        self.final_returns_avail_ideas = np.array([])
+        self.final_k_avail_ideas = np.array([])
+
     # code reusability: code for each age of scientist into a single function
     def investing(self):
         # Scientists continue to invest in ideas until they run out of
@@ -208,9 +215,12 @@ class Scientist(Agent):
             self.perceived_returns[:] = 0
 
         # conversions to tuple so dataframe updates (not sure why this happens with numpy arrays)
+        self.model.total_effort_tuple = tuple(self.model.total_effort)
         self.effort_invested_tuple = tuple(self.effort_invested)
         self.eff_inv_in_period_tuple = tuple(self.eff_inv_in_period)
         self.perceived_returns_tuple = tuple(map(lambda x: isinstance(x, float) and round(x,5) or x, tuple(self.perceived_returns)))
+        self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
+        self.final_returns_avail_ideas_tuple = tuple(map(lambda x: isinstance(x, float) and round(x,5) or x, tuple(self.final_returns_avail_ideas)))
 
 class ScientistModel(Model):
     def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables
@@ -272,7 +282,7 @@ class ScientistModel(Model):
         
         # Create data collector method for keeping track of variables over time
         self.datacollector = DataCollector(
-            model_reporters={"Total Effort": get_total_effort, "Average Investment Cost Across All Ideas": get_avg_investment},
+            model_reporters={"Total Effort Sum": get_total_effort, "Total Effort List": "total_effort_tuple"},
             agent_reporters={"Total effort invested": "effort_invested_tuple", "Effort invested in period": "eff_inv_in_period_tuple",
                              "Perceived returns": "perceived_returns_tuple"})
 
