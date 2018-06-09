@@ -13,10 +13,7 @@ def labels(x_label, y_label, title):
 # 2-var image graph
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
-def im_graph(x_var, y_var, x_label, y_label, title):
-    plt.figure(randint(1000,9999))
-    agent1 = flatten_list_of_numpy(x_var)
-    agent2 = flatten_list_of_numpy(y_var)
+def im_graph(agent1, agent2, x_label, y_label, title):
     scale1 = int(max(agent1)) + 2
     scale2 = int(max(agent2)) + 2
     low1 = int(min(agent1))
@@ -38,17 +35,18 @@ def im_graph(x_var, y_var, x_label, y_label, title):
 # CONDITION: k array should be equal to length of perceived returns
 def scatterplot(actual, perceived, x_label, y_label, title):
     plt.figure(randint(1000,9999))
-    actual_numpy = np.asarray(flatten_list_of_numpy(actual))
-    perceived_numpy = np.asarray(flatten_list_of_numpy(perceived))
+    actual_numpy = np.asarray(flatten_list(actual))
+    perceived_numpy = np.asarray(perceived)
     resid = actual_numpy-perceived_numpy
     time_id = []
     for np_array_idx in range(len(actual)):
         for i in range(len(actual[np_array_idx])):
-            time_id.append(np_array_idx)
+            time_id.append(np_array_idx+2)  # index shift
     min_scale = int(min(resid))
     max_scale = int(max(resid))+1
     step = int((max_scale-min_scale)/10)+1
     plt.yticks(np.arange(min_scale, max_scale, step))
     plt.xticks(np.arange(0,max(time_id)+1,1))
     plt.scatter(time_id, resid)
+    plt.axhline(0, color='black')
     labels(x_label, y_label, title)

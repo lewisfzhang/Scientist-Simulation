@@ -4,7 +4,7 @@ from mesa.datacollection import DataCollector
 import numpy as np
 from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
-from optimize import *
+from optimize1 import *
 
 # This file has 3 parts
 # 1. Agent class from Mesa
@@ -77,96 +77,17 @@ class Scientist(Agent):
         self.model = model
 
         # Array: keeping track of all the returns of investing in each available ideas
-        self.final_perceived_returns_avail_ideas = np.array([])
-        self.final_k_avail_ideas = np.array([])
-        self.final_actual_returns_avail_ideas = np.array([])
+        self.final_perceived_returns_avail_ideas = []
+        self.final_k_avail_ideas = []
+        self.final_actual_returns_avail_ideas = []
 
-    # code reusability: code for each age of scientist into a single function
-    def investing(self):
-        # Scientists continue to invest in ideas until they run out of
-        # available effort, or there are no more ideas to invest in
-        while self.avail_effort > 0:
 
-            # Array: determine which ideas scientists have invested no effort into
-            no_effort_inv = (self.effort_invested == 0)
-
-            # Array: calculate current investment costs based on prior investments;
-            # has investment costs or 0 if scientist has already paid cost
-            self.curr_k = no_effort_inv * self.k
-
-            # Array (size = model.total_ideas): how much more effort can
-            # be invested in a given idea based on the max investment for
-            # that idea and how much all scientists have already invested
-            self.effort_left_in_idea = self.max_investment - self.model.total_effort
-
-            # Change current investment cost to 0 if a given idea has 0
-            # effort left in it. This prevents the idea from affecting
-            # the marginal effort
-            for idx, value in enumerate(self.effort_left_in_idea):
-                if value == 0:
-                    self.curr_k[idx] = 0
-
-            # Scalar: want to pull returns for expending self.increment units
-            # of effort, where increment equals the max invest cost across
-            # all ideas that haven't been invested in yet plus 1
-            self.increment = max(self.curr_k[self.avail_ideas]) + 1
-
-            # Edge case in which scientist doesn't have enough effort to invest
-            # in idea with greatest investment cost
-            # POTENTIAL BIAS! LESS EFFORT SHOULD CORRESPOND TO LESS RESULTS?!
-            if self.avail_effort < self.increment:
-                self.increment = self.avail_effort
-
-            # Array: contains equivalent "marginal" efforts across ideas
-            # For idea with the max invest cost, marginal_effort will equal 1
-            # All others - marginal_effort is equal to increment minus invest cost, if any
-            self.marginal_effort = self.increment - self.curr_k
-
-            # Selects idea that gives the max return given equivalent "marginal" efforts
-            # NOTE: See above for comments on calc_cum_returns function,
-            # and exceptions on when the idea with the max return isn't chosen
-            self.idea_choice, self.max_return = calc_cum_returns(self, self.model)
-
-            # Accounts for the edge case in which max_return = 0 (implying that a
-            # scientist either can't invest in ANY ideas [due to investment
-            # cost barriers or an idea reaching max investment]). Effort
-            # is lost and doesn't carry over to the next period
-            if self.max_return == 0:
-                self.avail_effort = 0
-                continue
-
-            # Accounts for the edge case in which scientist chooses to invest in
-            # an idea that has less effort remaining than a scientist's
-            # marginal effort
-            if self.marginal_effort[self.idea_choice] > self.effort_left_in_idea[self.idea_choice]:
-                self.marginal_effort[self.idea_choice] = self.effort_left_in_idea[self.idea_choice]
-                self.increment = self.curr_k[self.idea_choice] + self.marginal_effort[self.idea_choice]
-
-            # Updates parameters after idea selection and effort expenditure
-            # NOTE: self.avail_effort and self.eff_inv_in_period should be
-            # updated by the increment, not by marginal effort, because the
-            # increment includes investment costs. We don't care about
-            # paid investment costs for the other variables
-            self.model.total_effort[self.idea_choice] += self.marginal_effort[self.idea_choice]
-            self.effort_invested[self.idea_choice] += self.marginal_effort[self.idea_choice]
-            self.eff_inv_in_period_marginal[self.idea_choice] += self.marginal_effort[self.idea_choice]
-            self.eff_inv_in_period_increment[self.idea_choice] += self.increment
-            self.avail_effort -= self.increment
-            self.perceived_returns[self.idea_choice] += self.max_return  # constant in 2-period lifespan scientists
-
-        # system debugging print statements
-        print("\ncurrent age", self.current_age, "   id", self.unique_id, "    step", self.model.schedule.time,
-              "\navail ideas array:",self.avail_ideas.tolist(),
-              "\ntotal effort invested array:", self.effort_invested.tolist(),
-              "\neffort invested in time period (increment):", self.eff_inv_in_period_increment.tolist(),
-              "\neffort invested in time period (marginal):", self.eff_inv_in_period_marginal.tolist())
 
     def step(self):
         # Check a scientist's age in the current time period
-        # NOTE: model time begins at 0 --> WRONG, begins at 1
-        # NOTE: +3 ensures that we correctly calculate the current age; see
-        # notes on time periods and ages in documentation
+        # NOTE: model time begins at 0
         self.current_age = (self.model.schedule.time - self.birth_order)
+
         # Array: has length equal to the total number of ideas in the model,
         # with 0s, 1s, 2s, etc. that indicate which time periods ideas are
         # from
@@ -188,7 +109,7 @@ class Scientist(Agent):
             self.avail_ideas = np.logical_or(idea_periods == self.model.schedule.time,
                 idea_periods == (self.model.schedule.time - 1))
 
-            self.investing()
+            greedy_investing(self)
 
         # Old scientist
         elif self.current_age == 1:
@@ -211,8 +132,7 @@ class Scientist(Agent):
             self.eff_inv_in_period_increment[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
 
-            print(self.avail_effort)
-            self.investing()
+            greedy_investing(self)
 
         # scientists not born yet
         else:
@@ -228,7 +148,7 @@ class Scientist(Agent):
         self.perceived_returns_tuple = rounded_tuple(self.perceived_returns)
         self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
         self.final_perceived_returns_avail_ideas_tuple = rounded_tuple(self.final_perceived_returns_avail_ideas)
-        self.final_actual_returns_avail_ideas = rounded_tuple(self.final_actual_returns_avail_ideas)
+        self.final_actual_returns_avail_ideas_tuple = rounded_tuple(self.final_actual_returns_avail_ideas)
 
 class ScientistModel(Model):
     def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables

@@ -13,7 +13,7 @@ def get_total_effort(model):
 def logistic_cdf(x, loc, scale):
     return 1/(1+np.exp((loc-x)/scale))
 
-# round to 5 decimal places and returns the immutable tuple object for datacollector
+# round to 2 decimal places and returns the immutable tuple object for datacollector
 def rounded_tuple(array):
     return tuple(map(lambda x: isinstance(x, float) and round(x, 2) or x, tuple(array)))
 
@@ -61,9 +61,15 @@ def page_counter():
     input_file.count += 1
     return input_file.count
 
-def flatten_list_of_numpy(numpy_list):
-    flatten_list = []
-    for np_array_idx in range(len(numpy_list)):
-        for idx, val in enumerate(numpy_list[np_array_idx]):
-            flatten_list.append(val)
-    return flatten_list
+# appends lists in loop
+def append_list(big_list, small_list):
+    for i in range(len(small_list)):
+        big_list.append(small_list[i])
+    return big_list
+
+def flatten_list(list_name):
+    return_list = []
+    for x in range(len(list_name)):
+        for idx,val in enumerate(list_name[x]):
+            return_list.append(val)
+    return return_list

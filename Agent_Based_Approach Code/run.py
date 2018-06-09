@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from run_graphs import *
 import math
+import pandas as pd
 
 use_server = False  # toggle between batch files and server (1 run)
 use_slider = False  # only True when use_server is also True
@@ -54,27 +55,35 @@ if use_standard:
     # ideas.to_html('web/test'+page_counter()+'.html')
     print("\n\n\nDATAFRAME (MODEL)\n",ideas.to_string())
 
+
     # collect data from individual variables for plotting
     agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
     agent_perceived_return_avail_ideas = [a.final_perceived_returns_avail_ideas for a in model.schedule.agents]
     agent_actual_return_avail_ideas = [a.final_actual_returns_avail_ideas for a in model.schedule.agents]
 
-    plt.figure(randint(1000,9999))
-    test = flatten_list_of_numpy(agent_k_avail_ideas)
-    print(test)
-    plt.hist(test)
+    agent_k_avail_ideas_flat = flatten_list(agent_k_avail_ideas)
+    agent_perceived_return_avail_ideas_flat = flatten_list(agent_perceived_return_avail_ideas)
+    agent_actual_return_avail_ideas_flat = flatten_list(agent_actual_return_avail_ideas)
+
+    # individual values dataframe
+    ind_vars = {"agent_k_avail_ideas_flat":agent_k_avail_ideas_flat,
+                "agent_perceived_return_avail_ideas_flat":agent_perceived_return_avail_ideas_flat,
+                "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
+    df1 = pd.DataFrame.from_dict(ind_vars)
+    print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
 
     # cost vs perceived return for all available ideas graph
-    im_graph(agent_k_avail_ideas, agent_perceived_return_avail_ideas, "k", "perceived returns (1/1000)",
+    im_graph(agent_k_avail_ideas_flat, agent_perceived_return_avail_ideas_flat, "k", "perceived returns (1/1000)",
              "cost vs perceived return for all available ideas across all scientists,time periods (unbiased)")
 
     # cost vs actual return for all available ideas graph
-    im_graph(agent_k_avail_ideas, agent_actual_return_avail_ideas, "k", "perceived returns (1/1000)",
+    im_graph(agent_k_avail_ideas_flat, agent_actual_return_avail_ideas_flat, "k", "perceived returns (1/1000)",
              "cost vs actual return for all available ideas across all scientists,time periods (unbiased)")
 
     # scatterplot of residuals for all available ideas graph
     # format: scatterplot(actual,perceived) | resid = actual-perceived
-    scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas,
+    # unflattened for time period calculation in scatterplot
+    scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas_flat,
                 "TP","Residual","Residuals for all available ideas (actual-perceived)")
 
     # cost vs perceived return for all INVESTED ideas graph

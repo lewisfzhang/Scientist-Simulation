@@ -1,9 +1,10 @@
 # input_file.py
 
-# from random import randint
+from random import randint
 # randint(1000,9999) --> when necessary
+# to reproduce same data, use CONSTANT seed value
 # for randomization best practice
-seed = 1234
+seed = randint(1000,9999)
 
 # for optimizations
 prop_invest_limit = 0.6  # works when <0.5?
@@ -25,5 +26,5 @@ means_lam = 25
 
 # life of each scientist variable?
 
-# for counting number of html pages generated
+# for counting number of html pages generated / other useful counter value for debugging
 count = 0
