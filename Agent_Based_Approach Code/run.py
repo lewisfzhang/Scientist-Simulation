@@ -13,11 +13,21 @@ import numpy as np
 from run_graphs import *
 import math
 import pandas as pd
+import timeit
+
+# runtime
+start = timeit.default_timer()
 
 use_server = False  # toggle between batch files and server (1 run)
 use_slider = False  # only True when use_server is also True
 use_batch = False
 use_standard = True
+
+# helper method for calculating runtime
+def stop_run(start):
+    # end runtime
+    stop = timeit.default_timer()
+    print("Runtime: ", stop - start, "seconds")
 
 # import variables from input_file
 seed = input_file.seed
@@ -94,6 +104,8 @@ if use_standard:
     # scatterplot of residuals for all INVESTED ideas graph
 
     # Marginal Effort vs Idea (Young vs Old)
+
+    stop_run(start)
 
     plt.show()
 

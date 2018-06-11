@@ -143,8 +143,8 @@ def calc_cum_returns(scientist, model):
             final_actual_returns_avail_ideas.append(sum(actual_returns))
 
     # scale because returns are so small (range of distribution curves is from 0-1)
-    final_perceived_returns_avail_ideas = [1000*i for i in final_perceived_returns_avail_ideas]
-    final_actual_returns_avail_ideas = [1000*i for i in final_actual_returns_avail_ideas]
+    final_perceived_returns_avail_ideas = [100*i for i in final_perceived_returns_avail_ideas]
+    final_actual_returns_avail_ideas = [100*i for i in final_actual_returns_avail_ideas]
 
     # that way, I can delete elements in the copy
     final_perceived_returns_avail_ideas_copy = np.asarray(final_perceived_returns_avail_ideas)
