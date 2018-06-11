@@ -14,8 +14,8 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title):
-    scale1 = int(max(agent1)) + 2
-    scale2 = int(max(agent2)) + 2
+    scale1 = int(max(agent1)) + 1
+    scale2 = int(max(agent2)) + 1
     low1 = int(min(agent1))
     low2 = int(min(agent2))
     num_cells = len(agent1)  # should be equal to length of perceived returns
@@ -24,9 +24,10 @@ def im_graph(agent1, agent2, x_label, y_label, title):
     for i in range(num_cells):
         x = int(10 * agent1[i] / scale1)  # int(round(agent_k[i],0))
         y = int(10 * agent2[i] / scale2)  # int(round(agent_perceived_return[i],0))
+        print("x:",x,"   y:",y)
         im_graph[x][y] += 1
     ax.imshow(im_graph, cmap=plt.cm.Reds, interpolation='nearest', extent=[low1, scale1, low2, scale2])
-    ax.set_aspect(0.03)
+    ax.set_aspect(0.5*scale1/scale2)
     labels(x_label, y_label, title)
 
 

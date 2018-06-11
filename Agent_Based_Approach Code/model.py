@@ -6,6 +6,7 @@ from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
 from optimize1 import *
 
+
 # This file has 3 parts
 # 1. Agent class from Mesa
 # 2. Model class from Mesa
@@ -80,8 +81,6 @@ class Scientist(Agent):
         self.final_perceived_returns_avail_ideas = []
         self.final_k_avail_ideas = []
         self.final_actual_returns_avail_ideas = []
-
-
 
     def step(self):
         # Check a scientist's age in the current time period

@@ -4,7 +4,7 @@ from random import randint
 # randint(1000,9999) --> when necessary
 # to reproduce same data, use CONSTANT seed value
 # for randomization best practice
-seed = randint(1000,9999)
+seed = 1234
 
 # for optimizations
 prop_invest_limit = 0.6  # works when <0.5?

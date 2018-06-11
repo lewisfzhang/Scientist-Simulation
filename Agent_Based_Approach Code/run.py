@@ -70,6 +70,7 @@ if use_standard:
                 "agent_perceived_return_avail_ideas_flat":agent_perceived_return_avail_ideas_flat,
                 "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
     df1 = pd.DataFrame.from_dict(ind_vars)
+    df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
     print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
 
     # cost vs perceived return for all available ideas graph
