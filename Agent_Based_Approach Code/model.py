@@ -5,6 +5,7 @@ import numpy as np
 from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
 from optimize1 import *
+import math
 
 
 # This file has 3 parts
@@ -47,8 +48,8 @@ class Scientist(Agent):
         # Each scientist is assigned a unique ID. We also use unique IDs to determine
         # scientists' ages and thus which scientists are alive in a given time period
         # and which ideas they can invest in
-        self.birth_order = unique_id
-        
+        self.birth_order = math.ceil(2*unique_id/model.N)
+
         # Array: keeps track of how much effort a scientist has invested in each idea
         # NOTE: does NOT include effort paid for ideas' investment costs
         self.effort_invested_by_scientist = np.zeros(model.total_ideas)
@@ -159,7 +160,7 @@ class Scientist(Agent):
 
 class ScientistModel(Model):
     def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables
-                 start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, #AgentModel variables
+                 start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, time_periods_alive,  #AgentModel variables
                  seed=None):
 
         super().__init__(seed)
@@ -174,12 +175,13 @@ class ScientistModel(Model):
         self.sds_lam = sds_lam
         self.means_lam = means_lam
 
+        self.time_periods_alive = time_periods_alive
         self.time_periods = time_periods
         self.N = N
 
         # Scalar: indicates the total number of scientists in the model
         # N is the number of scientists per time period
-        self.num_scientists = time_periods + 1  # NOTE: ONLY WHEN N=2!!!
+        self.num_scientists = int(N/2)*(time_periods + 1)
 
         # Scalar: number of ideas unique to each time period
         self.ideas_per_time = ideas_per_time
@@ -231,7 +233,8 @@ class ScientistModel(Model):
         self.datacollector = DataCollector(
             model_reporters={"Total Effort List": "total_effort_tuple",
                              "Total Effort By Age": "effort_invested_by_age_tuple"},
-            agent_reporters={"Total effort invested": "effort_invested_by_scientist_tuple",
+            agent_reporters={"TP Born": "birth_order",
+                             "Total effort invested": "effort_invested_by_scientist_tuple",
                              "Effort invested in period (increment)": "eff_inv_in_period_increment_tuple",
                              "Effort invested in period (marginal)": "eff_inv_in_period_marginal_tuple",
                              "Perceived returns": "perceived_returns_tuple",

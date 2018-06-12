@@ -11,8 +11,8 @@ import numpy as np
 from run_graphs import *
 import pandas as pd
 import timeit
-import webbrowser as wb
-import os
+from random import randint
+
 
 # runtime
 start = timeit.default_timer()
@@ -38,11 +38,12 @@ start_effort_decay = input_file.start_effort_decay
 k_lam = input_file.k_lam
 sds_lam = input_file.sds_lam
 means_lam = input_file.means_lam
+time_periods_alive = input_file.time_periods_alive
 
 all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N,
-                            "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
-                            "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
-                            "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
+            "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
+            "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
+            "sds_lam":sds_lam, "means_lam":means_lam, "time_periods_alive":time_periods_alive, "seed":seed}
 
 pd.set_option("display.max_colwidth", -1)
 pd.set_option('display.max_columns', None)
@@ -50,7 +51,7 @@ pd.set_option('display.max_columns', None)
 if use_standard:
     # initialize model object
     model = ScientistModel(time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,
-                           start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, seed)
+                           start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, time_periods_alive, seed)
     for i in range(time_periods+2):
         model.step()
 
@@ -80,7 +81,8 @@ if use_standard:
         #                    out=np.zeros_like(model.total_actual_returns), where=model.total_times_invested != 0),2)
         prop_invested = np.round(np.divide(model.total_effort_tuple, model.max_investment,
                                  out=np.zeros_like(model.total_effort_tuple), where=model.max_investment != 0), 2)
-        data1 = {"idea": range(0, time_periods + 2, 1),
+        data1 = {"idea": range(0, model.total_ideas, 1),
+                 "TP": np.arange(model.total_ideas) // model.ideas_per_time,
                  "scientists_invested": model.total_scientists_invested,
                  "times_invested": model.total_times_invested,
                  "avg_k": avg_k,
@@ -132,7 +134,6 @@ if use_standard:
         df2.to_html('web/pages/page_ind_vars2.html')  # page5
         df2.to_csv('web/csv/csv_ind_vars2.html')
 
-
         reset_counter()
 
         # cost vs perceived return for all available ideas graph
@@ -172,6 +173,7 @@ if use_standard:
                   (len(agent_perceived_return_avail_ideas_flat)-agent_perceived_return_avail_ideas_flat.count(0))
         two_var_scatterplot(avg_k, model.total_perceived_returns, "k", "perceived returns (1/100)",
                             "cost vs perceived return for INVESTED ideas (plot to check for bias)", mean_pr, mean_k)
+
         # plt.show()
 
     stop_run(start)
@@ -180,15 +182,16 @@ if use_standard:
 if use_batch:
     fixed_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N, "max_investment_lam":max_investment_lam,
                     "true_sds_lam":true_sds_lam, "true_means_lam":true_means_lam, "start_effort_lam":start_effort_lam,
-                    "start_effort_decay":start_effort_decay, "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam}
+                    "start_effort_decay":start_effort_decay, "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam,
+                    "seed": randint(100000, 999999)}
     # NOTE: variable should not be the range, because you should only run 1 iteration of it
-    variable_params = {"seed": range(10,500,10)}  # [min,max) total number of values in array is (max-min)/step
+    variable_params = {"time_periods_alive":time_periods_alive}  # [min,max) total number of values in array is (max-min)/step
     model_reports = {"Total_Effort": get_total_effort}
 
     batch_run = BatchRunner(ScientistModel,
-                            fixed_parameters=all_params,  # for now
+                            fixed_parameters=fixed_params,
                             variable_parameters=variable_params,
-                            iterations=1,
+                            iterations=5,
                             max_steps=time_periods+2,
                             model_reporters=model_reports)
     batch_run.run_all()
@@ -197,7 +200,6 @@ if use_batch:
     # # NOTE: obviously this is stupid since we only have 5 steps, but this is a template for future batch runs
     # plt.scatter(run_data.max_investment_lam, run_data.Total_Effort)
     # plt.show()
-    print
 
 if use_slider:
     # sliders for ScientistModel(Model)
