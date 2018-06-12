@@ -77,10 +77,15 @@ class Scientist(Agent):
         # Allows scientists to access model variables
         self.model = model
 
-        # Array: keeping track of all the returns of investing in each available ideas
+        # Array: keeping track of all the returns of investing in each available and invested ideas
+        # NOTE: the K is based on initial learning cost, not current cost
         self.final_perceived_returns_avail_ideas = []
         self.final_k_avail_ideas = []
         self.final_actual_returns_avail_ideas = []
+        self.final_perceived_returns_invested_ideas = []
+        self.final_k_invested_ideas = []
+        self.final_actual_returns_invested_ideas = []
+
 
     def step(self):
         # Check a scientist's age in the current time period
@@ -142,6 +147,9 @@ class Scientist(Agent):
         self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
         self.final_perceived_returns_avail_ideas_tuple = rounded_tuple(self.final_perceived_returns_avail_ideas)
         self.final_actual_returns_avail_ideas_tuple = rounded_tuple(self.final_actual_returns_avail_ideas)
+        self.final_perceived_returns_invested_ideas_tuple = rounded_tuple(self.final_perceived_returns_invested_ideas)
+        self.final_k_invested_ideas_tuple = rounded_tuple(self.final_k_invested_ideas)
+        self.final_actual_returns_invested_ideas_tuple = rounded_tuple(self.final_actual_returns_invested_ideas)
 
         # list of numpy into tuple of tuple
         temp_list=[]
@@ -201,6 +209,12 @@ class ScientistModel(Model):
         # format = [young,old]
         self.effort_invested_by_age = [np.zeros(self.total_ideas), np.zeros(self.total_ideas)]
 
+        self.total_perceived_returns = np.zeros(self.total_ideas)
+        self.total_actual_returns = np.zeros(self.total_ideas)
+        self.total_k = np.zeros(self.total_ideas)
+        self.total_times_invested = np.zeros(self.total_ideas)
+        self.total_scientists_invested = np.zeros(self.total_ideas)
+
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
         # in which young and old scientists get to invest in ideas is random)
@@ -215,8 +229,7 @@ class ScientistModel(Model):
         
         # Create data collector method for keeping track of variables over time
         self.datacollector = DataCollector(
-            model_reporters={"Total Effort Sum": get_total_effort,
-                             "Total Effort List": "total_effort_tuple",
+            model_reporters={"Total Effort List": "total_effort_tuple",
                              "Total Effort By Age": "effort_invested_by_age_tuple"},
             agent_reporters={"Total effort invested": "effort_invested_by_scientist_tuple",
                              "Effort invested in period (increment)": "eff_inv_in_period_increment_tuple",

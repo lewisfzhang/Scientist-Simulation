@@ -36,13 +36,13 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero):
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    fig.set_size_inches(1300.0 / float(DPI), 1220.0 / float(DPI))
     plt.savefig('web/images/imgraph' + str(page_counter()))
 
 # scatterplot
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
-def scatterplot(actual, perceived, x_label, y_label, title):
+def resid_scatterplot(actual, perceived, x_label, y_label, title):
     plt.figure(randint(1000,9999))
     actual_numpy = np.asarray(flatten_list(actual))
     perceived_numpy = np.asarray(perceived)
@@ -61,9 +61,22 @@ def scatterplot(actual, perceived, x_label, y_label, title):
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    fig.set_size_inches((2000.0+10*step) / float(DPI), 2000.0 / float(DPI))
     plt.savefig('web/images/scatterplot' + str(page_counter()))
 
+
+def two_var_scatterplot(varx, vary, x_label, y_label, title, hline, vline):
+    plt.figure(randint(1000,9999))
+    plt.yticks(np.arange(0, max(vary)+1, 1))
+    plt.xticks(np.arange(0, max(varx)+1, 1))
+    plt.scatter(varx, vary)
+    plt.axhline(hline, color='black')
+    plt.axvline(vline, color='black')
+    labels(x_label, y_label, title)
+    fig = plt.gcf()
+    DPI = fig.get_dpi()
+    fig.set_size_inches(2000.0 / float(DPI), (2000.0+10*max(vary)) / float(DPI))
+    plt.savefig('web/images/scatterplot' + str(page_counter()))
 
 
 def two_var_bar_graph(data, x_label, y_label, title):
@@ -73,6 +86,6 @@ def two_var_bar_graph(data, x_label, y_label, title):
     df.plot.bar(x="Idea", y=["Young", "Old"])
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    fig.set_size_inches((2000.0+10*len(data[0])) / float(DPI), 2000.0 / float(DPI))
     plt.savefig('web/images/2-var_bar_graph' + str(page_counter()))
 

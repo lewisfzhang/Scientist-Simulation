@@ -76,14 +76,21 @@ def greedy_investing(scientist):
         # updated by the increment, not by marginal effort, because the
         # increment includes investment costs. We don't care about
     # paid investment costs for the other variables
-        scientist.model.total_effort[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.effort_invested_by_scientist[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
-        scientist.model.effort_invested_by_age[scientist.current_age][scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.eff_inv_in_period_marginal[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.eff_inv_in_period_increment[scientist.idea_choice] += scientist.increment
         scientist.avail_effort -= scientist.increment
         scientist.perceived_returns[scientist.idea_choice] += scientist.max_return  # constant in 2-period lifespan scientists
         scientist.actual_returns[scientist.idea_choice] += scientist.actual_return  # constant in 2-period lifespan scientists
+
+        scientist.model.total_effort[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
+        scientist.model.effort_invested_by_age[scientist.current_age][scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
+        scientist.model.total_perceived_returns[scientist.idea_choice] += scientist.max_return
+        scientist.model.total_actual_returns[scientist.idea_choice] += scientist.actual_return
+        scientist.model.total_times_invested[scientist.idea_choice] += 1
+        scientist.model.total_k[scientist.idea_choice] += scientist.curr_k[scientist.idea_choice]
+        if scientist.curr_k[scientist.idea_choice]!=0:
+            scientist.model.total_scientists_invested[scientist.idea_choice] += 1
 
     # system debugging print statements
     # print("\ncurrent age", scientist.current_age, "   id", scientist.unique_id, "    step", scientist.model.schedule.time,
@@ -194,4 +201,9 @@ def calc_cum_returns(scientist, model):
     # convert back from above
     idx = (idea_choice - [(model.schedule.time + 1) * model.ideas_per_time] + len(final_perceived_returns_avail_ideas))[0]
     actual_return = final_actual_returns_avail_ideas[idx]
+
+    scientist.final_perceived_returns_invested_ideas.append(max_return)
+    scientist.final_actual_returns_invested_ideas.append(actual_return)
+    scientist.final_k_invested_ideas.append(scientist.k[idea_choice])
+
     return idea_choice, max_return, actual_return

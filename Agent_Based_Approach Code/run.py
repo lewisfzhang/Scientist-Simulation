@@ -5,15 +5,14 @@ from model import *
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
-from numpy.random import poisson
 import input_file
 from mesa.batchrunner import BatchRunner
-import matplotlib.pyplot as plt
 import numpy as np
 from run_graphs import *
-import math
 import pandas as pd
 import timeit
+import webbrowser as wb
+import os
 
 # runtime
 start = timeit.default_timer()
@@ -22,12 +21,8 @@ use_server = False  # toggle between batch files and server (1 run)
 use_slider = False  # only True when use_server is also True
 use_batch = False
 use_standard = True
-
-# helper method for calculating runtime
-def stop_run(start):
-    # end runtime
-    stop = timeit.default_timer()
-    print("Runtime: ", stop - start, "seconds")
+draw_graphs = True
+get_data = True
 
 # import variables from input_file
 seed = input_file.seed
@@ -49,7 +44,8 @@ all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":
                             "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
                             "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
 
-pd.set_option("display.max_colwidth", 10000)
+pd.set_option("display.max_colwidth", -1)
+pd.set_option('display.max_columns', None)
 
 if use_standard:
     # initialize model object
@@ -58,88 +54,150 @@ if use_standard:
     for i in range(time_periods+2):
         model.step()
 
-    # agent dataframe
-    effort = model.datacollector.get_agent_vars_dataframe()
-    # print("\n\nVariables\n",all_params,"\n\n\nDATAFRAME (AGENT)\n",effort.to_string())
-    effort.to_html('web/pages/page'+str(page_counter())+'.html')
-
-    # model dataframe
-    ideas = model.datacollector.get_model_vars_dataframe()
-    # ideas.to_html('web/test'+page_counter()+'.html')
-    # print("\n\n\nDATAFRAME (MODEL)\n",ideas.to_string())
-    ideas.to_html('web/pages/page'+str(page_counter())+'.html')
-
-    # collect data from individual variables for plotting
-    agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
-    agent_perceived_return_avail_ideas = [a.final_perceived_returns_avail_ideas for a in model.schedule.agents]
-    agent_actual_return_avail_ideas = [a.final_actual_returns_avail_ideas for a in model.schedule.agents]
-
-    agent_k_avail_ideas_flat = flatten_list(agent_k_avail_ideas)
-    agent_perceived_return_avail_ideas_flat = flatten_list(agent_perceived_return_avail_ideas)
-    agent_actual_return_avail_ideas_flat = flatten_list(agent_actual_return_avail_ideas)
-
-    # individual values dataframe
-    ind_vars = {"agent_k_avail_ideas_flat":agent_k_avail_ideas_flat,
-                "agent_perceived_return_avail_ideas_flat":agent_perceived_return_avail_ideas_flat,
-                "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
-    df1 = pd.DataFrame.from_dict(ind_vars)
-    df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
-    #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
-    df1.to_html('web/pages/page'+str(page_counter())+'.html')
-
-    reset_counter()
-
-    # cost vs perceived return for all available ideas graph
-    im_graph(agent_k_avail_ideas_flat, agent_perceived_return_avail_ideas_flat, "k", "perceived returns (1/1000)",
-             "cost vs perceived return for all available ideas across all scientists,time periods (unbiased)", False)
-
-    # cost vs actual return for all available ideas graph
-    im_graph(agent_k_avail_ideas_flat, agent_actual_return_avail_ideas_flat, "k", "perceived returns (1/1000)",
-             "cost vs actual return for all available ideas across all scientists,time periods (unbiased)", False)
-
-    # scatterplot of residuals for all available ideas graph
-    # format: scatterplot(actual,perceived) | resid = actual-perceived
-    # unflattened for time period calculation in scatterplot
-    scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas_flat,
-                "TP","Residual","Residuals for all available ideas (actual-perceived)")
-
-    # cost vs perceived return for all INVESTED ideas graph
-
-    # cost vs actual return for all INVESTED ideas graph
-
-    # scatterplot of residuals for all INVESTED ideas graph
-
-    # Marginal Effort vs Idea (Young vs Old)
-    two_var_bar_graph(model.effort_invested_by_age, "Idea", "Marginal Effort Invested",
-                      "Marginal Effort Invested By Young and Old Scientists For All Ideas")
+    print("\nVariables:\n",all_params)
 
     stop_run(start)
 
-    # plt.show()
+    if get_data:
+        # agent dataframe
+        agent_vars = model.datacollector.get_agent_vars_dataframe()
+        # print("\n\n\nDATAFRAME (AGENT)\n",agent_vars.to_string())
+        agent_vars.to_html('web/pages/page_agent_vars.html')  # page1
+        agent_vars.to_csv('web/csv/csv_agent_vars.csv')
+
+        # model dataframe
+        model_vars = model.datacollector.get_model_vars_dataframe()
+        # print("\n\n\nDATAFRAME (MODEL)\n",model_vars.to_string())
+        model_vars.to_html('web/pages/page_model_vars.html')  # page2
+        model_vars.to_csv('web/csv/csv_model_vars.csv')
+
+        # serious data table
+        avg_k = np.round(np.divide(model.total_k, model.total_scientists_invested,
+                                   out=np.zeros_like(model.total_k), where=model.total_scientists_invested != 0), 2)
+        # avg_pr = np.round(np.divide(model.total_perceived_returns, model.total_times_invested,
+        #                    out=np.zeros_like(model.total_perceived_returns), where=model.total_times_invested!=0),2)
+        # avg_ar = np.round(np.divide(model.total_actual_returns, model.total_times_invested,
+        #                    out=np.zeros_like(model.total_actual_returns), where=model.total_times_invested != 0),2)
+        prop_invested = np.round(np.divide(model.total_effort_tuple, model.max_investment,
+                                 out=np.zeros_like(model.total_effort_tuple), where=model.max_investment != 0), 2)
+        data1 = {"idea": range(0, time_periods + 2, 1),
+                 "scientists_invested": model.total_scientists_invested,
+                 "times_invested": model.total_times_invested,
+                 "avg_k": avg_k,
+                 "total_effort (marginal)": model.total_effort_tuple,
+                 "max_investment": model.max_investment,
+                 "prop_invested": prop_invested,
+                 "total_pr": np.round(model.total_perceived_returns, 2),
+                 "total_ar": np.round(model.total_actual_returns, 2)}
+        # "avg_pr": avg_pr,
+        # "avg_ar": avg_ar}
+        df_data1 = pd.DataFrame.from_dict(data1)
+        df_data1.to_html('web/pages/page_data1.html')  # page3
+        model_vars.to_csv('web/csv/data1.csv')
+
+    stop_run(start)
+
+    if draw_graphs:
+        # collect data from individual variables for plotting
+        agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
+        agent_perceived_return_avail_ideas = [a.final_perceived_returns_avail_ideas for a in model.schedule.agents]
+        agent_actual_return_avail_ideas = [a.final_actual_returns_avail_ideas for a in model.schedule.agents]
+        agent_k_invested_ideas = [a.final_k_invested_ideas for a in model.schedule.agents]
+        agent_perceived_return_invested_ideas = [a.final_perceived_returns_invested_ideas for a in model.schedule.agents]
+        agent_actual_return_invested_ideas = [a.final_actual_returns_invested_ideas for a in model.schedule.agents]
+
+        agent_k_avail_ideas_flat = flatten_list(agent_k_avail_ideas)
+        agent_perceived_return_avail_ideas_flat = flatten_list(agent_perceived_return_avail_ideas)
+        agent_actual_return_avail_ideas_flat = flatten_list(agent_actual_return_avail_ideas)
+        agent_k_invested_ideas_flat = flatten_list(agent_k_invested_ideas)
+        agent_perceived_return_invested_ideas_flat = flatten_list(agent_perceived_return_invested_ideas)
+        agent_actual_return_invested_ideas_flat = flatten_list(agent_actual_return_invested_ideas)
+
+        # individual values dataframe 1
+        ind_vars = {"agent_k_avail_ideas_flat":agent_k_avail_ideas_flat,
+                    "agent_perceived_return_avail_ideas_flat":agent_perceived_return_avail_ideas_flat,
+                    "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
+        df1 = pd.DataFrame.from_dict(ind_vars)
+        df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
+        #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
+        df1.to_html('web/pages/page_ind_vars1.html')  # page4
+        df1.to_csv('web/csv/csv_ind_vars1.html')
+
+        ind_vars2 = {"agent_k_invested_ideas_flat":agent_k_invested_ideas_flat,
+                    "agent_perceived_return_invested_ideas_flat":agent_perceived_return_invested_ideas_flat,
+                    "agent_actual_return_invested_ideas_flat":agent_actual_return_invested_ideas_flat}
+        df2 = pd.DataFrame.from_dict(ind_vars2)
+        df2.sort_values("agent_k_invested_ideas_flat", inplace=True)
+        # print("\n\n\nDATAFRAME 2 (IND VARS)\n", df2.to_string())
+        df2.to_html('web/pages/page_ind_vars2.html')  # page5
+        df2.to_csv('web/csv/csv_ind_vars2.html')
 
 
+        reset_counter()
+
+        # cost vs perceived return for all available ideas graph
+        im_graph(agent_k_avail_ideas_flat, agent_perceived_return_avail_ideas_flat, "k", "perceived returns (1/100)",
+                 "cost vs perceived return for all available ideas across all scientists,time periods (unbiased)", False)
+
+        # cost vs actual return for all available ideas graph
+        im_graph(agent_k_avail_ideas_flat, agent_actual_return_avail_ideas_flat, "k", "actual returns (1/100)",
+                 "cost vs actual return for all available ideas across all scientists,time periods (unbiased)", False)
+
+        # scatterplot of residuals for all available ideas graph
+        # format: scatterplot(actual,perceived) | resid = actual-perceived
+        # unflattened for time period calculation in scatterplot
+        resid_scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas_flat,
+                    "TP","Residual","Residuals for all available ideas (actual-perceived, 1/100)")
+
+        # cost vs perceived return for all INVESTED ideas graph
+        im_graph(agent_k_invested_ideas_flat, agent_perceived_return_invested_ideas_flat, "k", "perceived returns (1/100)",
+                 "cost vs perceived return for all INVESTED ideas across all scientists,time periods (biased)", False)
+
+        # cost vs actual return for all INVESTED ideas graph
+        im_graph(agent_k_invested_ideas_flat, agent_actual_return_invested_ideas_flat, "k", "actual returns (1/100)",
+                 "cost vs actual return for all INVESTED ideas across all scientists,time periods (biased)", False)
+
+        # scatterplot of residuals for all INVESTED ideas graph
+        resid_scatterplot(agent_actual_return_invested_ideas, agent_perceived_return_invested_ideas_flat,
+                    "TP", "Residual", "Residuals for all INVESTED ideas (actual-perceived, 1/100)")
+
+        # Marginal Effort vs Idea (Young vs Old)
+        two_var_bar_graph(model.effort_invested_by_age, "Idea", "Marginal Effort Invested",
+                          "Marginal Effort Invested By Young and Old Scientists For All Ideas")
+
+        # scatterplot of low/high K vs low/high PR for invested ideas
+        mean_k = sum(agent_k_avail_ideas_flat)/len(agent_k_avail_ideas_flat)
+        # divide sign (numerator and divisor too long), exclude 0's since they probably are never invested in model
+        mean_pr = sum(agent_perceived_return_avail_ideas_flat) / \
+                  (len(agent_perceived_return_avail_ideas_flat)-agent_perceived_return_avail_ideas_flat.count(0))
+        two_var_scatterplot(avg_k, model.total_perceived_returns, "k", "perceived returns (1/100)",
+                            "cost vs perceived return for INVESTED ideas (plot to check for bias)", mean_pr, mean_k)
+        # plt.show()
+
+    stop_run(start)
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
 if use_batch:
     fixed_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N, "max_investment_lam":max_investment_lam,
                     "true_sds_lam":true_sds_lam, "true_means_lam":true_means_lam, "start_effort_lam":start_effort_lam,
                     "start_effort_decay":start_effort_decay, "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam}
-    variable_params = {"seed": range(1000,500,10)}  # [min,max) total number of values in array is (max-min)/step
+    # NOTE: variable should not be the range, because you should only run 1 iteration of it
+    variable_params = {"seed": range(10,500,10)}  # [min,max) total number of values in array is (max-min)/step
     model_reports = {"Total_Effort": get_total_effort}
 
     batch_run = BatchRunner(ScientistModel,
                             fixed_parameters=all_params,  # for now
                             variable_parameters=variable_params,
-                            iterations=50,
+                            iterations=1,
                             max_steps=time_periods+2,
                             model_reporters=model_reports)
     batch_run.run_all()
 
     run_data = batch_run.get_model_vars_dataframe()
-    run_data.head()
-    # NOTE: obviously this is stupid since we only have 5 steps, but this is a template for future batch runs
-    plt.scatter(run_data.max_investment_lam, run_data.Total_Effort)
-    plt.show()
+    # # NOTE: obviously this is stupid since we only have 5 steps, but this is a template for future batch runs
+    # plt.scatter(run_data.max_investment_lam, run_data.Total_Effort)
+    # plt.show()
+    print
 
 if use_slider:
     # sliders for ScientistModel(Model)

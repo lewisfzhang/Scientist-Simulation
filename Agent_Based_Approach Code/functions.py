@@ -2,24 +2,21 @@
 
 import numpy as np
 import input_file
-from pathlib import Path
+import timeit
+import webbrowser as wb
 import os
-import copy
-from bs4 import BeautifulSoup
 
-# returns the sum of the total effort invested in all ideas by time period
-def get_total_effort(model):
-    arr = model.total_effort
-    return sum(arr)
 
 # Input: Parameters for the logistic cumulative distribution function
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
 def logistic_cdf(x, loc, scale):
     return 1/(1+np.exp((loc-x)/scale))
 
+
 # round to 2 decimal places and returns the immutable tuple object for datacollector
 def rounded_tuple(array):
     return tuple(map(lambda x: isinstance(x, float) and round(x, 2) or x, tuple(array)))
+
 
 # Input:
 # 1) num_ideas (scalar): number of ideas to create the return matrix for
@@ -44,6 +41,7 @@ def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
         returns_list.append(returns)
     return np.array(returns_list)
 
+
 # Input:
 # 1) numbers (array): contains the numbers we are picking the second largest from
 # Output:
@@ -60,13 +58,16 @@ def second_largest(numbers):
                 m2 = x
     return m2 if count >= 2 else None
 
+
 # for counting number of html pages generated
 def page_counter():
     input_file.count += 1
     return input_file.count
 
+
 def reset_counter():
     input_file.count = 0
+
 
 # appends lists in loop
 def append_list(big_list, small_list):
@@ -74,9 +75,23 @@ def append_list(big_list, small_list):
         big_list.append(small_list[i])
     return big_list
 
+
 def flatten_list(list_name):
     return_list = []
     for x in range(len(list_name)):
         for idx,val in enumerate(list_name[x]):
             return_list.append(val)
     return return_list
+
+
+# helper method for calculating runtime
+def stop_run(start):
+    # end runtime
+    stop = timeit.default_timer()
+    print("Elapsed runtime: ", stop - start, "seconds")
+
+
+# returns the sum of the total effort invested in all ideas by time period
+# def get_total_effort(model):
+#     arr = model.total_effort
+#     return sum(arr)
