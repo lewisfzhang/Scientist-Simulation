@@ -123,7 +123,7 @@ if use_standard:
         df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
         #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
         df1.to_html('web/pages/page_ind_vars1.html')  # page4
-        df1.to_csv('web/csv/csv_ind_vars1.html')
+        df1.to_csv('web/csv/csv_ind_vars1.csv')
 
         ind_vars2 = {"agent_k_invested_ideas_flat":agent_k_invested_ideas_flat,
                     "agent_perceived_return_invested_ideas_flat":agent_perceived_return_invested_ideas_flat,
@@ -132,7 +132,7 @@ if use_standard:
         df2.sort_values("agent_k_invested_ideas_flat", inplace=True)
         # print("\n\n\nDATAFRAME 2 (IND VARS)\n", df2.to_string())
         df2.to_html('web/pages/page_ind_vars2.html')  # page5
-        df2.to_csv('web/csv/csv_ind_vars2.html')
+        df2.to_csv('web/csv/csv_ind_vars2.csv')
 
         reset_counter()
 
