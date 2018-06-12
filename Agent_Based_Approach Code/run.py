@@ -49,6 +49,8 @@ all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":
                             "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
                             "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
 
+pd.set_option("display.max_colwidth", 10000)
+
 if use_standard:
     # initialize model object
     model = ScientistModel(time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,
@@ -82,7 +84,7 @@ if use_standard:
                 "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
     df1 = pd.DataFrame.from_dict(ind_vars)
     df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
-    # print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
+    #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
     df1.to_html('web/pages/page'+str(page_counter())+'.html')
 
     reset_counter()
@@ -119,14 +121,14 @@ if use_standard:
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
 if use_batch:
-    fixed_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N, "true_sds_lam":true_sds_lam,
-                    "true_means_lam":true_means_lam, "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay,
-                    "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam, "seed":seed}
-    variable_params = {"max_investment_lam": range(10,500,10)}
+    fixed_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N, "max_investment_lam":max_investment_lam,
+                    "true_sds_lam":true_sds_lam, "true_means_lam":true_means_lam, "start_effort_lam":start_effort_lam,
+                    "start_effort_decay":start_effort_decay, "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam}
+    variable_params = {"seed": range(1000,500,10)}  # [min,max) total number of values in array is (max-min)/step
     model_reports = {"Total_Effort": get_total_effort}
 
     batch_run = BatchRunner(ScientistModel,
-                            fixed_parameters=fixed_params,
+                            fixed_parameters=all_params,  # for now
                             variable_parameters=variable_params,
                             iterations=50,
                             max_steps=time_periods+2,

@@ -54,7 +54,7 @@ def greedy_investing(scientist):
         # Selects idea that gives the max return given equivalent "marginal" efforts
         # NOTE: See above for comments on calc_cum_returns function,
         # and exceptions on when the idea with the max return isn't chosen
-        scientist.idea_choice, scientist.max_return = calc_cum_returns(scientist, scientist.model)
+        scientist.idea_choice, scientist.max_return, scientist.actual_return = calc_cum_returns(scientist, scientist.model)
 
         # Accounts for the edge case in which max_return = 0 (implying that a
         # scientist either can't invest in ANY ideas [due to investment
@@ -83,6 +83,7 @@ def greedy_investing(scientist):
         scientist.eff_inv_in_period_increment[scientist.idea_choice] += scientist.increment
         scientist.avail_effort -= scientist.increment
         scientist.perceived_returns[scientist.idea_choice] += scientist.max_return  # constant in 2-period lifespan scientists
+        scientist.actual_returns[scientist.idea_choice] += scientist.actual_return  # constant in 2-period lifespan scientists
 
     # system debugging print statements
     # print("\ncurrent age", scientist.current_age, "   id", scientist.unique_id, "    step", scientist.model.schedule.time,
@@ -179,7 +180,7 @@ def calc_cum_returns(scientist, model):
                 upd_idx_max.append(idea_choice)
 
         if len(upd_idx_max) > 0:
-            idea_choice = random.choice(upd_idx_max)
+            idea_choice = random.choice(upd_idx_max)[0]
             break
 
         else:
@@ -190,4 +191,7 @@ def calc_cum_returns(scientist, model):
             if np.size(final_perceived_returns_avail_ideas_copy) == 0:
                 break
 
-    return idea_choice, max_return
+    # convert back from above
+    idx = (idea_choice - [(model.schedule.time + 1) * model.ideas_per_time] + len(final_perceived_returns_avail_ideas))[0]
+    actual_return = final_actual_returns_avail_ideas[idx]
+    return idea_choice, max_return, actual_return

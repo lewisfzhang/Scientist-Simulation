@@ -61,7 +61,7 @@ class Scientist(Agent):
         # Array: keeps track of total, perceived returns for each idea given
         # a scientist's level of investment in that idea
         self.perceived_returns = np.zeros(model.total_ideas)
-
+        self.actual_returns = np.zeros(model.total_ideas)
         # Array: creates a copy of the max investment array from model class;
         # this contains the max amount of effort that can be invested in each
         # idea across all scientists
@@ -91,14 +91,6 @@ class Scientist(Agent):
         # with 0s, 1s, 2s, etc. that indicate which time periods ideas are
         # from
         idea_periods = np.arange(self.model.total_ideas) // self.model.ideas_per_time
-
-        # # scientists have died
-        # if self.current_age >= 2:
-        #     # Scientists are alive and able to do things for only two time periods
-        #     # (i.e. can't do anything when they are not 0 or 1)
-        #     # RESET EVERYTHING TO 0, since they are inactive like an unborn scientist
-        #     self.eff_inv_in_period[:] = 0
-        #     self.perceived_returns[:] = 0
 
         # Young scientist (added the AND condition to ensure in TP 1 the scientist doesn't do anything)
         if self.current_age == 0 and self.model.schedule.time >= 2:
@@ -133,11 +125,12 @@ class Scientist(Agent):
 
             greedy_investing(self)
 
-        # scientists not born yet
+        # scientists not born yet or have died
         else:
             self.eff_inv_in_period_increment[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
             self.perceived_returns[:] = 0
+            self.actual_returns[:] = 0
 
         # conversions to tuple so dataframe updates (not sure why this happens with numpy arrays)
         self.model.total_effort_tuple = tuple(self.model.total_effort)
@@ -145,6 +138,7 @@ class Scientist(Agent):
         self.eff_inv_in_period_increment_tuple = tuple(self.eff_inv_in_period_increment)
         self.eff_inv_in_period_marginal_tuple = tuple(self.eff_inv_in_period_marginal)
         self.perceived_returns_tuple = rounded_tuple(self.perceived_returns)
+        self.actual_returns_tuple = rounded_tuple(self.actual_returns)
         self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
         self.final_perceived_returns_avail_ideas_tuple = rounded_tuple(self.final_perceived_returns_avail_ideas)
         self.final_actual_returns_avail_ideas_tuple = rounded_tuple(self.final_actual_returns_avail_ideas)
@@ -227,7 +221,8 @@ class ScientistModel(Model):
             agent_reporters={"Total effort invested": "effort_invested_by_scientist_tuple",
                              "Effort invested in period (increment)": "eff_inv_in_period_increment_tuple",
                              "Effort invested in period (marginal)": "eff_inv_in_period_marginal_tuple",
-                             "Perceived returns": "perceived_returns_tuple"})
+                             "Perceived returns": "perceived_returns_tuple",
+                             "Actual returns": "actual_returns_tuple"})
 
     def step(self):
         # once count_time exceeds total time periods, program does nothing to prevent OutofBounds

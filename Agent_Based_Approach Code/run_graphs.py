@@ -5,6 +5,7 @@ from random import randint
 import math
 import pandas as pd
 from functions import *
+import matplotlib as mpl
 
 def labels(x_label, y_label, title):
     plt.xlabel(x_label)
@@ -16,7 +17,6 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title, withZero):
-    print(agent2)
     high1 = math.ceil(max(agent1))
     high2 = math.ceil(max(agent2))
     low1 = int(min(agent1))
@@ -36,8 +36,8 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero):
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches(1300.0 / float(DPI), 1220.0 / float(DPI))
-    plt.savefig('web/images/graph' + str(page_counter()))
+    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    plt.savefig('web/images/imgraph' + str(page_counter()))
 
 # scatterplot
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
@@ -59,7 +59,10 @@ def scatterplot(actual, perceived, x_label, y_label, title):
     plt.scatter(time_id, resid)
     plt.axhline(0, color='black')
     labels(x_label, y_label, title)
-    plt.savefig('web/images/graph' + str(page_counter()))
+    fig = plt.gcf()
+    DPI = fig.get_dpi()
+    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    plt.savefig('web/images/scatterplot' + str(page_counter()))
 
 
 
@@ -68,5 +71,8 @@ def two_var_bar_graph(data, x_label, y_label, title):
     # plt.figure(randint(1000,9999))
     df = pd.DataFrame.from_dict(dict_data)
     df.plot.bar(x="Idea", y=["Young", "Old"])
-    plt.savefig('web/images/graph' + str(page_counter()))
+    fig = plt.gcf()
+    DPI = fig.get_dpi()
+    fig.set_size_inches(12000.0 / float(DPI), 2000.0 / float(DPI))
+    plt.savefig('web/images/2-var_bar_graph' + str(page_counter()))
 
