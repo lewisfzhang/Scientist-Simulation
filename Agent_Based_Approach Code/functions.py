@@ -2,7 +2,9 @@
 
 import numpy as np
 import input_file
+from pathlib import Path
 import os
+import copy
 from bs4 import BeautifulSoup
 
 # returns the sum of the total effort invested in all ideas by time period
@@ -78,21 +80,3 @@ def flatten_list(list_name):
         for idx,val in enumerate(list_name[x]):
             return_list.append(val)
     return return_list
-
-def append_html():
-    file = open('web/output.html','w')
-    soup_original = BeautifulSoup(''.join(open('web/output.html')))
-    pathlist = Path('web/pages').glob('**/*.asm')
-    print(pathlist)
-    append_html_helper(soup_original,pathlist)
-
-def append_html_helper(soup_original,pathlist):
-    reset_counter()
-    for path in pathlist:
-        path_in_str = str(path)
-        soup_temp = BeautifulSoup(''.join(open(path_in_str)))
-        new_tag = soup.new_tag(str(page_counter()))
-        new_tag.append('SEPARATOR')
-        soup_original.body.append(new_tag)
-        for element in soup_temp:
-            soup_original.body.append(element)

@@ -10,7 +10,7 @@ seed = randint(100000, 999999)
 prop_invest_limit = 0.6  # works when <0.5?
 
 # model variables
-time_periods = 10
+time_periods = 100
 ideas_per_time = 1  # haven't implemented >1...
 N = 2  # number of scientists per time period, for now just stick to 2
 max_investment_lam = 50  # based on logistic cdf with sds and means below (want lam to be near flat of top of curve (1)

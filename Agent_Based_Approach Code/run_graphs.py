@@ -15,7 +15,8 @@ def labels(x_label, y_label, title):
 # 2-var image graph
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
-def im_graph(agent1, agent2, x_label, y_label, title):
+def im_graph(agent1, agent2, x_label, y_label, title, withZero):
+    print(agent2)
     high1 = math.ceil(max(agent1))
     high2 = math.ceil(max(agent2))
     low1 = int(min(agent1))
@@ -24,6 +25,8 @@ def im_graph(agent1, agent2, x_label, y_label, title):
     fig, ax = plt.subplots(figsize=(high2-low2+1, high1-low1+1))  # swapping x and y has no effect on scatterplot
     im_graph = np.zeros((high2-low2+1, high1-low1+1))
     for i in range(num_cells):
+        if not withZero and agent2[i] == 0:
+            continue
         x = int(agent1[i]-min(agent1))  # int(round(agent_k[i],0))
         y = int(agent2[i]-min(agent2))  # int(round(agent_perceived_return[i],0))
         im_graph[high2-low2-y][x] += 1
