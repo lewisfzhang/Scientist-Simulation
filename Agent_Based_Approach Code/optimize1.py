@@ -17,7 +17,7 @@ def greedy_investing(scientist):
     while scientist.avail_effort > 0:
         # print('BRUH IM HERE', page_counter())
         # Array: determine which ideas scientists have invested no effort into
-        no_effort_inv = (scientist.effort_invested == 0)
+        no_effort_inv = (scientist.effort_invested_by_scientist == 0)
 
         # Array: calculate current investment costs based on prior investments;
         # has investment costs or 0 if scientist has already paid cost
@@ -77,19 +77,20 @@ def greedy_investing(scientist):
         # increment includes investment costs. We don't care about
     # paid investment costs for the other variables
         scientist.model.total_effort[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
-        scientist.effort_invested[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
+        scientist.effort_invested_by_scientist[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
+        scientist.model.effort_invested_by_age[scientist.current_age][scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.eff_inv_in_period_marginal[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.eff_inv_in_period_increment[scientist.idea_choice] += scientist.increment
         scientist.avail_effort -= scientist.increment
         scientist.perceived_returns[scientist.idea_choice] += scientist.max_return  # constant in 2-period lifespan scientists
 
     # system debugging print statements
-    print("\ncurrent age", scientist.current_age, "   id", scientist.unique_id, "    step", scientist.model.schedule.time,
-          "\navail ideas array:",scientist.avail_ideas.tolist(),
-          "\ntotal effort invested array:", scientist.effort_invested.tolist(),
-          "\neffort invested in time period (increment):", scientist.eff_inv_in_period_increment.tolist(),
-          "\neffort invested in time period (marginal):", scientist.eff_inv_in_period_marginal.tolist(),
-          "\ncurrent cost across ideas:", scientist.curr_k)
+    # print("\ncurrent age", scientist.current_age, "   id", scientist.unique_id, "    step", scientist.model.schedule.time,
+    #       "\navail ideas array:",scientist.avail_ideas.tolist(),
+    #       "\ntotal effort invested array:", scientist.effort_invested_by_scientist.tolist(),
+    #       "\neffort invested in time period (increment):", scientist.eff_inv_in_period_increment.tolist(),
+    #       "\neffort invested in time period (marginal):", scientist.eff_inv_in_period_marginal.tolist(),
+    #       "\ncurrent cost across ideas:", scientist.curr_k)
 
 # Function to calculate "marginal" returns for available ideas, taking into account investment costs
 # Input:

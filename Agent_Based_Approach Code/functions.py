@@ -2,6 +2,8 @@
 
 import numpy as np
 import input_file
+import os
+from bs4 import BeautifulSoup
 
 # returns the sum of the total effort invested in all ideas by time period
 def get_total_effort(model):
@@ -61,6 +63,9 @@ def page_counter():
     input_file.count += 1
     return input_file.count
 
+def reset_counter():
+    input_file.count = 0
+
 # appends lists in loop
 def append_list(big_list, small_list):
     for i in range(len(small_list)):
@@ -73,3 +78,21 @@ def flatten_list(list_name):
         for idx,val in enumerate(list_name[x]):
             return_list.append(val)
     return return_list
+
+def append_html():
+    file = open('web/output.html','w')
+    soup_original = BeautifulSoup(''.join(open('web/output.html')))
+    pathlist = Path('web/pages').glob('**/*.asm')
+    print(pathlist)
+    append_html_helper(soup_original,pathlist)
+
+def append_html_helper(soup_original,pathlist):
+    reset_counter()
+    for path in pathlist:
+        path_in_str = str(path)
+        soup_temp = BeautifulSoup(''.join(open(path_in_str)))
+        new_tag = soup.new_tag(str(page_counter()))
+        new_tag.append('SEPARATOR')
+        soup_original.body.append(new_tag)
+        for element in soup_temp:
+            soup_original.body.append(element)

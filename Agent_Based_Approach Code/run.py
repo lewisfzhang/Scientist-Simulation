@@ -59,12 +59,13 @@ if use_standard:
     # agent dataframe
     effort = model.datacollector.get_agent_vars_dataframe()
     print("\n\nVariables\n",all_params,"\n\n\nDATAFRAME (AGENT)\n",effort.to_string())
+    effort.to_html('web/pages/html'+str(page_counter())+'.html')
 
     # model dataframe
     ideas = model.datacollector.get_model_vars_dataframe()
     # ideas.to_html('web/test'+page_counter()+'.html')
     print("\n\n\nDATAFRAME (MODEL)\n",ideas.to_string())
-
+    ideas.to_html('web/pages/html'+str(page_counter())+'.html')
 
     # collect data from individual variables for plotting
     agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
@@ -82,6 +83,9 @@ if use_standard:
     df1 = pd.DataFrame.from_dict(ind_vars)
     df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
     print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
+    df1.to_html('web/pages/page'+str(page_counter())+'.html')
+
+    reset_counter()
 
     # cost vs perceived return for all available ideas graph
     im_graph(agent_k_avail_ideas_flat, agent_perceived_return_avail_ideas_flat, "k", "perceived returns (1/1000)",
@@ -104,6 +108,10 @@ if use_standard:
     # scatterplot of residuals for all INVESTED ideas graph
 
     # Marginal Effort vs Idea (Young vs Old)
+    two_var_bar_graph(model.effort_invested_by_age, "Idea", "Marginal Effort Invested",
+                      "Marginal Effort Invested By Young and Old Scientists For All Ideas")
+
+    append_html()
 
     stop_run(start)
 
