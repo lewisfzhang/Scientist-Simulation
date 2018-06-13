@@ -99,7 +99,7 @@ class Scientist(Agent):
         idea_periods = np.arange(self.model.total_ideas) // self.model.ideas_per_time
 
         # Young scientist (added the AND condition to ensure in TP 1 the scientist doesn't do anything)
-        if self.current_age == 0 and self.model.schedule.time >= 2:
+        if 0 <= self.current_age < self.model.time_periods_alive/2 and self.model.schedule.time >= 2:
             # Array: Contains 1s for ideas in the current time period and previous
             # time period, indicating that a young scientist can invest in those
             # ideas. The rest of the array has 0s
@@ -109,7 +109,7 @@ class Scientist(Agent):
             greedy_investing(self)
 
         # Old scientist
-        elif self.current_age == 1:
+        elif self.model.time_periods_alive <= self.current_age < self.model.time_periods_alive:
             # Array: Contains 1s for ideas in the current time period and previous
             # two time periods, indicating that an old scientist can invest in those
             # ideas. The rest of the array has 0s

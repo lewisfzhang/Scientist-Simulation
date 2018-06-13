@@ -44,32 +44,38 @@ all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":
             "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
             "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "k_lam":k_lam,
             "sds_lam":sds_lam, "means_lam":means_lam, "time_periods_alive":time_periods_alive, "seed":seed}
+print("\nVariables:\n",all_params)
+f = open('web/parameters.txt', 'w')
+f.write(str(all_params))
+f.close()
 
 pd.set_option("display.max_colwidth", -1)
 pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 
 if use_standard:
+    print("compiled")
+    stop_run(start)
+
     # initialize model object
     model = ScientistModel(time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,
                            start_effort_lam, start_effort_decay, k_lam, sds_lam, means_lam, time_periods_alive, seed)
     for i in range(time_periods+2):
         model.step()
-
-    print("\nVariables:\n",all_params)
-
-    stop_run(start)
+        print("step:",i)
+        stop_run(start)
 
     if get_data:
         # agent dataframe
         agent_vars = model.datacollector.get_agent_vars_dataframe()
         # print("\n\n\nDATAFRAME (AGENT)\n",agent_vars.to_string())
-        agent_vars.to_html('web/pages/page_agent_vars.html')  # page1
+        # agent_vars.to_html('web/pages/page_agent_vars.html')  # page1
         agent_vars.to_csv('web/csv/csv_agent_vars.csv')
 
         # model dataframe
         model_vars = model.datacollector.get_model_vars_dataframe()
         # print("\n\n\nDATAFRAME (MODEL)\n",model_vars.to_string())
-        model_vars.to_html('web/pages/page_model_vars.html')  # page2
+        # model_vars.to_html('web/pages/page_model_vars.html')  # page2
         model_vars.to_csv('web/csv/csv_model_vars.csv')
 
         # serious data table
@@ -97,6 +103,7 @@ if use_standard:
         df_data1.to_html('web/pages/page_data1.html')  # page3
         model_vars.to_csv('web/csv/data1.csv')
 
+    print("finished accessing data tools")
     stop_run(start)
 
     if draw_graphs:
@@ -122,7 +129,7 @@ if use_standard:
         df1 = pd.DataFrame.from_dict(ind_vars)
         df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
         #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
-        df1.to_html('web/pages/page_ind_vars1.html')  # page4
+        # df1.to_html('web/pages/page_ind_vars1.html')  # page4
         df1.to_csv('web/csv/csv_ind_vars1.csv')
 
         ind_vars2 = {"agent_k_invested_ideas_flat":agent_k_invested_ideas_flat,
@@ -131,7 +138,7 @@ if use_standard:
         df2 = pd.DataFrame.from_dict(ind_vars2)
         df2.sort_values("agent_k_invested_ideas_flat", inplace=True)
         # print("\n\n\nDATAFRAME 2 (IND VARS)\n", df2.to_string())
-        df2.to_html('web/pages/page_ind_vars2.html')  # page5
+        # df2.to_html('web/pages/page_ind_vars2.html')  # page5
         df2.to_csv('web/csv/csv_ind_vars2.csv')
 
         reset_counter()
@@ -176,6 +183,7 @@ if use_standard:
 
         # plt.show()
 
+    print("finished drawing graphs --> end of program")
     stop_run(start)
 
 # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
