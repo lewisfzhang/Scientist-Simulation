@@ -1,4 +1,0 @@
-1. making all_possible_effort_splits more general to include more ideas/scientists
-2. start TDD
-3. Figure out how to represent the data to actually start maximization
-4. write function to come up with all the young splits

@@ -13,8 +13,8 @@ prop_invest_limit = 0.6  # works when <0.5?
 
 # model variables
 time_periods = 10  # stable time periods
-ideas_per_time = 5
-N = 6  # number of scientists alive per time period (EVEN #'s ONLY!)
+ideas_per_time = 1
+N = 2  # number of scientists alive per time period (EVEN #'s ONLY!)
 max_investment_lam = 50  # based on logistic cdf with sds and means below (want lam to be near flat of top of curve (1)
 true_sds_lam = 4
 true_means_lam = 25
