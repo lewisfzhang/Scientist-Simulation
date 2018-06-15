@@ -159,7 +159,7 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
             df2.sort_values("agent_k_invested_ideas_flat", inplace=True)
             # print("\n\n\nDATAFRAME 2 (IND VARS)\n", df2.to_string())
             # df2.to_html('web/pages/page_ind_vars2.html')  # page4
-            df2.to_csv('web/csv/csv_ind_vars2.csv')
+            df2.to_csv('web/csv/csv_ind_vars.csv')
 
             print("ind var finish")
             stop_run(start)
@@ -201,6 +201,9 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                     func_distr(*arg_list[i])  # passes parameters in arg_list from list form to a series of arguments
 
             # plt.show()
+
+            # saves all of the images to an html file
+            png_to_html()
 
             print("finished drawing graphs --> end of program")
             stop_run(start)

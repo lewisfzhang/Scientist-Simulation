@@ -3,6 +3,8 @@
 import numpy as np
 import input_file
 import timeit
+import glob
+import os
 
 
 # Input: Parameters for the logistic cumulative distribution function
@@ -97,3 +99,12 @@ def log_0(np_array):
 # np.divide that handles division by 0
 def divide_0(num, denom):
     return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
+
+
+def png_to_html():
+    image_list = glob.glob('web\images\*.png')
+    html = ''
+    for i in range(len(image_list)):
+        html += '<img src="'+str(os.getcwd())+'\\'+str(image_list[i])+'" />'
+    with open("web/pages/all_images.html", "w") as file:
+        file.write(html)
