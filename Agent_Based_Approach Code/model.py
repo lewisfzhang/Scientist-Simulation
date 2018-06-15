@@ -27,10 +27,13 @@ class Scientist(Agent):
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
         # additional investment (so each scientist has different cost for each idea)
-        self.k = poisson(lam=model.k_lam, size=model.total_ideas)
+        #
+        # normal distribution is the "noise" associated with learning an idea where 99% of
+        # all true k for each scientist will be within 50% of the true k based on each idea
+        self.k = model.k * (np.random.normal(6, 1, model.total_ideas)/6)
 
-        # SCALAR: error each scientist has for perceived compared to the true actual returns
-        self.noise = model.noise_factor * np.random.normal(0,1,model.total_ideas)
+        # ARRAY: error each scientist has for perceived compared to the true actual returns
+        self.noise = model.noise_factor * np.random.normal(0, 1, model.total_ideas)
 
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
@@ -149,7 +152,6 @@ class ScientistModel(Model):
 
         # store variables into Scientist(Agent) objects
         self.start_effort_lam = start_effort_lam
-        self.k_lam = k_lam
         self.sds_lam = sds_lam
         self.means_lam = means_lam
 
@@ -172,6 +174,10 @@ class ScientistModel(Model):
         # Scalar: total number of ideas in the model. +2 is used to account
         # for first two, non-steady state time periods
         self.total_ideas = ideas_per_time*(time_periods+2)
+
+        # k is the learning cost for each idea
+        self.k_lam = k_lam
+        self.k = poisson(lam=self.k_lam, size=self.total_ideas)
 
         # SCALAR: store means of the mean and sds for returns
         self.true_sds_lam = true_sds_lam
