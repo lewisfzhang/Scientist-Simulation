@@ -179,7 +179,7 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                          "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False, "actual", False),
 
                         ("resid_scatterplot", agent_actual_return_invested_ideas, agent_perceived_return_invested_ideas_flat,
-                        "TP", "Residual", "Residuals for all INVESTED ideas (actual-perceived)", None, None, None),
+                        "Scientist ID", "Residual", "Residuals for all INVESTED ideas (actual-perceived)", None, None, None),
 
                         ("two_var_bar_graph", model.effort_invested_by_age, None, "Idea", "Marginal Effort Invested",
                         "Marginal Effort Invested By Young and Old Scientists For All Ideas", None, None, True),

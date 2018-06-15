@@ -4,23 +4,23 @@ from random import randint
 # randint(1000,9999) --> when necessary
 # to reproduce same data, use CONSTANT seed value
 # for randomization best practice
-seed = randint(100000, 999999)
+seed = 156656  # randint(100000, 999999)
 num_processors = 5
 
 # model variables
 time_periods = 10  # stable time periods
 ideas_per_time = 1
 N = 20  # number of scientists alive per time period (EVEN #'s ONLY!)
-true_means_lam = 100
+true_means_lam = 300
 true_sds_lam = int(0.16 * true_means_lam)
 
 # agent constants
-start_effort_lam = int(0.03*true_means_lam)
+start_effort_lam = int(0.03*true_means_lam)  # make sure this is >= 9 to ensure start_effort isn't too small
 noise_factor = 1
 
 # keep k and start effort ratio fixed (see next line)
 # keep learning cost relatively low to promote new ideas (but model could still be flawed)
-k_lam = 1  # 0.001*true_means_lam
+k_lam = int(0.3*start_effort_lam)  # make sure this is still > 0
 
 sds_lam = true_sds_lam
 means_lam = true_means_lam

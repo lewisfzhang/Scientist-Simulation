@@ -58,21 +58,21 @@ def resid_scatterplot(actual, perceived, x_label, y_label, title):
     actual_numpy = np.asarray(flatten_list(actual))
     perceived_numpy = np.asarray(perceived)
     resid = actual_numpy-perceived_numpy
-    time_id = []
+    agent_id = []
     for np_array_idx in range(len(actual)):
         for i in range(len(actual[np_array_idx])):
-            time_id.append(np_array_idx+2)  # index shift
+            agent_id.append(np_array_idx+1)  # index shift
     min_scale = int(min(resid))
     max_scale = int(max(resid))+1
     step = int((max_scale-min_scale)/10)+1
     plt.yticks(np.arange(min_scale, max_scale, step))
-    plt.xticks(np.arange(0,max(time_id)+1,1))
-    plt.scatter(time_id, resid)
+    plt.xticks(np.arange(0, len(actual)+1, 1))
+    plt.scatter(agent_id, resid)
     plt.axhline(0, color='black')
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches((2000.0+10*step) / float(DPI), 2000.0 / float(DPI))
+    fig.set_size_inches((2000.0+30*len(actual)) / float(DPI), 2000.0 / float(DPI))
     plt.savefig('web/images/scatterplot_resid')
 
 
