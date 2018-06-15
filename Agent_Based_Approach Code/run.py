@@ -17,13 +17,14 @@ from multiprocessing import Pool
 # start runtime
 start = timeit.default_timer()
 
+# switches that control how the program runs
 use_server = False  # toggle between batch files and server (1 run)
 use_slider = False  # only True when use_server is also True
 use_batch = False
 use_standard = True
 draw_graphs = True
 get_data = True
-use_multiprocessing = False
+use_multiprocessing = True
 
 # number of processors for multiprocessing
 num_processors = input_file.num_processors
@@ -45,17 +46,21 @@ sds_lam = input_file.sds_lam
 means_lam = input_file.means_lam
 time_periods_alive = input_file.time_periods_alive
 
+# default parameters for modelas a dictionary
 all_params = {"time_periods": time_periods, "ideas_per_time": ideas_per_time, "N": N,
               "max_investment_lam": max_investment_lam, "true_sds_lam": true_sds_lam, "true_means_lam": true_means_lam,
               "start_effort_lam": start_effort_lam, "start_effort_decay": start_effort_decay,
               "noise_factor": noise_factor,
               "k_lam": k_lam, "sds_lam": sds_lam, "means_lam": means_lam, "time_periods_alive": time_periods_alive,
               "seed": seed}
-print("Variables:\n", all_params)
+
+# write parameters to text file
 f = open('web/parameters.txt', 'w')
 f.write(str(all_params))
 f.close()
 
+# set dataframe settings to max width, max rows, and max columns since we are collecting large quantities
+# of data and printing out entire arrays/tuples
 pd.set_option("display.max_colwidth", -1)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
@@ -106,8 +111,15 @@ def func_distr(graph_type, arg1, arg2, name1, name2, name3, extra_arg, file_name
 
 
 if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function
+    # initiate multiprocessing with 'num_processors' threads
+    # NOTE: increasing the number of processors does not always increase speed of program. in fact, it may actually
+    # slow down the program due to the additional overhead needed for process switching
     p = Pool(num_processors)
 
+    # printing parameters into console screen
+    print("Variables:\n", all_params)
+
+    # when we only want to run one model and collect all agent and model data from it
     if use_standard:
         print("compiled")
         stop_run(start)
@@ -128,16 +140,11 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
 
         if draw_graphs:
             # collect data from individual variables for plotting
-            # agent_k_avail_ideas = [a.final_k_avail_ideas for a in model.schedule.agents]
-            # agent_perceived_return_avail_ideas = [a.final_perceived_returns_avail_ideas for a in model.schedule.agents]
-            # agent_actual_return_avail_ideas = [a.final_actual_returns_avail_ideas for a in model.schedule.agents]
             agent_k_invested_ideas = [a.final_k_invested_ideas for a in model.schedule.agents]
             agent_perceived_return_invested_ideas = [a.final_perceived_returns_invested_ideas for a in model.schedule.agents]
             agent_actual_return_invested_ideas = [a.final_actual_returns_invested_ideas for a in model.schedule.agents]
 
-            # agent_k_avail_ideas_flat = flatten_list(agent_k_avail_ideas)
-            # agent_perceived_return_avail_ideas_flat = flatten_list(agent_perceived_return_avail_ideas)
-            # agent_actual_return_avail_ideas_flat = flatten_list(agent_actual_return_avail_ideas)
+            # flattening numpy arrays
             agent_k_invested_ideas_flat = flatten_list(agent_k_invested_ideas)
             agent_perceived_return_invested_ideas_flat = flatten_list(agent_perceived_return_invested_ideas)
             agent_actual_return_invested_ideas_flat = flatten_list(agent_actual_return_invested_ideas)
@@ -145,29 +152,19 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
             print("variable collecting finish")
             stop_run(start)
 
-            # # individual values dataframe 1
-            # ind_vars = {"agent_k_avail_ideas_flat":agent_k_avail_ideas_flat,
-            #             "agent_perceived_return_avail_ideas_flat":agent_perceived_return_avail_ideas_flat,
-            #             "agent_actual_return_avail_ideas_flat":agent_actual_return_avail_ideas_flat}
-            # df1 = pd.DataFrame.from_dict(ind_vars)
-            # df1.sort_values("agent_k_avail_ideas_flat", inplace=True)
-            # #print("\n\n\nDATAFRAME (IND VARS)\n", df1.to_string())
-            # # df1.to_html('web/pages/page_ind_vars1.html')  # page4
-            # df1.to_csv('web/csv/csv_ind_vars1.csv')
-
             ind_vars2 = {"agent_k_invested_ideas_flat": agent_k_invested_ideas_flat,
                          "agent_perceived_return_invested_ideas_flat": agent_perceived_return_invested_ideas_flat,
                          "agent_actual_return_invested_ideas_flat": agent_actual_return_invested_ideas_flat}
             df2 = pd.DataFrame.from_dict(ind_vars2)
             df2.sort_values("agent_k_invested_ideas_flat", inplace=True)
             # print("\n\n\nDATAFRAME 2 (IND VARS)\n", df2.to_string())
-            # df2.to_html('web/pages/page_ind_vars2.html')  # page5
+            # df2.to_html('web/pages/page_ind_vars2.html')  # page4
             df2.to_csv('web/csv/csv_ind_vars2.csv')
 
             print("ind var finish")
             stop_run(start)
 
-            reset_counter()
+            # reset_counter()
 
             arg_list = [("im_graph", agent_k_invested_ideas_flat, agent_perceived_return_invested_ideas_flat, "k", "perceived returns",
                         "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False, "perceived", True),
@@ -198,10 +195,10 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                          "perceived return vs cost for INVESTED ideas (plot to check for bias)", None, None, False)]
 
             if use_multiprocessing:
-                p.starmap(func_distr, arg_list)
+                p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
             else:
                 for i in range(0, len(arg_list)):
-                    func_distr(*arg_list[i])
+                    func_distr(*arg_list[i])  # passes parameters in arg_list from list form to a series of arguments
 
             # plt.show()
 
@@ -209,6 +206,8 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
             stop_run(start)
 
     # can either use server to display interactive data (1 run), or do a batch of simultaneous runs
+    # use if we only care about model variables and how changing one variable affects the others
+    # NOTE: cannot access agent variables
     if use_batch:
         fixed_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N, "max_investment_lam":max_investment_lam,
                         "true_sds_lam":true_sds_lam, "true_means_lam":true_means_lam, "start_effort_lam":start_effort_lam,
@@ -225,12 +224,12 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                                 max_steps=time_periods+2,
                                 model_reporters=model_reports)
         batch_run.run_all()
-
         run_data = batch_run.get_model_vars_dataframe()
         # # NOTE: obviously this is stupid since we only have 5 steps, but this is a template for future batch runs
         # plt.scatter(run_data.max_investment_lam, run_data.Total_Effort)
         # plt.show()
 
+    # sliders allow us to change certain variables in real time
     if use_slider:
         # sliders for ScientistModel(Model)
         time_periods = UserSettableParameter('slider', "Time Periods", 3, 1, 100, 1)
@@ -247,6 +246,9 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
         sds_lam = UserSettableParameter('slider', "SDS Lambda", 4, 1, 100, 1)
         means_lam = UserSettableParameter('slider', "Means Lambda", 25, 1, 100, 1)
 
+    # launches an interactive display, probably don't need to implement this
+    # NOTE: not practical if we are running large scale simulations as calculations will take too long to keep
+    # up with the interactive display
     if use_server:
         chart1 = ChartModule([{"Label": "Total Effort",
                               "Color": "Black"}],
@@ -256,5 +258,5 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                                "Scientist Model",
                                all_params)
 
-        server.port = 8521  # The default
+        server.port = 8521  # the default
         server.launch()

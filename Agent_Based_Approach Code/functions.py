@@ -89,7 +89,7 @@ def stop_run(start):
     print("Elapsed runtime: ", stop - start, "seconds")
 
 
-# np.log() that handles 0
+# np.log() that handles 0 (and very small values that will return infinity)
 def log_0(np_array):
     return np.log(np_array, out=np.zeros(len(np_array)), where=np_array > 2**-10)
 

@@ -23,8 +23,7 @@ def greedy_investing(scientist):
         # all ideas that haven't been invested in yet plus 1
         scientist.increment = max(scientist.curr_k[scientist.avail_ideas]) + 1
 
-        # Edge case in which scientist doesn't have enough effort to invest
-        # in idea with greatest investment cost
+        # Edge case in which scientist doesn't have enough effort to invest in idea with greatest investment cost
         # POTENTIAL BIAS! LESS EFFORT SHOULD CORRESPOND TO LESS RESULTS?!
         if scientist.avail_effort < scientist.increment:
             scientist.increment = scientist.avail_effort
@@ -122,15 +121,15 @@ def calc_cum_returns(scientist, model):
     # Array: finds the index of the maximum return over all the available ideas
     idx_max_return = np.where(np.asarray(final_perceived_returns_avail_ideas) == max_return)[0]
     # choosing random value out of all possible values
-    idx = idx_max_return[randint(0, len(idx_max_return)-1)]
-    # note idx and idea_choice are the same since ((model.schedule.time + 1) * model.ideas_per_time) = len(final_perceived_returns_avail_ideas)
-    idea_choice = idx + ((model.schedule.time + 1) * model.ideas_per_time) - len(final_perceived_returns_avail_ideas)
+    idea_choice = idx_max_return[randint(0, len(idx_max_return)-1)]
+
     # convert back from above
-    actual_return = final_actual_returns_avail_ideas[idx]
+    actual_return = final_actual_returns_avail_ideas[idea_choice]
 
     # update back to the variables/attribute of the Agent object / scientist
     scientist.final_perceived_returns_invested_ideas.append(max_return)
     scientist.final_actual_returns_invested_ideas.append(actual_return)
     scientist.final_k_invested_ideas.append(scientist.k[idea_choice])
 
+    # returns index of the invested idea, as well as its perceived and actual returns
     return idea_choice, max_return, actual_return

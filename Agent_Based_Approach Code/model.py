@@ -85,9 +85,6 @@ class Scientist(Agent):
         self.eff_inv_in_period_marginal_tuple = tuple(self.eff_inv_in_period_marginal)
         self.perceived_returns_tuple = rounded_tuple(self.perceived_returns)
         self.actual_returns_tuple = rounded_tuple(self.actual_returns)
-        # self.final_k_avail_ideas_tuple = tuple(self.final_k_avail_ideas)
-        # self.final_perceived_returns_avail_ideas_tuple = rounded_tuple(self.final_perceived_returns_avail_ideas)
-        # self.final_actual_returns_avail_ideas_tuple = rounded_tuple(self.final_actual_returns_avail_ideas)
         self.final_perceived_returns_invested_ideas_tuple = rounded_tuple(self.final_perceived_returns_invested_ideas)
         self.final_k_invested_ideas_tuple = rounded_tuple(self.final_k_invested_ideas)
         self.final_actual_returns_invested_ideas_tuple = rounded_tuple(self.final_actual_returns_invested_ideas)
@@ -247,11 +244,6 @@ class ScientistModel(Model):
     # for data collecting after model has finished running
     def collect_vars(self):
         self.avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
-        # avg_pr = np.round(np.divide(model.total_perceived_returns, model.total_times_invested,
-        #                    out=np.zeros_like(model.total_perceived_returns), where=model.total_times_invested!=0),2)
-        # avg_ar = np.round(np.divide(model.total_actual_returns, model.total_times_invested,
-        #                    out=np.zeros_like(model.total_actual_returns), where=model.total_times_invested != 0),2)
-
         self.total_perceived_returns = np.round(self.total_perceived_returns, 2)
         self.total_actual_returns = np.round(self.total_actual_returns, 2)
         self.prop_invested = self.total_effort / (2*self.true_means_lam)
