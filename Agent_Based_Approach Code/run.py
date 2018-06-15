@@ -54,11 +54,6 @@ all_params = {"time_periods": time_periods, "ideas_per_time": ideas_per_time, "N
               "k_lam": k_lam, "sds_lam": sds_lam, "means_lam": means_lam, "time_periods_alive": time_periods_alive,
               "seed": seed}
 
-# write parameters to text file
-f = open('web/parameters.txt', 'w')
-f.write(str(all_params))
-f.close()
-
 # set dataframe settings to max width, max rows, and max columns since we are collecting large quantities
 # of data and printing out entire arrays/tuples
 pd.set_option("display.max_colwidth", -1)
@@ -118,6 +113,11 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
 
     # printing parameters into console screen
     print("Variables:\n", all_params)
+
+    # write parameters to text file
+    f = open('web/parameters.txt', 'w')
+    f.write(str(all_params))
+    f.close()
 
     # when we only want to run one model and collect all agent and model data from it
     if use_standard:
