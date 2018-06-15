@@ -3,8 +3,6 @@
 import numpy as np
 import input_file
 import timeit
-import webbrowser as wb
-import os
 
 
 # Input: Parameters for the logistic cumulative distribution function
@@ -99,9 +97,3 @@ def log_0(np_array):
 # np.divide that handles division by 0
 def divide_0(num, denom):
     return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
-
-
-# returns the sum of the total effort invested in all ideas by time period
-# def get_total_effort(model):
-#     arr = model.total_effort
-#     return sum(arr)

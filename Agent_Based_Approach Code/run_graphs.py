@@ -5,7 +5,6 @@ from random import randint
 import math
 import pandas as pd
 from functions import *
-import matplotlib as mpl
 
 
 # labeling x, y, and title
@@ -76,6 +75,7 @@ def resid_scatterplot(actual, perceived, x_label, y_label, title):
     plt.savefig('web/images/scatterplot_resid')
 
 
+# plots the returns vs cost on a scatterplot
 def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline, vline):
     if linear:
         name = "linear"
@@ -98,6 +98,7 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
     plt.savefig('web/images/two_var_scatterplot_'+name)
 
 
+# plots the young vs old scientist as a 2-var bar graph
 def two_var_bar_graph(data, x_label, y_label, title, linear):
     if linear:
         name = "linear"

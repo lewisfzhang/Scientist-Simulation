@@ -13,6 +13,48 @@ import pandas as pd
 import timeit
 from random import randint
 
+# start runtime
+start = timeit.default_timer()
+
+use_server = False  # toggle between batch files and server (1 run)
+use_slider = False  # only True when use_server is also True
+use_batch = False
+use_standard = True
+draw_graphs = True
+get_data = True
+
+# import variables from input_file
+seed = input_file.seed
+time_periods = input_file.time_periods
+ideas_per_time = input_file.ideas_per_time
+N = input_file.N
+max_investment_lam = input_file.max_investment_lam
+true_sds_lam = input_file.true_sds_lam
+true_means_lam = input_file.true_means_lam
+
+start_effort_lam = input_file.start_effort_lam
+start_effort_decay = input_file.start_effort_decay
+noise_factor = input_file.noise_factor
+k_lam = input_file.k_lam
+sds_lam = input_file.sds_lam
+means_lam = input_file.means_lam
+time_periods_alive = input_file.time_periods_alive
+
+all_params = {"time_periods": time_periods, "ideas_per_time": ideas_per_time, "N": N,
+              "max_investment_lam": max_investment_lam, "true_sds_lam": true_sds_lam, "true_means_lam": true_means_lam,
+              "start_effort_lam": start_effort_lam, "start_effort_decay": start_effort_decay,
+              "noise_factor": noise_factor,
+              "k_lam": k_lam, "sds_lam": sds_lam, "means_lam": means_lam, "time_periods_alive": time_periods_alive,
+              "seed": seed}
+print("Variables:\n", all_params)
+f = open('web/parameters.txt', 'w')
+f.write(str(all_params))
+f.close()
+
+pd.set_option("display.max_colwidth", -1)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
 
 # print model and agent dataframes from simulation model run
 def print_pd_data(model):
@@ -58,48 +100,8 @@ def func_distr(graph_type, arg1, arg2, name1, name2, name3, extra_arg, file_name
     print(graph_type,stop-start,"seconds")
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function
     p = Pool(5)
-
-    # runtime
-    start = timeit.default_timer()
-
-    use_server = False  # toggle between batch files and server (1 run)
-    use_slider = False  # only True when use_server is also True
-    use_batch = False
-    use_standard = True
-    draw_graphs = True
-    get_data = True
-
-    # import variables from input_file
-    seed = input_file.seed
-    time_periods = input_file.time_periods
-    ideas_per_time = input_file.ideas_per_time
-    N = input_file.N
-    max_investment_lam = input_file.max_investment_lam
-    true_sds_lam = input_file.true_sds_lam
-    true_means_lam = input_file.true_means_lam
-
-    start_effort_lam = input_file.start_effort_lam
-    start_effort_decay = input_file.start_effort_decay
-    noise_factor = input_file.noise_factor
-    k_lam = input_file.k_lam
-    sds_lam = input_file.sds_lam
-    means_lam = input_file.means_lam
-    time_periods_alive = input_file.time_periods_alive
-
-    all_params = {"time_periods":time_periods, "ideas_per_time":ideas_per_time, "N":N,
-                "max_investment_lam":max_investment_lam, "true_sds_lam":true_sds_lam,"true_means_lam":true_means_lam,
-                "start_effort_lam":start_effort_lam, "start_effort_decay":start_effort_decay, "noise_factor":noise_factor,
-                "k_lam":k_lam, "sds_lam":sds_lam, "means_lam":means_lam, "time_periods_alive":time_periods_alive, "seed":seed}
-    print("Variables:\n",all_params)
-    f = open('web/parameters.txt', 'w')
-    f.write(str(all_params))
-    f.close()
-
-    pd.set_option("display.max_colwidth", -1)
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_rows', None)
 
     if use_standard:
         print("compiled")

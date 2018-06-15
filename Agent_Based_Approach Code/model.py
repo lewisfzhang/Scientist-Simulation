@@ -33,18 +33,16 @@ class Scientist(Agent):
         # (so each scientist has different cost for each idea)
         self.k = poisson(lam=model.k_lam, size=model.total_ideas)
 
+        # error each scientist has for perceived compared to the true actual returns
         self.noise = model.noise_factor * np.random.normal(0,1,model.total_ideas)
+
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
         self.sds = model.true_sds + self.noise
         self.means = model.true_means + self.noise
-        # Ensures that none of the standard devs are equal to 0
-        # NOTE: May be worth asking Jay if there is a better way to handle this
-
-        self.M = poisson(lam=10000, size=model.total_ideas)
 
         # Create the ideas/returns matrix
-        self.perceived_returns_matrix = create_return_matrix(model.total_ideas, self.sds, self.means, self.M,
+        self.perceived_returns_matrix = create_return_matrix(model.total_ideas, self.sds, self.means, self.model.M,
                                                              model.true_sds_lam, model.true_means_lam)
 
         # Each scientist is assigned a unique ID. We also use unique IDs to determine
@@ -178,12 +176,10 @@ class ScientistModel(Model):
 
         # store variables into Scientist(Agent) objects
         self.start_effort_lam = start_effort_lam
-        # self.start_effort_decay = start_effort_decay
         self.noise_factor = noise_factor
         self.k_lam = k_lam
         self.sds_lam = sds_lam
         self.means_lam = means_lam
-
         self.time_periods_alive = time_periods_alive
         self.time_periods = time_periods
         self.N = N
@@ -199,12 +195,10 @@ class ScientistModel(Model):
         # for first two, non-steady state time periods
         self.total_ideas = ideas_per_time*(time_periods+2)
 
-        # self.max_investment_lam = max_investment_lam
-        # Array: stores the max investment allowed for each idea
-        # self.max_investment = poisson(lam=max_investment_lam, size=self.total_ideas)
-
+        # scalars that store means of the mean and sds for returns
         self.true_sds_lam = true_sds_lam
         self.true_means_lam = true_means_lam
+
         # Array: store parameters for true idea return distribution
         self.true_sds = poisson(lam=self.true_sds_lam, size=self.total_ideas)
         self.true_means = poisson(lam=self.true_means_lam, size=self.total_ideas)
@@ -212,18 +206,20 @@ class ScientistModel(Model):
         # Ensures that none of the standard devs are equal to 0, this is OKAY
         self.true_sds += 1 + self.noise_factor
 
-        self.M = poisson(lam=100, size=self.total_ideas)
+        # M is a scalar that multiples based on each idea
+        self.M = poisson(lam=10000, size=self.total_ideas)
 
+        # creates actual returns matrix
         self.actual_returns_matrix = create_return_matrix(self.total_ideas, self.true_sds, self.true_means, self.M,
                                                           self.true_sds_lam, self.true_means_lam)
 
-        # Array: keeps track of total effort allocated to each idea across all
-        # scientists
+        # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
 
         # format = [young,old]
         self.effort_invested_by_age = [np.zeros(self.total_ideas), np.zeros(self.total_ideas)]
 
+        # data collector (useless) variables
         self.total_perceived_returns = np.zeros(self.total_ideas)
         self.total_actual_returns = np.zeros(self.total_ideas)
         self.total_k = np.zeros(self.total_ideas)
@@ -239,7 +235,7 @@ class ScientistModel(Model):
         self.count_time = 0
         self.steps_taken = 0
 
-
+        # creates Agent objects
         for i in range(1, self.num_scientists + 1):
             a = Scientist(i, self)
             self.schedule.add(a)
@@ -264,6 +260,7 @@ class ScientistModel(Model):
 
         self.count_time += 1
 
+    # for data collecting after model has finished running
     def collect_vars(self):
         self.avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
         # avg_pr = np.round(np.divide(model.total_perceived_returns, model.total_times_invested,
