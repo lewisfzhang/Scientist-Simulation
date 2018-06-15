@@ -1,0 +1,1 @@
+{'time_periods': 10, 'ideas_per_time': 1, 'N': 20, 'max_investment_lam': 50, 'true_sds_lam': 16, 'true_means_lam': 100, 'start_effort_lam': 3, 'start_effort_decay': 0, 'noise_factor': 1, 'k_lam': 1, 'sds_lam': 16, 'means_lam': 100, 'time_periods_alive': 4, 'seed': 423852}

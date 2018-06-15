@@ -49,8 +49,9 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     plt.savefig('web/images/imgraph_' + file_name)
 
 
-# scatterplot
+# scatterplot that plots residuals of returns
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
+# CONDITION: actual array is still in numpy form, hasn't been flattened yet
 # CONDITION: k array should be equal to length of perceived returns
 def resid_scatterplot(actual, perceived, x_label, y_label, title):
     plt.figure(randint(1000,9999))

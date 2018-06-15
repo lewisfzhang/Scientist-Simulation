@@ -18,18 +18,6 @@ def greedy_investing(scientist):
         # has investment costs or 0 if scientist has already paid cost
         scientist.curr_k = no_effort_inv * scientist.k
 
-        # Array (size = model.total_ideas): how much more effort can
-        # be invested in a given idea based on the max investment for
-        # that idea and how much all scientists have already invested
-        # scientist.effort_left_in_idea = scientist.max_investment - scientist.model.total_effort
-
-        # # Change current investment cost to 0 if a given idea has 0
-        # # effort left in it. This prevents the idea from affecting
-        # # the marginal effort
-        # for idx, value in enumerate(scientist.effort_left_in_idea):
-        #     if value == 0:
-        #         scientist.curr_k[idx] = 0
-
         # Scalar: want to pull returns for expending self.increment units
         # of effort, where increment equals the max invest cost across
         # all ideas that haven't been invested in yet plus 1
@@ -68,15 +56,11 @@ def greedy_investing(scientist):
         scientist.eff_inv_in_period_marginal[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
         scientist.eff_inv_in_period_increment[scientist.idea_choice] += scientist.increment
         scientist.avail_effort -= scientist.increment
-        scientist.perceived_returns[scientist.idea_choice] += scientist.max_return  # constant in 2-period lifespan scientists
-        scientist.actual_returns[scientist.idea_choice] += scientist.actual_return  # constant in 2-period lifespan scientists
+        scientist.perceived_returns[scientist.idea_choice] += scientist.max_return
+        scientist.actual_returns[scientist.idea_choice] += scientist.actual_return
 
         scientist.model.total_effort[scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
-        scientist.model.effort_invested_by_age[int(scientist.current_age*2/scientist.model.time_periods_alive)][scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]
-        print("\ncurrent age", scientist.current_age, "   id", scientist.unique_id, "    step", scientist.model.schedule.time, "rel age:", int(scientist.current_age*2/scientist.model.time_periods_alive))
-        print("incr", scientist.increment, "curr_k", scientist.curr_k[scientist.idea_choice], "marginal",scientist.marginal_effort[scientist.idea_choice],"\n\n\n")
-        print("max return",scientist.max_return,"idea_choice",scientist.idea_choice)
-        print("size", len(scientist.model.total_actual_returns))
+        scientist.model.effort_invested_by_age[int(scientist.current_age*2/scientist.model.time_periods_alive)][scientist.idea_choice] += scientist.marginal_effort[scientist.idea_choice]  # half of lifespan defines young vs old
         scientist.model.total_perceived_returns[scientist.idea_choice] += scientist.max_return
         scientist.model.total_actual_returns[scientist.idea_choice] += scientist.actual_return
         scientist.model.total_times_invested[scientist.idea_choice] += 1
@@ -107,10 +91,6 @@ def calc_cum_returns(scientist, model):
     # Array: keeping track of all the returns of investing in each available ideas
     final_perceived_returns_avail_ideas = []
     final_actual_returns_avail_ideas = []
-
-    # Scalar: limit on the amount of effort that a scientist can invest in a single idea
-    # in one time period
-    # invest_cutoff = round(scientist.start_effort * input_file.prop_invest_limit)
 
     # Loops over all the ideas the scientist is allowed to invest in
     # condition checks ideas where scientist.avail_ideas is TRUE

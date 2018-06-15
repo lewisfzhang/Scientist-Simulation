@@ -12,6 +12,7 @@ from run_graphs import *
 import pandas as pd
 import timeit
 from random import randint
+from multiprocessing import Pool
 
 # start runtime
 start = timeit.default_timer()
@@ -22,6 +23,10 @@ use_batch = False
 use_standard = True
 draw_graphs = True
 get_data = True
+use_multiprocessing = False
+
+# number of processors for multiprocessing
+num_processors = input_file.num_processors
 
 # import variables from input_file
 seed = input_file.seed
@@ -101,7 +106,7 @@ def func_distr(graph_type, arg1, arg2, name1, name2, name3, extra_arg, file_name
 
 
 if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function
-    p = Pool(5)
+    p = Pool(num_processors)
 
     if use_standard:
         print("compiled")
@@ -192,54 +197,11 @@ if __name__ == '__main__':  # for multiprocessor package so it knows the true ma
                         ("two_var_scatterplot", model.avg_k, model.total_perceived_returns, "k", "perceived returns",
                          "perceived return vs cost for INVESTED ideas (plot to check for bias)", None, None, False)]
 
-            p.starmap(func_distr, arg_list)
-
-            # # # cost vs perceived return for all available ideas graph
-            # # im_graph(agent_k_avail_ideas_flat, agent_perceived_return_avail_ideas_flat, "k", "perceived returns (1/100)",
-            # #          "cost vs perceived return for all available ideas across all scientists,time periods (unbiased)", False)
-            # #
-            # # # cost vs actual return for all available ideas graph
-            # # im_graph(agent_k_avail_ideas_flat, agent_actual_return_avail_ideas_flat, "k", "actual returns (1/100)",
-            # #          "cost vs actual return for all available ideas across all scientists,time periods (unbiased)", False)
-            # #
-            # # # scatterplot of residuals for all available ideas graph
-            # # # format: scatterplot(actual,perceived) | resid = actual-perceived
-            # # # unflattened for time period calculation in scatterplot
-            # # resid_scatterplot(agent_actual_return_avail_ideas,agent_perceived_return_avail_ideas_flat,
-            # #             "TP","Residual","Residuals for all available ideas (actual-perceived, 1/100)")
-            #
-            # # cost vs perceived return for all INVESTED ideas graph
-            # im_graph(agent_k_invested_ideas_flat, agent_perceived_return_invested_ideas_flat, "k", "perceived returns (1/100)",
-            #          "cost vs perceived return for all INVESTED ideas across all scientists,time periods (biased)", False)
-            #
-            # # cost vs actual return for all INVESTED ideas graph
-            # im_graph(agent_k_invested_ideas_flat, agent_actual_return_invested_ideas_flat, "k", "actual returns (1/100)",
-            #          "cost vs actual return for all INVESTED ideas across all scientists,time periods (biased)", False)
-            #
-            # print("imgraph finish")
-            # stop_run(start)
-            #
-            # # scatterplot of residuals for all INVESTED ideas graph
-            # resid_scatterplot(agent_actual_return_invested_ideas, agent_perceived_return_invested_ideas_flat,
-            #             "TP", "Residual", "Residuals for all INVESTED ideas (actual-perceived, 1/100)")
-            #
-            # print("resid graph finish")
-            # stop_run(start)
-            #
-            # # Marginal Effort vs Idea (Young vs Old)
-            # two_var_bar_graph(model.effort_invested_by_age, "Idea", "Marginal Effort Invested",
-            #                   "Marginal Effort Invested By Young and Old Scientists For All Ideas")
-            #
-            # print("two var finish")
-            # stop_run(start)
-            #
-            # # scatterplot of low/high K vs low/high PR for invested ideas
-            # # mean_k = sum(agent_k_avail_ideas_flat)/len(agent_k_avail_ideas_flat)
-            # # divide sign (numerator and divisor too long), exclude 0's since they probably are never invested in model
-            # # mean_pr = sum(agent_perceived_return_avail_ideas_flat) / \
-            # #           (len(agent_perceived_return_avail_ideas_flat)-agent_perceived_return_avail_ideas_flat.count(0))
-            # two_var_scatterplot(avg_k, model.total_perceived_returns, "k", "perceived returns (1/100)",
-            #                     "cost vs perceived return for INVESTED ideas (plot to check for bias)", start)  #, mean_pr, mean_k)
+            if use_multiprocessing:
+                p.starmap(func_distr, arg_list)
+            else:
+                for i in range(0, len(arg_list)):
+                    func_distr(*arg_list[i])
 
             # plt.show()
 

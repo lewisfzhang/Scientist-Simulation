@@ -5,6 +5,7 @@ from random import randint
 # to reproduce same data, use CONSTANT seed value
 # for randomization best practice
 seed = randint(100000, 999999)
+num_processors = 5
 
 # model variables
 time_periods = 10  # stable time periods

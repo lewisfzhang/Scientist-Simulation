@@ -6,6 +6,7 @@ from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
 from optimize1 import *
 import math
+import store
 
 
 # This file has 3 parts
@@ -19,21 +20,16 @@ class Scientist(Agent):
         # he or she is alive (not accounting for start effort decay)
         self.start_effort = poisson(lam=model.start_effort_lam)
 
-        # Scalar: rate of decay for start_effort of old scientists; currently
-        # set at 1 but can be adjusted as necessary
-        # self.start_effort_decay = model.start_effort_decay
-
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
         self.avail_effort = self.start_effort
 
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
-        # additional investment
-        # (so each scientist has different cost for each idea)
+        # additional investment (so each scientist has different cost for each idea)
         self.k = poisson(lam=model.k_lam, size=model.total_ideas)
 
-        # error each scientist has for perceived compared to the true actual returns
+        # SCALAR: error each scientist has for perceived compared to the true actual returns
         self.noise = model.noise_factor * np.random.normal(0,1,model.total_ideas)
 
         # Arrays: parameters determining perceived returns for ideas, which are
@@ -41,13 +37,12 @@ class Scientist(Agent):
         self.sds = model.true_sds + self.noise
         self.means = model.true_means + self.noise
 
-        # Create the ideas/returns matrix
+        # ARRAY: Create the ideas/returns matrix
         self.perceived_returns_matrix = create_return_matrix(model.total_ideas, self.sds, self.means, self.model.M,
                                                              model.true_sds_lam, model.true_means_lam)
 
-        # Each scientist is assigned a unique ID. We also use unique IDs to determine
-        # scientists' ages and thus which scientists are alive in a given time period
-        # and which ideas they can invest in
+        # SCALAR: Each scientist is assigned a unique ID. We also use unique IDs to determine
+        # scientists' ages and thus which scientists are alive in a given time period and which ideas they can invest in
         self.birth_order = math.ceil(2*unique_id/model.N)
 
         # Array: keeps track of how much effort a scientist has invested in each idea
@@ -63,16 +58,10 @@ class Scientist(Agent):
         # a scientist's level of investment in that idea
         self.perceived_returns = np.zeros(model.total_ideas)
         self.actual_returns = np.zeros(model.total_ideas)
-        # Array: creates a copy of the max investment array from model class;
-        # this contains the max amount of effort that can be invested in each
-        # idea across all scientists
-        # NOTE: this doesn't include effort paid to meet investment costs
-        # self.max_investment = model.max_investment.copy()
         
         # Array: keeps track of effort invested ONLY during the current time period
         # NOTE: resets to 0 after each time period and DOES include investment costs
         self.eff_inv_in_period_increment = np.zeros(model.total_ideas)
-
         self.eff_inv_in_period_marginal = np.zeros(model.total_ideas)
 
         # Allows scientists to access model variables
@@ -80,15 +69,14 @@ class Scientist(Agent):
 
         # Array: keeping track of all the returns of investing in each available and invested ideas
         # NOTE: the K is based on initial learning cost, not current cost
-        # self.final_perceived_returns_avail_ideas = []
-        # self.final_k_avail_ideas = []
-        # self.final_actual_returns_avail_ideas = []
         self.final_perceived_returns_invested_ideas = []
         self.final_k_invested_ideas = []
         self.final_actual_returns_invested_ideas = []
 
+        # instantiate tuple data collecting variables the first time the agent object is created
         self.update()
 
+    # converts mutable numpy arrays into easily accessed tuples
     def update(self):
         # conversions to tuple so dataframe updates (not sure why this happens with numpy arrays)
         self.model.total_effort_tuple = tuple(self.model.total_effort)
@@ -117,20 +105,6 @@ class Scientist(Agent):
 
         # scientist is alive
         if 0 <= self.current_age < self.model.time_periods_alive and self.model.schedule.time >= 2:
-            # Determine start/available effort based on the rate of decay for old scientists
-            # Currently, start_effort_decay is set to 1, meaning there is no decay for
-            # old scientists
-            #
-            # first old scientist didn't invest when he was young (CAN CHANGE IF NECESSARY)
-            # remember that decay * current age shouldn't be greater than start_effort!!!
-            #
-            # not implementing decay until later...
-            # if self.model.schedule.time != 2 and self.current_age > 0:
-            #     self.start_effort = self.start_effort - self.start_effort_decay * self.current_age
-            #     self.avail_effort = self.start_effort
-
-            # reset effort in new time period
-
             # reset effort in new time period
             self.eff_inv_in_period_increment[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
@@ -156,6 +130,8 @@ class Scientist(Agent):
             self.perceived_returns[:] = 0
             self.actual_returns[:] = 0
 
+        # data collecting conversions (into immutable tuples) before running data collector on agent and model variables
+        # NOTE: could also go in the model step? not exactly sure...
         self.model.steps_taken += 1
         if self.model.steps_taken == self.model.num_scientists:
             self.model.steps_taken = 0
@@ -176,16 +152,21 @@ class ScientistModel(Model):
 
         # store variables into Scientist(Agent) objects
         self.start_effort_lam = start_effort_lam
-        self.noise_factor = noise_factor
         self.k_lam = k_lam
         self.sds_lam = sds_lam
         self.means_lam = means_lam
+
+        # the number of TP a scientist can actively invest in ideas
         self.time_periods_alive = time_periods_alive
+
+        # number of stable time_periods in the model
+        # NOTE: total time periods is time_periods + 2 (first two are unstable)
         self.time_periods = time_periods
+
+        # scalar: number of scientists per time period
         self.N = N
 
         # Scalar: indicates the total number of scientists in the model
-        # N is the number of scientists per time period
         self.num_scientists = int(N/2)*(time_periods + 1)
 
         # Scalar: number of ideas unique to each time period
@@ -195,18 +176,22 @@ class ScientistModel(Model):
         # for first two, non-steady state time periods
         self.total_ideas = ideas_per_time*(time_periods+2)
 
-        # scalars that store means of the mean and sds for returns
+        # SCALAR: store means of the mean and sds for returns
         self.true_sds_lam = true_sds_lam
         self.true_means_lam = true_means_lam
 
         # Array: store parameters for true idea return distribution
         self.true_sds = poisson(lam=self.true_sds_lam, size=self.total_ideas)
         self.true_means = poisson(lam=self.true_means_lam, size=self.total_ideas)
-        
+
+        # the amount of variance from the actual perceived return
+        self.noise_factor = noise_factor
+
         # Ensures that none of the standard devs are equal to 0, this is OKAY
         self.true_sds += 1 + self.noise_factor
 
         # M is a scalar that multiples based on each idea
+        # not sure if this is redundant since we already have random poisson values for true_means and true_sds
         self.M = poisson(lam=10000, size=self.total_ideas)
 
         # creates actual returns matrix
@@ -216,10 +201,11 @@ class ScientistModel(Model):
         # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
 
+        # data collector variable
         # format = [young,old]
         self.effort_invested_by_age = [np.zeros(self.total_ideas), np.zeros(self.total_ideas)]
 
-        # data collector (useless) variables
+        # data collector variables that have no effect on results of model
         self.total_perceived_returns = np.zeros(self.total_ideas)
         self.total_actual_returns = np.zeros(self.total_ideas)
         self.total_k = np.zeros(self.total_ideas)
@@ -231,8 +217,7 @@ class ScientistModel(Model):
         # in which young and old scientists get to invest in ideas is random)
         self.schedule = RandomActivation(self)
 
-        # counts number of times/steps
-        self.count_time = 0
+        # counts number of steps taken in current TP, used for Agent class
         self.steps_taken = 0
 
         # creates Agent objects
@@ -252,13 +237,12 @@ class ScientistModel(Model):
                              "Actual returns": "actual_returns_tuple"})
 
     def step(self):
-        # once count_time exceeds total time periods, program does nothing to prevent OutofBounds
-        if self.count_time < self.time_periods+2:
-            # Call data collector to keep track of variables at each model step
+        # runs through all stable time periods
+        if self.schedule.time < self.time_periods+2:
+            # iterates through all scientists in the model
             self.schedule.step()
+            # Call data collector to keep track of variables at each model step
             self.datacollector.collect(self)
-
-        self.count_time += 1
 
     # for data collecting after model has finished running
     def collect_vars(self):
