@@ -7,6 +7,8 @@ import pandas as pd
 from functions import *
 import matplotlib as mpl
 
+
+# labeling x, y, and title
 def labels(x_label, y_label, title):
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -16,28 +18,37 @@ def labels(x_label, y_label, title):
 # 2-var image graph
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
-def im_graph(agent1, agent2, x_label, y_label, title, withZero):
+def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linear):
+    if linear:
+        file_name += '_linear'
+    else:
+        # agent1 = log_0(np.asarray(agent1))
+        agent2 = log_0(np.asarray(agent2))
+        file_name += '_exp'
+        y_label = "Log of " + y_label
+        title = "Log of " + title
     high1 = math.ceil(max(agent1))
     high2 = math.ceil(max(agent2))
-    low1 = int(min(agent1))
-    low2 = int(min(agent2))
+    low1 = min(agent1)
+    low2 = min(agent2)
     num_cells = len(agent1)  # should be equal to length of perceived returns
-    fig, ax = plt.subplots(figsize=(high2-low2+1, high1-low1+1))  # swapping x and y has no effect on scatterplot
-    im_graph = np.zeros((high2-low2+1, high1-low1+1))
+    fig, ax = plt.subplots(figsize=(high2-int(low2)+1, high1-int(low1)+1))  # swapping x and y has no effect on scatterplot
+    im_graph = np.zeros((high2-int(low2)+1, high1-int(low1)+1))
     for i in range(num_cells):
         if not withZero and agent2[i] == 0:
             continue
-        x = int(agent1[i]-min(agent1))  # int(round(agent_k[i],0))
-        y = int(agent2[i]-min(agent2))  # int(round(agent_perceived_return[i],0))
-        im_graph[high2-low2-y][x] += 1
-    plt.imshow(im_graph, cmap=plt.cm.Reds, interpolation='nearest', extent=[low1, high1, low2, high2])
+        x = int(agent1[i] - low1)
+        y = int(agent2[i] - low2)
+        im_graph[high2-int(low2)-y][x] += 1
+    plt.imshow(im_graph, cmap=plt.cm.Reds, interpolation='nearest', extent=[int(low1), high1, int(low2), high2])
     plt.colorbar()
     ax.set_aspect((high1-low1)/(high2-low2))
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
     fig.set_size_inches(1300.0 / float(DPI), 1220.0 / float(DPI))
-    plt.savefig('web/images/imgraph' + str(page_counter()))
+    plt.savefig('web/images/imgraph_' + file_name)
+
 
 # scatterplot
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
@@ -62,30 +73,46 @@ def resid_scatterplot(actual, perceived, x_label, y_label, title):
     fig = plt.gcf()
     DPI = fig.get_dpi()
     fig.set_size_inches((2000.0+10*step) / float(DPI), 2000.0 / float(DPI))
-    plt.savefig('web/images/scatterplot' + str(page_counter()))
+    plt.savefig('web/images/scatterplot_resid')
 
 
-def two_var_scatterplot(varx, vary, x_label, y_label, title, hline, vline):
+def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline, vline):
+    if linear:
+        name = "linear"
+        step_y = 10
+    else:
+        name = "exp"
+        y_label = "Log of " + y_label
+        title = "Log of " + title
+        vary = log_0(vary)
+        step_y = 1
     plt.figure(randint(1000,9999))
-    plt.yticks(np.arange(0, max(vary)+1, 1))
-    plt.xticks(np.arange(0, max(varx)+1, 1))
+    max_y = max(vary)
     plt.scatter(varx, vary)
-    plt.axhline(hline, color='black')
-    plt.axvline(vline, color='black')
     labels(x_label, y_label, title)
+    plt.yticks(np.arange(0, max_y+1, step_y))
+    plt.xticks(np.arange(0, max(varx)+1, 1))
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches(2000.0 / float(DPI), (2000.0+10*max(vary)) / float(DPI))
-    plt.savefig('web/images/scatterplot' + str(page_counter()))
+    fig.set_size_inches(2000.0 / float(DPI), (2000.0+max_y) / float(DPI))
+    plt.savefig('web/images/two_var_scatterplot_'+name)
 
 
-def two_var_bar_graph(data, x_label, y_label, title):
-    dict_data = {"Idea":range(0,len(data[0])),"Young":data[0],"Old":data[1]}
+def two_var_bar_graph(data, x_label, y_label, title, linear):
+    if linear:
+        name = "linear"
+    else:
+        name = "exp"
+        y_label = "Log of " + y_label
+        title = "Log of " + title
+        data = [log_0(data[0]), log_0(data[1])]
+    dict_data = {"Idea": range(0, len(data[0])), "Young": data[0], "Old": data[1]}
     # plt.figure(randint(1000,9999))
     df = pd.DataFrame.from_dict(dict_data)
     df.plot.bar(x="Idea", y=["Young", "Old"])
     fig = plt.gcf()
     DPI = fig.get_dpi()
     fig.set_size_inches((2000.0+10*len(data[0])) / float(DPI), 2000.0 / float(DPI))
-    plt.savefig('web/images/2-var_bar_graph' + str(page_counter()))
+    labels(x_label, y_label, title)
+    plt.savefig('web/images/2-var_bar_graph_young_old_'+name)
 

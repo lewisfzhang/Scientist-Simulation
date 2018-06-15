@@ -27,13 +27,13 @@ def rounded_tuple(array):
 # A matrix that is has dimension n x m where n = num_ideas and m = max_of_max_inv
 # where each cell (i,j) contains the return based on the logistic cumulative
 # distribution function of the i-th idea and the j-th extra unit of effort
-def create_return_matrix(num_ideas, max_of_max_inv, sds, means):
-    # Creates array of the effort units to calculate returns for
-    x = np.arange(max_of_max_inv + 1)
+def create_return_matrix(num_ideas, sds, means, M, sds_lam, means_lam):
+    # 4 std dev outside normal curve basically guarentees all values
+    x = np.arange(means_lam*2+1)
     returns_list = []
     for i in range(num_ideas):
         # Calculates the return for an idea for all amounts of effort units
-        returns = logistic_cdf(x, loc=means[i], scale=sds[i])
+        returns = M[i] * logistic_cdf(x, loc=means[i], scale=sds[i])
         # Stacks arrays horizontally
         to_subt_temp = np.hstack((0, returns[:-1]))
         # Calculates return per unit of effort
@@ -89,6 +89,16 @@ def stop_run(start):
     # end runtime
     stop = timeit.default_timer()
     print("Elapsed runtime: ", stop - start, "seconds")
+
+
+# np.log() that handles 0
+def log_0(np_array):
+    return np.log(np_array, out=np.zeros(len(np_array)), where=np_array > 2**-10)
+
+
+# np.divide that handles division by 0
+def divide_0(num, denom):
+    return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
 
 
 # returns the sum of the total effort invested in all ideas by time period
