@@ -102,9 +102,9 @@ def divide_0(num, denom):
 
 
 def png_to_html():
-    image_list = glob.glob('web\images\*.png')
+    image_list = glob.glob('web/images/*.png')
     html = ''
     for i in range(len(image_list)):
-        html += '<img src="'+str(os.getcwd())+'\\'+str(image_list[i])+'" />'
+        html += '<img src="'+str(os.getcwd())+'/'+str(image_list[i])+'" />'
     with open("web/pages/all_images.html", "w") as file:
         file.write(html)
