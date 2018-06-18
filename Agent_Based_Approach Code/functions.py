@@ -85,10 +85,11 @@ def flatten_list(list_name):
 
 
 # helper method for calculating runtime
-def stop_run(start):
+def stop_run():
     # end runtime
     stop = timeit.default_timer()
-    print("Elapsed runtime: ", stop - start, "seconds")
+    print("Elapsed runtime: ", stop - input_file.start, "seconds")
+    input_file.start = stop
 
 
 # np.log() that handles 0 (and very small values that will return infinity)

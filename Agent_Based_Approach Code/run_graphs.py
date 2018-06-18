@@ -5,7 +5,12 @@ from random import randint
 import math
 import pandas as pd
 from functions import *
+import matplotlib as mpl
 
+
+def settings():
+    mpl.rcParams['xtick.labelsize'] = 5
+    mpl.rcParams['ytick.labelsize'] = 5
 
 # labeling x, y, and title
 def labels(x_label, y_label, title):
@@ -18,6 +23,7 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linear):
+    settings()
     if linear:
         file_name += '_linear'
     else:
@@ -32,7 +38,7 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     low2 = min(agent2)
     num_cells = len(agent1)  # should be equal to length of perceived returns
     fig, ax = plt.subplots(figsize=(high2-int(low2)+1, high1-int(low1)+1))  # swapping x and y has no effect on scatterplot
-    im_graph = np.zeros((high2-int(low2)+1, high1-int(low1)+1))
+    im_graph = np.zeros(high2-int(low2)+1, high1-int(low1)+1)
     for i in range(num_cells):
         if not withZero and agent2[i] == 0:
             continue
@@ -47,6 +53,8 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     DPI = fig.get_dpi()
     fig.set_size_inches(1300.0 / float(DPI), 1220.0 / float(DPI))
     plt.savefig('web/images/imgraph_' + file_name)
+    plt.close()
+    del agent1, agent2, fig, ax, im_graph
 
 
 # scatterplot that plots residuals of returns
@@ -74,6 +82,8 @@ def resid_scatterplot(actual, perceived, x_label, y_label, title):
     DPI = fig.get_dpi()
     fig.set_size_inches((2000.0+30*len(actual)) / float(DPI), 2000.0 / float(DPI))
     plt.savefig('web/images/scatterplot_resid')
+    plt.close()
+    del actual, perceived, actual_numpy, perceived_numpy, resid, agent_id, fig
 
 
 # plots the returns vs cost on a scatterplot
@@ -97,6 +107,8 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
     DPI = fig.get_dpi()
     fig.set_size_inches(2000.0 / float(DPI), (2000.0+max_y) / float(DPI))
     plt.savefig('web/images/two_var_scatterplot_'+name)
+    plt.close()
+    del varx, vary, fig
 
 
 # plots the young vs old scientist as a 2-var bar graph
@@ -109,12 +121,13 @@ def two_var_bar_graph(data, x_label, y_label, title, linear):
         title = "Log of " + title
         data = [log_0(data[0]), log_0(data[1])]
     dict_data = {"Idea": range(0, len(data[0])), "Young": data[0], "Old": data[1]}
-    # plt.figure(randint(1000,9999))
     df = pd.DataFrame.from_dict(dict_data)
+    df.plot(kind='bar', stacked=True, width=1)
     df.plot.bar(x="Idea", y=["Young", "Old"])
     fig = plt.gcf()
     DPI = fig.get_dpi()
-    fig.set_size_inches((2000.0+10*len(data[0])) / float(DPI), 2000.0 / float(DPI))
+    fig.set_size_inches((2000+10*len(data[0])) / float(DPI), 2000.0 / float(DPI))
     labels(x_label, y_label, title)
     plt.savefig('web/images/2-var_bar_graph_young_old_'+name)
-
+    plt.close()
+    del data, fig, dict_data, df

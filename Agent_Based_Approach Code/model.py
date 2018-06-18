@@ -130,14 +130,7 @@ class Scientist(Agent):
             self.perceived_returns[:] = 0
             self.actual_returns[:] = 0
 
-        # data collecting conversions (into immutable tuples) before running data collector on agent and model variables
-        # NOTE: could also go in the model step? not exactly sure...
-        self.model.steps_taken += 1
-        if self.model.steps_taken == self.model.num_scientists:
-            self.model.steps_taken = 0
-            self.update()
-            if self.model.schedule.time == self.model.time_periods+1:
-                self.model.collect_vars()
+        self.update()
 
 
 class ScientistModel(Model):
@@ -214,6 +207,17 @@ class ScientistModel(Model):
         self.total_k = np.zeros(self.total_ideas)
         self.total_times_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested = np.zeros(self.total_ideas)
+        self.avg_k = np.zeros(self.total_ideas)
+        self.prop_invested = np.zeros(self.total_ideas)
+
+        self.agent_k_invested_ideas = []
+        self.agent_perceived_return_invested_ideas = []
+        self.agent_actual_return_invested_ideas = []
+
+        # flattening numpy arrays
+        self.agent_k_invested_ideas_flat = []
+        self.agent_perceived_return_invested_ideas_flat = []
+        self.agent_actual_return_invested_ideas_flat = []
 
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
@@ -246,6 +250,8 @@ class ScientistModel(Model):
             self.schedule.step()
             # Call data collector to keep track of variables at each model step
             self.datacollector.collect(self)
+            if self.schedule.time == self.time_periods + 2:  # should be +1 but since we pass the step function it's actually +2
+                self.collect_vars()
 
     # for data collecting after model has finished running
     def collect_vars(self):
@@ -253,3 +259,13 @@ class ScientistModel(Model):
         self.total_perceived_returns = np.round(self.total_perceived_returns, 2)
         self.total_actual_returns = np.round(self.total_actual_returns, 2)
         self.prop_invested = self.total_effort / (2*self.true_means_lam)
+
+        # collect data from individual variables for plotting
+        self.agent_k_invested_ideas = [a.final_k_invested_ideas for a in self.schedule.agents]
+        self.agent_perceived_return_invested_ideas = [a.final_perceived_returns_invested_ideas for a in self.schedule.agents]
+        self.agent_actual_return_invested_ideas = [a.final_actual_returns_invested_ideas for a in self.schedule.agents]
+
+        # flattening numpy arrays
+        self.agent_k_invested_ideas_flat = flatten_list(self.agent_k_invested_ideas)
+        self.agent_perceived_return_invested_ideas_flat = flatten_list(self.agent_perceived_return_invested_ideas)
+        self.agent_actual_return_invested_ideas_flat = flatten_list(self.agent_actual_return_invested_ideas)
