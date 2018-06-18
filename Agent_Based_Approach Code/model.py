@@ -6,7 +6,6 @@ from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
 from optimize1 import *
 import math
-import store
 
 
 # This file has 3 parts

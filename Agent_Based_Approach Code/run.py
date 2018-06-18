@@ -7,7 +7,7 @@ import numpy as np
 from run_graphs import *
 import pandas as pd
 import timeit
-from multiprocessing import Pool
+from multiprocessing import *
 import gc
 
 
@@ -68,6 +68,8 @@ def main():
     # initiate multiprocessing with 'num_processors' threads
     # NOTE: increasing the number of processors does not always increase speed of program. in fact, it may actually
     # slow down the program due to the additional overhead needed for process switching
+    # NOTE: fork doesn't work on Mac, spawn is best because it works on Mac and is default on Windows
+    set_start_method('spawn')
     p = Pool(processes=num_processors)
 
     # printing parameters into console screen

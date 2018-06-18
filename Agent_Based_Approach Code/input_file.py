@@ -5,7 +5,12 @@ from random import randint
 # to reproduce same data, use CONSTANT seed value
 # for randomization best practice
 seed = randint(100000, 999999)
-num_processors = 5
+
+# Optimal processors by system
+# Mac w/ 4 cores --> 3
+# Windows w/ 8 cores --> 3
+# Windows w/ 24 cores --> 8
+num_processors = 3
 
 # model variables
 time_periods = 10  # stable time periods

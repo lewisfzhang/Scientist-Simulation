@@ -38,7 +38,7 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     low2 = min(agent2)
     num_cells = len(agent1)  # should be equal to length of perceived returns
     fig, ax = plt.subplots(figsize=(high2-int(low2)+1, high1-int(low1)+1))  # swapping x and y has no effect on scatterplot
-    im_graph = np.zeros(high2-int(low2)+1, high1-int(low1)+1)
+    im_graph = np.zeros((high2-int(low2)+1, high1-int(low1)+1))
     for i in range(num_cells):
         if not withZero and agent2[i] == 0:
             continue
