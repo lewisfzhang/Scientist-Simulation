@@ -18,7 +18,6 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linear):
-    print("start",agent1, agent2, x_label, y_label, title, withZero, file_name, linear)
     if linear:
         file_name += '_linear'
     else:
@@ -48,7 +47,6 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     DPI = fig.get_dpi()
     fig.set_size_inches(1300.0 / float(DPI), 1220.0 / float(DPI))
     plt.savefig('web/images/imgraph_' + file_name)
-    print("done")
 
 
 # scatterplot that plots residuals of returns
