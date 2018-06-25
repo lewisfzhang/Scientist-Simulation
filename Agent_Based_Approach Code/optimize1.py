@@ -1,4 +1,4 @@
-# optimize1.py
+# optimize.py
 
 import numpy as np
 from functions import *

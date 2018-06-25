@@ -1,27 +1,52 @@
 from mesa import Agent, Model
-from mesa.time import RandomActivation
-from mesa.datacollection import DataCollector
+from mesa.time import BaseScheduler
 import numpy as np
 from numpy.random import poisson
 from functions import *  # anything not directly tied to Mesa objects
-from optimize1 import *
+from optimize import *
 import math
+import timeit
+import pandas as pd
+from multiprocessing import *
+import os
+import input_file
+import pickle
+from collections import Counter
+from store import *
 
+
+# utility = important, don't run GC on it
+# void = not important, can run GC
 
 # This file has 3 parts
 # 1. Agent class from Mesa
 # 2. Model class from Mesa
 class Scientist(Agent):
+    # scalars initialized first, then arrays
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        
+
+        # Allows scientists to access model variables
+        self.model = model
+
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
-        self.start_effort = poisson(lam=model.start_effort_lam)
+        self.start_effort = poisson(lam=input_file.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
-        self.avail_effort = self.start_effort
+        self.avail_effort = self.start_effort  # utility
+
+        # the specific agent id unique to him/herself
+        self.unique_id = unique_id  # utility
+
+        # SCALAR: Each scientist is assigned a unique ID. We also use unique IDs to determine
+        # scientists' ages and thus which scientists are alive in a given time period and which ideas they can invest in
+        self.birth_order = math.ceil(unique_id / input_file.N)  # utility
+
+        # create specific tmp directory for agent
+        self.directory = 'tmp/agent_' + str(self.unique_id) + '/'
+        create_directory(self.directory)
 
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
@@ -29,73 +54,47 @@ class Scientist(Agent):
         #
         # normal distribution is the "noise" associated with learning an idea where 99% of
         # all true k for each scientist will be within 50% of the true k based on each idea
-        self.k = model.k * (np.random.normal(6, 1, model.total_ideas)/6)
+        self.k = self.model.k * (np.random.normal(6, 1, self.model.total_ideas)/6)  # utility
+
+        # Array: has length equal to the total number of ideas in the model,
+        # with 0s, 1s, 2s, etc. that indicate which time periods ideas are from
+        self.idea_periods = np.arange(self.model.total_ideas) // input_file.ideas_per_time  # utility
 
         # ARRAY: error each scientist has for perceived compared to the true actual returns
-        self.noise = model.noise_factor * np.random.normal(0, 1, model.total_ideas)
+        self.noise = input_file.noise_factor * np.random.normal(0, 1, model.total_ideas)  # void
 
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
-        self.sds = model.true_sds + self.noise
-        self.means = model.true_means + self.noise
+        self.sds = self.model.true_sds + self.noise  # void
+        self.means = self.model.true_means + self.noise  # void
 
         # ARRAY: Create the ideas/returns matrix
-        self.perceived_returns_matrix = create_return_matrix(model.total_ideas, self.sds, self.means, self.model.M,
-                                                             model.true_sds_lam, model.true_means_lam)
+        # NOTE: logistic_cdf is not ranodm, always generates same curve based on means and sds
+        self.perceived_returns_matrix = create_return_matrix(self.model.total_ideas, self.sds, self.means, self.model.M,
+                                                             input_file.true_sds_lam, input_file.true_means_lam)  # utility
 
-        # SCALAR: Each scientist is assigned a unique ID. We also use unique IDs to determine
-        # scientists' ages and thus which scientists are alive in a given time period and which ideas they can invest in
-        self.birth_order = math.ceil(2*unique_id/model.N)
+        # dereferencing 'void' variables
+        self.noise = None
+        self.sds = None
+        self.means = None
 
         # Array: keeps track of how much effort a scientist has invested in each idea
         # NOTE: does NOT include effort paid for ideas' investment costs
-        self.effort_invested_by_scientist = np.zeros(model.total_ideas)
-        
-        # Array: keeps track of which ideas can be worked on in a given time period
-        # for a given scientist's age. This array will have 1s for ideas that
-        # are accessible to a scientist and 0s for all other ideas
-        self.avail_ideas = np.zeros(model.total_ideas)
-        
+        self.effort_invested_by_scientist = np.zeros(self.model.total_ideas)  # utility
+
         # Array: keeps track of total, perceived returns for each idea given
         # a scientist's level of investment in that idea
-        self.perceived_returns = np.zeros(model.total_ideas)
-        self.actual_returns = np.zeros(model.total_ideas)
-        
+        self.perceived_returns = np.zeros(self.model.total_ideas)  # utility
+        self.actual_returns = np.zeros(self.model.total_ideas)  # utility
+
         # Array: keeps track of effort invested ONLY during the current time period
         # NOTE: resets to 0 after each time period and DOES include investment costs
-        self.eff_inv_in_period_increment = np.zeros(model.total_ideas)
-        self.eff_inv_in_period_marginal = np.zeros(model.total_ideas)
+        self.eff_inv_in_period_increment = np.zeros(self.model.total_ideas)  # utility
+        self.eff_inv_in_period_marginal = np.zeros(self.model.total_ideas)  # utility
 
-        # Allows scientists to access model variables
-        self.model = model
-
-        # Array: keeping track of all the returns of investing in each available and invested ideas
-        # NOTE: the K is based on initial learning cost, not current cost
-        self.final_perceived_returns_invested_ideas = []
-        self.final_k_invested_ideas = []
-        self.final_actual_returns_invested_ideas = []
-
-        # instantiate tuple data collecting variables the first time the agent object is created
-        self.update()
-
-    # converts mutable numpy arrays into easily accessed tuples
-    def update(self):
-        # conversions to tuple so dataframe updates (not sure why this happens with numpy arrays)
-        self.model.total_effort_tuple = tuple(self.model.total_effort)
-        self.effort_invested_by_scientist_tuple = tuple(self.effort_invested_by_scientist)
-        self.eff_inv_in_period_increment_tuple = tuple(self.eff_inv_in_period_increment)
-        self.eff_inv_in_period_marginal_tuple = tuple(self.eff_inv_in_period_marginal)
-        self.perceived_returns_tuple = rounded_tuple(self.perceived_returns)
-        self.actual_returns_tuple = rounded_tuple(self.actual_returns)
-        self.final_perceived_returns_invested_ideas_tuple = rounded_tuple(self.final_perceived_returns_invested_ideas)
-        self.final_k_invested_ideas_tuple = rounded_tuple(self.final_k_invested_ideas)
-        self.final_actual_returns_invested_ideas_tuple = rounded_tuple(self.final_actual_returns_invested_ideas)
-
-        # list of numpy into tuple of tuple
-        temp_list = []
-        for i in range(len(self.model.effort_invested_by_age)):
-            temp_list.append(tuple(self.model.effort_invested_by_age[i]))
-        self.model.effort_invested_by_age_tuple = tuple(temp_list)
+        store_agent_arrays(self)
+        store_agent_arrays_data(self)
+        store_agent_arrays_tp(self)
 
     def step(self):
         # Check a scientist's age in the current time period
@@ -103,95 +102,132 @@ class Scientist(Agent):
         self.current_age = (self.model.schedule.time - self.birth_order)
 
         # scientist is alive
-        if 0 <= self.current_age < self.model.time_periods_alive and self.model.schedule.time >= 2:
+        if 0 <= self.current_age < input_file.time_periods_alive and self.model.schedule.time >= 2:
+            # pull all variables out of stored files
+            unpack_agent_arrays(self)
+            unpack_agent_arrays_tp(self)
+            unpack_model_arrays(self.model)
+            unpack_model_arrays_data(self.model)
+            unpack_model_lists(self.model)
+
             # reset effort in new time period
             self.eff_inv_in_period_increment[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
-
-            # Array: has length equal to the total number of ideas in the model,
-            # with 0s, 1s, 2s, etc. that indicate which time periods ideas are from
-            idea_periods = np.arange(self.model.total_ideas) // self.model.ideas_per_time
 
             # reset effort
             self.avail_effort = self.start_effort
 
-            # unlimited access to past ideas, too lazy to think of another way to implement double negative
-            # what this statement really wants is idea_periods <= schedule.time
-            self.avail_ideas = np.logical_not(idea_periods > self.model.schedule.time)
+            # Array: keeps track of which ideas can be worked on in a given time period
+            # for a given scientist's age. This array will have 1s for ideas that
+            # are accessible to a scientist and 0s for all other ideas
+            self.avail_ideas = np.logical_not(self.model.idea_periods > self.model.schedule.time)
+
             greedy_investing(self)
 
-        elif self.current_age == self.model.time_periods_alive:
-            # reset effort in new time period
-            self.eff_inv_in_period_increment[:] = 0
-            self.eff_inv_in_period_marginal[:] = 0
+            self.avail_ideas = None
+            store_agent_arrays(self)
+            store_agent_arrays_tp(self)
+            store_model_arrays(self.model)
+            store_model_arrays_data(self.model)
+            store_model_lists(self.model)
 
-            # reset returns because scientists is not active
-            self.perceived_returns[:] = 0
-            self.actual_returns[:] = 0
+        else:
+            unpack_agent_arrays_data(self)
+            unpack_agent_arrays_tp(self)
 
-        self.update()
+            if self.current_age == input_file.time_periods_alive:
+                # reset effort in new time period
+                self.eff_inv_in_period_increment[:] = 0
+                self.eff_inv_in_period_marginal[:] = 0
+
+                # reset returns because scientists is not active
+                self.perceived_returns[:] = 0
+                self.actual_returns[:] = 0
+
+            # updating 0's to agent_df
+            # comment out to get more concise agent df that only displays active scientists in a TP
+            # self.update_agent_df()
+
+            store_agent_arrays_tp(self)
+            store_agent_arrays_data(self)
+
+
+    # converts mutable numpy arrays into easily accessed tuples
+    def update(self, df_row):
+        unpack_agent_arrays_data(self)
+        unpack_agent_arrays_tp(self)
+
+        if df_row is not None:
+            # Updates parameters after idea selection and effort expenditure
+            # NOTE: self.avail_effort and self.eff_inv_in_period should be
+            # updated by the increment, not by marginal effort, because the
+            # increment includes investment costs. We don't care about
+            # paid investment costs for the other variables
+            idea = int(df_row['Idea Choice'])
+            self.perceived_returns[idea] += df_row['Max Return']
+            self.actual_returns[idea] += df_row['Actual Return']
+            idea = None
+
+        self.update_agent_df()
+
+        store_agent_arrays_data(self)
+        store_agent_arrays_tp(self)
+
+    def update_agent_df(self):
+        # updating agent dataframe
+        df_agent = pd.read_pickle('tmp/model/agent_vars_df.pkl')
+        # format: TP Born, Total effort invested, Effort invested in period (increment),
+        #         Effort invested in period (marginal), Perceived returns, Actual returns
+        new_data = {'TP Born': self.birth_order,
+                    'Total Effort Invested': self.effort_invested_by_scientist,
+                    'Effort Invested In Period (Increment)': self.eff_inv_in_period_increment,
+                    'Effort Invested In Period (Marginal)': self.eff_inv_in_period_marginal,
+                    'Perceived Returns': rounded_tuple(self.perceived_returns),
+                    'Actual Returns': rounded_tuple(self.actual_returns)}
+        df_agent.loc[self.model.schedule.time].loc[self.unique_id] = new_data
+        df_agent.to_pickle(self.model.directory+'agent_vars_df.pkl')
+
+        # Dereferencing variables
+        df_agent = None
+        new_data = None
 
 
 class ScientistModel(Model):
-    def __init__(self, time_periods, ideas_per_time, N, max_investment_lam, true_sds_lam, true_means_lam,  # ScientistModel variables
-                 start_effort_lam, start_effort_decay, noise_factor, k_lam, sds_lam, means_lam, time_periods_alive,  #AgentModel variables
-                 seed=None):
-
+    def __init__(self, seed=None):
         super().__init__(seed)
 
-        # for batch runs
-        self.running = True
-
-        # store variables into Scientist(Agent) objects
-        self.start_effort_lam = start_effort_lam
-        self.sds_lam = sds_lam
-        self.means_lam = means_lam
-
-        # the number of TP a scientist can actively invest in ideas
-        self.time_periods_alive = time_periods_alive
-
-        # number of stable time_periods in the model
-        # NOTE: total time periods is time_periods + 2 (first two are unstable)
-        self.time_periods = time_periods
-
-        # scalar: number of scientists per time period
-        self.N = N
+        # create specific tmp directory for model
+        self.directory = 'tmp/model/'
+        create_directory(self.directory)
 
         # Scalar: indicates the total number of scientists in the model
-        self.num_scientists = int(N/2)*(time_periods + 1)
+        self.num_scientists = input_file.N*(input_file.time_periods + 1)  # utility
 
-        # Scalar: number of ideas unique to each time period
-        self.ideas_per_time = ideas_per_time
-        
         # Scalar: total number of ideas in the model. +2 is used to account
         # for first two, non-steady state time periods
-        self.total_ideas = ideas_per_time*(time_periods+2)
+        self.total_ideas = input_file.ideas_per_time*(input_file.time_periods+2)  # utility
+
+        # Array: has length equal to the total number of ideas in the model,
+        # with 0s, 1s, 2s, etc. that indicate which time periods ideas are from
+        self.idea_periods = np.arange(self.total_ideas) // input_file.ideas_per_time  # utility
 
         # k is the learning cost for each idea
-        self.k_lam = k_lam
-        self.k = poisson(lam=self.k_lam, size=self.total_ideas)
-
-        # SCALAR: store means of the mean and sds for returns
-        self.true_sds_lam = true_sds_lam
-        self.true_means_lam = true_means_lam
+        self.k = poisson(lam=input_file.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
 
         # Array: store parameters for true idea return distribution
-        self.true_sds = poisson(lam=self.true_sds_lam, size=self.total_ideas)
-        self.true_means = poisson(lam=self.true_means_lam, size=self.total_ideas)
-
-        # the amount of variance from the actual perceived return
-        self.noise_factor = noise_factor
+        self.true_sds = poisson(lam=input_file.true_sds_lam, size=self.total_ideas)  # void
+        self.true_means = poisson(lam=input_file.true_means_lam, size=self.total_ideas)  # void
 
         # Ensures that none of the standard devs are equal to 0, this is OKAY
-        self.true_sds += 1 + self.noise_factor
+        self.true_sds += 1 + input_file.noise_factor  # void
 
         # M is a scalar that multiples based on each idea
         # not sure if this is redundant since we already have random poisson values for true_means and true_sds
-        self.M = poisson(lam=10000, size=self.total_ideas)
+        self.M = poisson(lam=10000, size=self.total_ideas)  # void
 
         # creates actual returns matrix
         self.actual_returns_matrix = create_return_matrix(self.total_ideas, self.true_sds, self.true_means, self.M,
-                                                          self.true_sds_lam, self.true_means_lam)
+                                                          input_file.true_sds_lam, input_file.true_means_lam)  # utility
 
         # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
@@ -206,22 +242,17 @@ class ScientistModel(Model):
         self.total_k = np.zeros(self.total_ideas)
         self.total_times_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested = np.zeros(self.total_ideas)
-        self.avg_k = np.zeros(self.total_ideas)
-        self.prop_invested = np.zeros(self.total_ideas)
 
-        self.agent_k_invested_ideas = []
-        self.agent_perceived_return_invested_ideas = []
-        self.agent_actual_return_invested_ideas = []
-
-        # flattening numpy arrays
-        self.agent_k_invested_ideas_flat = []
-        self.agent_perceived_return_invested_ideas_flat = []
-        self.agent_actual_return_invested_ideas_flat = []
+        # Array: keeping track of all the returns of investing in each available and invested ideas
+        # NOTE: the K is based on initial learning cost, not current cost
+        self.final_perceived_returns_invested_ideas = [[] for i in range(self.num_scientists)]
+        self.final_k_invested_ideas = []
+        self.final_actual_returns_invested_ideas = []
 
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
         # in which young and old scientists get to invest in ideas is random)
-        self.schedule = RandomActivation(self)
+        self.schedule = BaseScheduler(self)  # NOTE: doesn't skew results if not random due to call_back
 
         # counts number of steps taken in current TP, used for Agent class
         self.steps_taken = 0
@@ -230,41 +261,120 @@ class ScientistModel(Model):
         for i in range(1, self.num_scientists + 1):
             a = Scientist(i, self)
             self.schedule.add(a)
-        
-        # Create data collector method for keeping track of variables over time
-        self.datacollector = DataCollector(
-            model_reporters={"Total Effort List": "total_effort_tuple",
-                             "Total Effort By Age": "effort_invested_by_age_tuple"},
-            agent_reporters={"TP Born": "birth_order",
-                             "Total effort invested": "effort_invested_by_scientist_tuple",
-                             "Effort invested in period (increment)": "eff_inv_in_period_increment_tuple",
-                             "Effort invested in period (marginal)": "eff_inv_in_period_marginal_tuple",
-                             "Perceived returns": "perceived_returns_tuple",
-                             "Actual returns": "actual_returns_tuple"})
+
+        # dereferencing variables
+        self.k = None
+        self.true_sds = None
+        self.true_means = None
+        self.M = None
+
+        create_datacollectors(self)
+        create_list_dict(self)
+        store_model_arrays(self)
+        store_model_arrays_data(self)
+        store_model_lists(self)
 
     def step(self):
-        # runs through all stable time periods
-        if self.schedule.time < self.time_periods+2:
-            # iterates through all scientists in the model
-            self.schedule.step()
-            # Call data collector to keep track of variables at each model step
-            self.datacollector.collect(self)
-            if self.schedule.time == self.time_periods + 2:  # should be +1 but since we pass the step function it's actually +2
-                self.collect_vars()
+        # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
+        #               actual_return, scientist.unique_id
+        pd.DataFrame(columns=['Idea Choice', 'Marginal Effort', 'Increment', 'Max Return', 'Actual Return', 'ID',
+                              'Times Invested']).to_pickle('tmp/model/investing_queue.pkl')
+
+        # iterates through all scientists in the model
+        # below is the same as self.schedule.step()
+        for i in range(self.num_scientists):
+            self.schedule.agents[i].step()
+            gc_collect()
+        self.call_back()
+        self.schedule.time += 1
+
+        # run data collecting variables if the last step of the simulation has completed
+        if self.schedule.time == input_file.time_periods + 2:  # should be +1 but since we pass the step function it's actually +2
+            self.collect_vars()
+
+    # does something when the last scientist in the TP is done investing in ideas
+    def call_back(self):
+        self.process_winners()
+
+        unpack_model_arrays_data(self)
+
+        # updating model dataframe
+        df_model = pd.read_pickle(self.directory+'model_vars_df.pkl')
+        df_model.loc[self.schedule.time] = [self.total_effort, self.effort_invested_by_age]
+        df_model.to_pickle(self.directory+'model_vars_df.pkl')
+        df_model = None
+
+        store_model_arrays_data(self)
+
+    def process_winners(self):
+        investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
+
+        # initializing list of dictionaries with returns and investments for each idea in the TP
+        list_dict = new_list_dict(self)
+
+        # iterating through all investments by each scientists
+        # young scientists get 0 returns, old scientists get all of the returns
+        for index, row in investing_queue.iterrows():
+            idx_idea = int(row['Idea Choice'])
+            if list_dict[idx_idea]['Oldest ID'] < row['ID']:
+                list_dict[idx_idea]['Oldest ID'] = row['ID']
+
+            # update current stats for idea_dict
+            list_dict[idx_idea] += Counter({"Total Effort": row['Marginal Effort'],
+                                            "Total Increment": row['Increment'],
+                                            "Max Return": row['Max Return'],
+                                            "Actual Return": row['Actual Return']})
+
+        # list that stores scientists who get returns (optional, see below)
+        # happy_scientist = []
+
+        # update model data collecting variables, and back for the old scientist who won all the returns for the idea
+        for idea_choice in list_dict:
+            idx_id = int(idea_choice["Oldest ID"]) - 1  # shift to left 1 since scientist id's start from 1
+            if idx_id != -1:  # only active ideas needed
+                # happy_scientist.append(idx_id)
+                self.schedule.agents[idx_id].update(idea_choice)
+
+        # updating data for remaining scientists who did not get any returns / inactive scientists
+        # NOTE: OPTIONAL, only for agent_df. can speed up model simulation greatly if we don't care about
+        # agent df with NaN for active scientists (happy_scientists would also be optional in this case)
+        # for i in list(set(range(self.num_scientists))-set(happy_scientist)):  # difference between two sets
+        #     self.schedule.agents[i].update(None)
+
+        investing_queue = None
+        list_dict = None
+        idea_dict = None
+        idea = None
 
     # for data collecting after model has finished running
     def collect_vars(self):
-        self.avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
-        self.total_perceived_returns = np.round(self.total_perceived_returns, 2)
-        self.total_actual_returns = np.round(self.total_actual_returns, 2)
-        self.prop_invested = self.total_effort / (2*self.true_means_lam)
+        unpack_model_arrays_data(self)
+        idea = range(0, self.total_ideas, 1)
+        tp = np.arange(self.total_ideas) // input_file.ideas_per_time
+        prop_invested = self.total_effort / (2*input_file.true_means_lam)
+        avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
+        total_perceived_returns = np.round(self.total_perceived_returns, 2)
+        total_actual_returns = np.round(self.total_actual_returns, 2)
 
-        # collect data from individual variables for plotting
-        self.agent_k_invested_ideas = [a.final_k_invested_ideas for a in self.schedule.agents]
-        self.agent_perceived_return_invested_ideas = [a.final_perceived_returns_invested_ideas for a in self.schedule.agents]
-        self.agent_actual_return_invested_ideas = [a.final_actual_returns_invested_ideas for a in self.schedule.agents]
+        data1_dict = {"idea": idea,
+                      "TP": tp,
+                      "scientists_invested": self.total_scientists_invested,
+                      "times_invested": self.total_times_invested,
+                      "avg_k": avg_k,
+                      "total_effort (marginal)": self.total_effort,
+                      "prop_invested": prop_invested,
+                      "total_pr": total_perceived_returns,
+                      "total_ar": total_actual_returns}
+        pd.DataFrame.from_dict(data1_dict).to_pickle(self.directory+'data1.pkl')
+        store_model_arrays_data(self)
 
-        # flattening numpy arrays
-        self.agent_k_invested_ideas_flat = flatten_list(self.agent_k_invested_ideas)
-        self.agent_perceived_return_invested_ideas_flat = flatten_list(self.agent_perceived_return_invested_ideas)
-        self.agent_actual_return_invested_ideas_flat = flatten_list(self.agent_actual_return_invested_ideas)
+        unpack_model_lists(self)
+        final_perceived_returns_invested_ideas_flat = flatten_list(self.final_perceived_returns_invested_ideas)
+        ind_vars_dict = {"agent_k_invested_ideas": self.final_k_invested_ideas,
+                         "agent_perceived_return_invested_ideas": final_perceived_returns_invested_ideas_flat,
+                         "agent_actual_return_invested_ideas": self.final_actual_returns_invested_ideas}
+        pd.DataFrame.from_dict(ind_vars_dict).to_pickle(self.directory+'ind_vars.pkl')
+        store_model_lists(self)
+
+        del final_perceived_returns_invested_ideas_flat, ind_vars_dict, data1_dict, idea, tp, prop_invested, avg_k,\
+            total_perceived_returns, total_actual_returns

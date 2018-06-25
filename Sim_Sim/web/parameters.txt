@@ -1,1 +1,1 @@
-{'time_periods': 10, 'ideas_per_time': 1, 'N': 20, 'max_investment_lam': 50, 'true_sds_lam': 48, 'true_means_lam': 300, 'start_effort_lam': 30, 'start_effort_decay': 6, 'noise_factor': 1, 'k_lam': 12, 'sds_lam': 48, 'means_lam': 300, 'time_periods_alive': 4, 'seed': 885863}
+{'time_periods': 8, 'ideas_per_time': 5, 'N': 3, 'true_means_lam': 300, 'true_sds_lam': 48, 'start_effort_lam': 9, 'noise_factor': 1, 'k_lam': 3, 'time_periods_alive': 4, 'seed': 123456}

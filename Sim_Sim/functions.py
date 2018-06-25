@@ -5,6 +5,9 @@ import input_file
 import timeit
 import glob
 import os
+import resource
+from pympler import asizeof
+import gc
 
 
 # Input: Parameters for the logistic cumulative distribution function
@@ -42,23 +45,6 @@ def create_return_matrix(num_ideas, sds, means, M, sds_lam, means_lam):
     return np.array(returns_list)
 
 
-# Input:
-# 1) numbers (array): contains the numbers we are picking the second largest from
-# Output:
-# The second largest number out of the array
-def second_largest(numbers):
-    count = 0
-    m1 = m2 = float('-inf')
-    for x in numbers:
-        count += 1
-        if x > m2:
-            if x >= m1:
-                m1, m2 = x, m1
-            else:
-                m2 = x
-    return m2 if count >= 2 else None
-
-
 # for counting number of html pages generated
 def page_counter():
     input_file.count += 1
@@ -85,7 +71,9 @@ def flatten_list(list_name):
 
 
 # helper method for calculating runtime
-def stop_run():
+def stop_run(string):
+    print("")
+    print(string)
     # end runtime
     stop = timeit.default_timer()
     print("Elapsed runtime: ", stop - input_file.start, "seconds")
@@ -93,11 +81,13 @@ def stop_run():
 
 
 # np.log() that handles 0 (and very small values that will return infinity)
+# CONDITION: np_array cannot be a list, must be a np array
 def log_0(np_array):
     return np.log(np_array, out=np.zeros(len(np_array)), where=np_array > 2**-10)
 
 
 # np.divide that handles division by 0
+# num, denom can also be lists!
 def divide_0(num, denom):
     return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
 
@@ -109,3 +99,30 @@ def png_to_html():
         html += '<img src="'+str(os.getcwd())+'/'+str(image_list[i])+'" />'
     with open("web/pages/all_images.html", "w") as file:
         file.write(html)
+
+
+# returns current resources used
+def mem():
+    print('Memory usage         : % 2.2f MB' % round(
+        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024.0/1024.0, 1)
+    )
+
+
+# returns size of object
+def get_size(obj):
+    return asizeof.asizeof(obj)
+
+
+# create directory in tmp if it doesn't already exist
+def create_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+def gc_collect():
+    # print("\nBEFORE", end="")
+    # mem()
+    collected = gc.collect()
+    # print("Collected", collected, "objects")
+    # print("AFTER", end="")
+    # mem()

@@ -8,9 +8,17 @@ from functions import *
 import matplotlib as mpl
 
 
-def settings():
+# settings for images
+def settings_small():
     mpl.rcParams['xtick.labelsize'] = 5
     mpl.rcParams['ytick.labelsize'] = 5
+
+
+# settings for images
+def settings_big():
+    mpl.rcParams['xtick.labelsize'] = 10
+    mpl.rcParams['ytick.labelsize'] = 10
+
 
 # labeling x, y, and title
 def labels(x_label, y_label, title):
@@ -23,12 +31,12 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linear):
-    settings()
+    settings_big()
     if linear:
         file_name += '_linear'
     else:
         # agent1 = log_0(np.asarray(agent1))
-        agent2 = log_0(np.asarray(agent2))
+        agent2 = log_0(agent2)
         file_name += '_exp'
         y_label = "Log of " + y_label
         title = "Log of " + title
@@ -61,20 +69,19 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: actual array is still in numpy form, hasn't been flattened yet
 # CONDITION: k array should be equal to length of perceived returns
-def resid_scatterplot(actual, perceived, x_label, y_label, title):
-    plt.figure(randint(1000,9999))
-    actual_numpy = np.asarray(flatten_list(actual))
-    perceived_numpy = np.asarray(perceived)
-    resid = actual_numpy-perceived_numpy
+def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
+    settings_small()
+    plt.figure(randint(1000, 9999))
+    resid = np.asarray(actual)-np.asarray(perceived)
     agent_id = []
-    for np_array_idx in range(len(actual)):
-        for i in range(len(actual[np_array_idx])):
-            agent_id.append(np_array_idx+1)  # index shift
+    for array_idx in range(len(perceived_2d)):
+        for i in range(len(perceived_2d[array_idx])):
+            agent_id.append(array_idx+1)  # index shift
     min_scale = int(min(resid))
     max_scale = int(max(resid))+1
     step = int((max_scale-min_scale)/10)+1
     plt.yticks(np.arange(min_scale, max_scale, step))
-    plt.xticks(np.arange(0, len(actual)+1, 1))
+    plt.xticks(np.arange(1, len(perceived_2d)+1, 1))
     plt.scatter(agent_id, resid)
     plt.axhline(0, color='black')
     labels(x_label, y_label, title)
@@ -83,11 +90,12 @@ def resid_scatterplot(actual, perceived, x_label, y_label, title):
     fig.set_size_inches((2000.0+30*len(actual)) / float(DPI), 2000.0 / float(DPI))
     plt.savefig('web/images/scatterplot_resid')
     plt.close()
-    del actual, perceived, actual_numpy, perceived_numpy, resid, agent_id, fig
+    del actual, perceived, perceived_2d, resid, agent_id, fig
 
 
 # plots the returns vs cost on a scatterplot
 def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline, vline):
+    settings_small()
     if linear:
         name = "linear"
         step_y = 10
@@ -113,6 +121,7 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
 
 # plots the young vs old scientist as a 2-var bar graph
 def two_var_bar_graph(data, x_label, y_label, title, linear):
+    settings_small()
     if linear:
         name = "linear"
     else:
