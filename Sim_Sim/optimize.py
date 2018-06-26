@@ -8,6 +8,7 @@ import input_file
 import pandas as pd
 import input_file
 from store import *
+import shared_mp as s
 
 
 # scientist chooses the idea that returns the most at each step
@@ -102,9 +103,11 @@ def greedy_investing(scientist):
     store_model_arrays_data(scientist.model, False)
 
     # appending current dataframe to model investing queue
+    s.lock4.acquire()
     investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
     investing_queue = investing_queue.append(temp_df, ignore_index=True)
     investing_queue.to_pickle('tmp/model/investing_queue.pkl')
+    s.lock4.release()
 
     # clearing data before running while loop again (no need for GC since it is run right after we exit the method)
     del no_effort_inv, curr_k, increment, idea_choice, max_return, actual_return, row_data, row, temp_df, investing_queue

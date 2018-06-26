@@ -45,6 +45,10 @@ class Scientist(Agent):
         # scientists' ages and thus which scientists are alive in a given time period and which ideas they can invest in
         self.birth_order = math.ceil(unique_id / input_file.N)  # utility
 
+        # Check a scientist's age in the current time period
+        # NOTE: model time begins at 0
+        self.current_age = self.model.schedule.time - self.birth_order  # utility
+
         # create specific tmp directory for agent
         self.directory = 'tmp/agent_' + str(self.unique_id) + '/'
         create_directory(self.directory)
@@ -100,7 +104,7 @@ class Scientist(Agent):
     def step(self):
         # Check a scientist's age in the current time period
         # NOTE: model time begins at 0
-        self.current_age = (self.model.schedule.time - self.birth_order)
+        self.current_age = self.model.schedule.time - self.birth_order
 
         # scientist is alive
         if 0 <= self.current_age < input_file.time_periods_alive and self.model.schedule.time >= 2:
@@ -195,6 +199,7 @@ class ScientistModel(Model):
         super().__init__(seed)
 
         # create specific tmp directory for model
+        create_directory('tmp/')
         self.directory = 'tmp/model/'
         create_directory(self.directory)
 
@@ -253,9 +258,14 @@ class ScientistModel(Model):
         self.schedule = BaseScheduler(self)  # NOTE: doesn't skew results if not random due to call_back
 
         # creates Agent objects
+        # p = mp.Pool()
+        # scientists = p.starmap(scientist_creator, [(i, self) for i in range(1, self.num_scientists + 1)])
+        # p.close()
+        # p.join()
+
+        # adds Agent objects to the schedule
         for i in range(1, self.num_scientists + 1):
-            a = Scientist(i, self)
-            self.schedule.add(a)
+            self.schedule.add(Scientist(i, self))
 
         # dereferencing variables
         self.k = None
@@ -275,27 +285,28 @@ class ScientistModel(Model):
         pd.DataFrame(columns=['Idea Choice', 'Marginal Effort', 'Increment', 'Max Return', 'Actual Return', 'ID',
                               'Times Invested']).to_pickle('tmp/model/investing_queue.pkl')
 
-        mp_list = []  # list of mp processes
-
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
-        for i in range(self.num_scientists):
-            mp_list.append(mp.Process(target=self.schedule.agents[i].step()))
-
-        for i in range(self.num_scientists):
-            mp_list[i].start()
-
-        for i in range(self.num_scientists):
-            mp_list[i].join()
-
-        for i in range(self.num_scientists):
-            mp_list[i].terminate()
+        if input_file.use_multiprocessing:
+            s.lock1 = mp.Lock()  # for model_arrays
+            s.lock2 = mp.Lock()  # for model_arrays_data
+            s.lock3 = mp.Lock()  # for model_lists
+            s.lock4 = mp.Lock()  # for model df
+            p = mp.Pool()
+            p.starmap(mp_helper, [(self, i) for i in range(self.num_scientists)])
+            p.close()
+            p.join()
+            p = None
+        else:
+            for i in range(self.num_scientists):
+                self.schedule.agents[i].step()
 
         self.call_back()
         self.schedule.time += 1
 
         # run data collecting variables if the last step of the simulation has completed
-        if self.schedule.time == input_file.time_periods + 2:  # should be +1 but since we pass the step function it's actually +2
+        # should be +1 but since we pass the step function it's actually +2
+        if self.schedule.time == input_file.time_periods + 2:
             self.collect_vars()
 
     # does something when the last scientist in the TP is done investing in ideas
@@ -384,3 +395,11 @@ class ScientistModel(Model):
 
         del final_perceived_returns_invested_ideas_flat, ind_vars_dict, data1_dict, idea, tp, prop_invested, avg_k,\
             total_perceived_returns, total_actual_returns
+
+
+def mp_helper(model, i):
+    model.schedule.agents[i].step()
+
+
+# def scientist_creator(i, model):
+#     return Scientist(i, model)

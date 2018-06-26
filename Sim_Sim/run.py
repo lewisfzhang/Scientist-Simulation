@@ -10,11 +10,6 @@ import stat
 
 
 def main():
-    # default spawn is fork
-    s.lock1 = mp.Lock()
-    s.lock2 = mp.Lock()
-    s.lock3 = mp.Lock()
-
     # start runtime
     start_prog = timeit.default_timer()
     with open('tmp/start_prog.txt', 'w')as f:
@@ -23,8 +18,8 @@ def main():
     input_file.start = timeit.default_timer()
 
     # default parameters for model as a dictionary
-    all_params = {"seed": input_file.seed, "time_periods": input_file.time_periods,
-                  "ideas_per_time": input_file.ideas_per_time, "N": input_file.N,
+    all_params = {"seed": input_file.seed, "use_multiprocessing": input_file.use_multiprocessing,
+                  "time_periods": input_file.time_periods, "ideas_per_time": input_file.ideas_per_time, "N": input_file.N,
                   "true_means_lam": input_file.true_means_lam, "true_sds_lam": input_file.true_sds_lam,
                   "start_effort_lam": input_file.start_effort_lam, "noise_factor": input_file.noise_factor,
                   "k_lam": input_file.k_lam, "time_periods_alive": input_file.time_periods_alive}

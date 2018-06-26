@@ -6,12 +6,6 @@ from random import randint
 # for randomization best practice
 seed = 123456  # randint(100000, 999999)
 
-# Optimal processors by system
-# Mac w/ 4 cores --> 3
-# Windows w/ 8 cores --> 3
-# Windows w/ 24 cores --> 8
-num_processors = 3
-
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)
 time_periods = 8
@@ -27,6 +21,7 @@ true_means_lam = 300
 true_sds_lam = int(0.16 * true_means_lam)
 
 # agent constants (Use 0.03 for Windows due to GPU limit)
+# possibly try 0.05*N/100?
 start_effort_lam = int(0.03*true_means_lam)  # make sure this is >= 9 to ensure start_effort isn't too small
 
 # the amount of variance from the actual perceived return
@@ -47,6 +42,12 @@ start = 0
 
 # whether we want parallel processing (depending if it works on the system being run)
 use_multiprocessing = True
+
+# Optimal processors by system
+# Mac w/ 4 cores --> 3
+# Windows w/ 8 cores --> 3
+# Windows w/ 24 cores --> 8
+num_processors = 3
 
 # Potential variables for future use
 start_effort_decay = int(0.2*start_effort_lam)

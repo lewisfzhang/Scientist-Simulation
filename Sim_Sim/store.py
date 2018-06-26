@@ -13,7 +13,7 @@ def store_model_arrays(model, isFirst):
     np.save(model.directory + 'idea_periods.npy', model.idea_periods)
     model.idea_periods = None
 
-    if not isFirst:
+    if not isFirst and input_file.use_multiprocessing:
         s.lock1.release()
 
 
@@ -39,7 +39,7 @@ def store_model_arrays_data(model, isFirst):
     np.save(model.directory + 'total_scientists_invested.npy', model.total_scientists_invested)
     model.total_scientists_invested = None
 
-    if not isFirst:
+    if not isFirst and input_file.use_multiprocessing:
         s.lock2.release()
 
 
@@ -59,12 +59,13 @@ def store_model_lists(model, isFirst):
     np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
     model.actual_returns_matrix = None
 
-    if not isFirst:
+    if not isFirst and input_file.use_multiprocessing:
         s.lock3.release()
   
     
 def unpack_model_arrays(model):
-    s.lock1.acquire()
+    if input_file.use_multiprocessing:
+        s.lock1.acquire()
 
     # unlimited access to past ideas, too lazy to think of another way to implement double negative
     # what this statement really wants is idea_periods <= schedule.time
@@ -72,7 +73,8 @@ def unpack_model_arrays(model):
 
 
 def unpack_model_arrays_data(model):
-    s.lock2.acquire()
+    if input_file.use_multiprocessing:
+        s.lock2.acquire()
 
     model.total_effort = np.load(model.directory + 'total_effort.npy')
 
@@ -90,7 +92,8 @@ def unpack_model_arrays_data(model):
 
 
 def unpack_model_lists(model):
-    s.lock3.acquire()
+    if input_file.use_multiprocessing:
+        s.lock3.acquire()
 
     with open(model.directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         model.final_perceived_returns_invested_ideas = pickle.load(fp)

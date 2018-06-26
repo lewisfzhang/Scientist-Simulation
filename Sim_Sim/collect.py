@@ -18,7 +18,7 @@ def main():
     # slow down the program due to the additional overhead needed for process switching
     # NOTE: fork doesn't work on Mac, spawn is best because it works on Mac and is default on Windows
     mp.set_start_method('spawn')
-    p = mp.Pool(processes=input_file.num_processors)
+    p = mp.Pool()  # default number is mp.cpu_count()
 
     # get starting time from run.py
     start_prog = int(open('tmp/start_prog.txt', 'r').read())
