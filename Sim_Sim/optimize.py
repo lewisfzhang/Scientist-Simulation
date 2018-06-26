@@ -7,6 +7,7 @@ from random import randint
 import input_file
 import pandas as pd
 import input_file
+from store import *
 
 
 # scientist chooses the idea that returns the most at each step
@@ -70,6 +71,7 @@ def greedy_investing(scientist):
         scientist.eff_inv_in_period_increment[idea_choice] += increment
         scientist.avail_effort -= increment
 
+        unpack_model_arrays_data(scientist.model)
         scientist.model.total_effort[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.model.effort_invested_by_age[int(scientist.current_age * 2 / input_file.time_periods_alive)] \
             [idea_choice] += scientist.marginal_effort[idea_choice]  # halflife defines young vs old
@@ -77,6 +79,7 @@ def greedy_investing(scientist):
         scientist.model.total_actual_returns[idea_choice] += actual_return
         scientist.model.total_times_invested[idea_choice] += 1
         scientist.model.total_k[idea_choice] += curr_k[idea_choice]
+        store_model_arrays_data(scientist.model, False)
 
         # checks if idea_choice is already in the df
         if idea_choice in temp_df['Idea Choice'].values:
@@ -94,7 +97,9 @@ def greedy_investing(scientist):
                         "ID": scientist.unique_id, "Times Invested": 1}
             temp_df = temp_df.append(row_data, ignore_index=True)
 
+    unpack_model_arrays_data(scientist.model)
     scientist.model.total_scientists_invested[idea_choice] += 1
+    store_model_arrays_data(scientist.model, False)
 
     # appending current dataframe to model investing queue
     investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
@@ -117,6 +122,7 @@ def greedy_investing(scientist):
 # 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
 def calc_cum_returns(scientist, model):
+    unpack_model_lists(scientist.model)
     # Array: keeping track of all the returns of investing in each available ideas
     final_perceived_returns_avail_ideas = []
     final_actual_returns_avail_ideas = []
@@ -161,6 +167,7 @@ def calc_cum_returns(scientist, model):
     scientist.model.final_actual_returns_invested_ideas.append(actual_return)
     scientist.model.final_k_invested_ideas.append(scientist.k[idea_choice])
 
+    store_model_lists(scientist.model, False)
     final_perceived_returns_avail_ideas = None
     final_actual_returns_avail_ideas = None
     idx_max_return = None

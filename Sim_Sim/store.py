@@ -6,17 +6,18 @@ import pickle
 import input_file
 import pandas as pd
 from collections import Counter
+import shared_mp as s
 
 
-def store_model_arrays(model):
+def store_model_arrays(model, isFirst):
     np.save(model.directory + 'idea_periods.npy', model.idea_periods)
     model.idea_periods = None
 
-    np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
-    model.actual_returns_matrix = None
+    if not isFirst:
+        s.lock1.release()
 
 
-def store_model_arrays_data(model):
+def store_model_arrays_data(model, isFirst):
     np.save(model.directory + 'total_effort.npy', model.total_effort)
     model.total_effort = None
 
@@ -38,8 +39,11 @@ def store_model_arrays_data(model):
     np.save(model.directory + 'total_scientists_invested.npy', model.total_scientists_invested)
     model.total_scientists_invested = None
 
+    if not isFirst:
+        s.lock2.release()
 
-def store_model_lists(model):
+
+def store_model_lists(model, isFirst):
     with open(model.directory + "final_perceived_returns_invested_ideas.txt", "wb") as fp:
         pickle.dump(model.final_perceived_returns_invested_ideas, fp)
     model.final_perceived_returns_invested_ideas = None
@@ -51,10 +55,16 @@ def store_model_lists(model):
     with open(model.directory + "final_actual_returns_invested_ideas.txt", "wb") as fp:
         pickle.dump(model.final_actual_returns_invested_ideas, fp)
     model.final_actual_returns_invested_ideas = None
+
+    np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
+    model.actual_returns_matrix = None
+
+    if not isFirst:
+        s.lock3.release()
   
     
 def unpack_model_arrays(model):
-    model.actual_returns_matrix = np.load(model.directory + 'actual_returns_matrix.npy')
+    s.lock1.acquire()
 
     # unlimited access to past ideas, too lazy to think of another way to implement double negative
     # what this statement really wants is idea_periods <= schedule.time
@@ -62,6 +72,8 @@ def unpack_model_arrays(model):
 
 
 def unpack_model_arrays_data(model):
+    s.lock2.acquire()
+
     model.total_effort = np.load(model.directory + 'total_effort.npy')
 
     model.effort_invested_by_age = np.load(model.directory + 'effort_invested_by_age.npy')
@@ -78,6 +90,8 @@ def unpack_model_arrays_data(model):
 
 
 def unpack_model_lists(model):
+    s.lock3.acquire()
+
     with open(model.directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         model.final_perceived_returns_invested_ideas = pickle.load(fp)
 
@@ -86,6 +100,8 @@ def unpack_model_lists(model):
 
     with open(model.directory + "final_actual_returns_invested_ideas.txt", "rb") as fp:
         model.final_actual_returns_invested_ideas = pickle.load(fp)
+
+    model.actual_returns_matrix = np.load(model.directory + 'actual_returns_matrix.npy')
 
 
 def create_datacollectors(model):

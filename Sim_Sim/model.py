@@ -7,12 +7,13 @@ from optimize import *
 import math
 import timeit
 import pandas as pd
-from multiprocessing import *
+import multiprocessing as mp
 import os
 import input_file
 import pickle
 from collections import Counter
 from store import *
+import shared_mp as s
 
 
 # utility = important, don't run GC on it
@@ -106,9 +107,6 @@ class Scientist(Agent):
             # pull all variables out of stored files
             unpack_agent_arrays(self)
             unpack_agent_arrays_tp(self)
-            unpack_model_arrays(self.model)
-            unpack_model_arrays_data(self.model)
-            unpack_model_lists(self.model)
 
             # reset effort in new time period
             self.eff_inv_in_period_increment[:] = 0
@@ -117,19 +115,18 @@ class Scientist(Agent):
             # reset effort
             self.avail_effort = self.start_effort
 
+            unpack_model_arrays(self.model)
             # Array: keeps track of which ideas can be worked on in a given time period
             # for a given scientist's age. This array will have 1s for ideas that
             # are accessible to a scientist and 0s for all other ideas
             self.avail_ideas = np.logical_not(self.model.idea_periods > self.model.schedule.time)
+            store_model_arrays(self.model, False)
 
             greedy_investing(self)
 
             self.avail_ideas = None
             store_agent_arrays(self)
             store_agent_arrays_tp(self)
-            store_model_arrays(self.model)
-            store_model_arrays_data(self.model)
-            store_model_lists(self.model)
 
         else:
             unpack_agent_arrays_data(self)
@@ -151,6 +148,7 @@ class Scientist(Agent):
             store_agent_arrays_tp(self)
             store_agent_arrays_data(self)
 
+        gc_collect()
 
     # converts mutable numpy arrays into easily accessed tuples
     def update(self, df_row):
@@ -254,9 +252,6 @@ class ScientistModel(Model):
         # in which young and old scientists get to invest in ideas is random)
         self.schedule = BaseScheduler(self)  # NOTE: doesn't skew results if not random due to call_back
 
-        # counts number of steps taken in current TP, used for Agent class
-        self.steps_taken = 0
-
         # creates Agent objects
         for i in range(1, self.num_scientists + 1):
             a = Scientist(i, self)
@@ -270,9 +265,9 @@ class ScientistModel(Model):
 
         create_datacollectors(self)
         create_list_dict(self)
-        store_model_arrays(self)
-        store_model_arrays_data(self)
-        store_model_lists(self)
+        store_model_arrays(self, True)
+        store_model_arrays_data(self, True)
+        store_model_lists(self, True)
 
     def step(self):
         # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
@@ -280,11 +275,22 @@ class ScientistModel(Model):
         pd.DataFrame(columns=['Idea Choice', 'Marginal Effort', 'Increment', 'Max Return', 'Actual Return', 'ID',
                               'Times Invested']).to_pickle('tmp/model/investing_queue.pkl')
 
+        mp_list = []  # list of mp processes
+
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
         for i in range(self.num_scientists):
-            self.schedule.agents[i].step()
-            gc_collect()
+            mp_list.append(mp.Process(target=self.schedule.agents[i].step()))
+
+        for i in range(self.num_scientists):
+            mp_list[i].start()
+
+        for i in range(self.num_scientists):
+            mp_list[i].join()
+
+        for i in range(self.num_scientists):
+            mp_list[i].terminate()
+
         self.call_back()
         self.schedule.time += 1
 
@@ -304,7 +310,7 @@ class ScientistModel(Model):
         df_model.to_pickle(self.directory+'model_vars_df.pkl')
         df_model = None
 
-        store_model_arrays_data(self)
+        store_model_arrays_data(self, False)
 
     def process_winners(self):
         investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
@@ -366,7 +372,7 @@ class ScientistModel(Model):
                       "total_pr": total_perceived_returns,
                       "total_ar": total_actual_returns}
         pd.DataFrame.from_dict(data1_dict).to_pickle(self.directory+'data1.pkl')
-        store_model_arrays_data(self)
+        store_model_arrays_data(self, False)
 
         unpack_model_lists(self)
         final_perceived_returns_invested_ideas_flat = flatten_list(self.final_perceived_returns_invested_ideas)
@@ -374,7 +380,7 @@ class ScientistModel(Model):
                          "agent_perceived_return_invested_ideas": final_perceived_returns_invested_ideas_flat,
                          "agent_actual_return_invested_ideas": self.final_actual_returns_invested_ideas}
         pd.DataFrame.from_dict(ind_vars_dict).to_pickle(self.directory+'ind_vars.pkl')
-        store_model_lists(self)
+        store_model_lists(self, False)
 
         del final_perceived_returns_invested_ideas_flat, ind_vars_dict, data1_dict, idea, tp, prop_invested, avg_k,\
             total_perceived_returns, total_actual_returns
