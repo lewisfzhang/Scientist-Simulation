@@ -1,3 +1,5 @@
+# run_graphs.py
+
 from model import *
 import matplotlib.pyplot as plt
 import numpy as np

@@ -8,11 +8,10 @@ import input_file
 import pandas as pd
 import input_file
 from store import *
-import shared_mp as s
 
 
 # scientist chooses the idea that returns the most at each step
-def greedy_investing(scientist):
+def greedy_investing(scientist, lock):
     # load arrays needed
     # temp df for ideas scientist has invested in
     temp_df = pd.DataFrame(columns=['Idea Choice', 'Marginal Effort', 'Increment', 'Max Return', 'Actual Return', 'ID',
@@ -57,7 +56,7 @@ def greedy_investing(scientist):
         # Selects idea that gives the max return given equivalent "marginal" efforts
         # NOTE: See above for comments on calc_cum_returns function,
         # and exceptions on when the idea with the max return isn't chosen
-        idea_choice, max_return, actual_return = calc_cum_returns(scientist, scientist.model)
+        idea_choice, max_return, actual_return = calc_cum_returns(scientist, scientist.model, lock[1])
 
         # Accounts for the edge case in which max_return = 0 (implying that a
         # scientist either can't invest in ANY ideas [due to investment
@@ -72,7 +71,7 @@ def greedy_investing(scientist):
         scientist.eff_inv_in_period_increment[idea_choice] += increment
         scientist.avail_effort -= increment
 
-        unpack_model_arrays_data(scientist.model)
+        unpack_model_arrays_data(scientist.model, lock[0])
         scientist.model.total_effort[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.model.effort_invested_by_age[int(scientist.current_age * 2 / input_file.time_periods_alive)] \
             [idea_choice] += scientist.marginal_effort[idea_choice]  # halflife defines young vs old
@@ -80,7 +79,7 @@ def greedy_investing(scientist):
         scientist.model.total_actual_returns[idea_choice] += actual_return
         scientist.model.total_times_invested[idea_choice] += 1
         scientist.model.total_k[idea_choice] += curr_k[idea_choice]
-        store_model_arrays_data(scientist.model, False)
+        store_model_arrays_data(scientist.model, False, lock[0])
 
         # checks if idea_choice is already in the df
         if idea_choice in temp_df['Idea Choice'].values:
@@ -98,16 +97,18 @@ def greedy_investing(scientist):
                         "ID": scientist.unique_id, "Times Invested": 1}
             temp_df = temp_df.append(row_data, ignore_index=True)
 
-    unpack_model_arrays_data(scientist.model)
+    unpack_model_arrays_data(scientist.model, lock[0])
     scientist.model.total_scientists_invested[idea_choice] += 1
-    store_model_arrays_data(scientist.model, False)
+    store_model_arrays_data(scientist.model, False, lock[0])
 
     # appending current dataframe to model investing queue
-    s.lock4.acquire()
+    if input_file.use_multiprocessing:
+        lock[2].acquire()
     investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
     investing_queue = investing_queue.append(temp_df, ignore_index=True)
     investing_queue.to_pickle('tmp/model/investing_queue.pkl')
-    s.lock4.release()
+    if input_file.use_multiprocessing:
+        lock[2].release()
 
     # clearing data before running while loop again (no need for GC since it is run right after we exit the method)
     del no_effort_inv, curr_k, increment, idea_choice, max_return, actual_return, row_data, row, temp_df, investing_queue
@@ -124,8 +125,8 @@ def greedy_investing(scientist):
 # Output:
 # 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
-def calc_cum_returns(scientist, model):
-    unpack_model_lists(scientist.model)
+def calc_cum_returns(scientist, model, lock):
+    unpack_model_lists(scientist.model, lock)
     # Array: keeping track of all the returns of investing in each available ideas
     final_perceived_returns_avail_ideas = []
     final_actual_returns_avail_ideas = []
@@ -170,7 +171,7 @@ def calc_cum_returns(scientist, model):
     scientist.model.final_actual_returns_invested_ideas.append(actual_return)
     scientist.model.final_k_invested_ideas.append(scientist.k[idea_choice])
 
-    store_model_lists(scientist.model, False)
+    store_model_lists(scientist.model, False, lock)
     final_perceived_returns_avail_ideas = None
     final_actual_returns_avail_ideas = None
     idx_max_return = None

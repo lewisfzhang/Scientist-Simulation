@@ -1,3 +1,5 @@
+# model.py
+
 from mesa import Agent, Model
 from mesa.time import BaseScheduler
 import numpy as np
@@ -8,12 +10,11 @@ import math
 import timeit
 import pandas as pd
 import multiprocessing as mp
-import os
 import input_file
 import pickle
 from collections import Counter
 from store import *
-import shared_mp as s
+from functools import partial
 
 
 # utility = important, don't run GC on it
@@ -101,7 +102,7 @@ class Scientist(Agent):
         store_agent_arrays_data(self)
         store_agent_arrays_tp(self)
 
-    def step(self):
+    def step(self, lock):
         # Check a scientist's age in the current time period
         # NOTE: model time begins at 0
         self.current_age = self.model.schedule.time - self.birth_order
@@ -119,14 +120,14 @@ class Scientist(Agent):
             # reset effort
             self.avail_effort = self.start_effort
 
-            unpack_model_arrays(self.model)
+            unpack_model_arrays(self.model, lock[0])
             # Array: keeps track of which ideas can be worked on in a given time period
             # for a given scientist's age. This array will have 1s for ideas that
             # are accessible to a scientist and 0s for all other ideas
             self.avail_ideas = np.logical_not(self.model.idea_periods > self.model.schedule.time)
-            store_model_arrays(self.model, False)
+            store_model_arrays(self.model, False, lock[0])
 
-            greedy_investing(self)
+            greedy_investing(self, lock[1:])  # all locks except the first
 
             self.avail_ideas = None
             store_agent_arrays(self)
@@ -275,9 +276,9 @@ class ScientistModel(Model):
 
         create_datacollectors(self)
         create_list_dict(self)
-        store_model_arrays(self, True)
-        store_model_arrays_data(self, True)
-        store_model_lists(self, True)
+        store_model_arrays(self, True, None)
+        store_model_arrays_data(self, True, None)
+        store_model_lists(self, True, None)
 
     def step(self):
         # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
@@ -288,12 +289,14 @@ class ScientistModel(Model):
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
         if input_file.use_multiprocessing:
-            s.lock1 = mp.Lock()  # for model_arrays
-            s.lock2 = mp.Lock()  # for model_arrays_data
-            s.lock3 = mp.Lock()  # for model_lists
-            s.lock4 = mp.Lock()  # for model df
             p = mp.Pool()
-            p.starmap(mp_helper, [(self, i) for i in range(self.num_scientists)])
+            m = mp.Manager()
+            lock1 = m.Lock()  # for model_arrays
+            lock2 = m.Lock()  # for model_arrays_data
+            lock3 = m.Lock()  # for model_lists
+            lock4 = m.Lock()  # for model df
+            func = partial(mp_helper, [lock1, lock2, lock3, lock4])
+            p.starmap(func, [(self, i) for i in range(self.num_scientists)])
             p.close()
             p.join()
             p = None
@@ -313,7 +316,7 @@ class ScientistModel(Model):
     def call_back(self):
         self.process_winners()
 
-        unpack_model_arrays_data(self)
+        unpack_model_arrays_data(self, None)
 
         # updating model dataframe
         df_model = pd.read_pickle(self.directory+'model_vars_df.pkl')
@@ -321,7 +324,7 @@ class ScientistModel(Model):
         df_model.to_pickle(self.directory+'model_vars_df.pkl')
         df_model = None
 
-        store_model_arrays_data(self, False)
+        store_model_arrays_data(self, False, None)
 
     def process_winners(self):
         investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
@@ -365,7 +368,7 @@ class ScientistModel(Model):
 
     # for data collecting after model has finished running
     def collect_vars(self):
-        unpack_model_arrays_data(self)
+        unpack_model_arrays_data(self, None)
         idea = range(0, self.total_ideas, 1)
         tp = np.arange(self.total_ideas) // input_file.ideas_per_time
         prop_invested = self.total_effort / (2*input_file.true_means_lam)
@@ -383,23 +386,19 @@ class ScientistModel(Model):
                       "total_pr": total_perceived_returns,
                       "total_ar": total_actual_returns}
         pd.DataFrame.from_dict(data1_dict).to_pickle(self.directory+'data1.pkl')
-        store_model_arrays_data(self, False)
+        store_model_arrays_data(self, False, None)
 
-        unpack_model_lists(self)
+        unpack_model_lists(self, None)
         final_perceived_returns_invested_ideas_flat = flatten_list(self.final_perceived_returns_invested_ideas)
         ind_vars_dict = {"agent_k_invested_ideas": self.final_k_invested_ideas,
                          "agent_perceived_return_invested_ideas": final_perceived_returns_invested_ideas_flat,
                          "agent_actual_return_invested_ideas": self.final_actual_returns_invested_ideas}
         pd.DataFrame.from_dict(ind_vars_dict).to_pickle(self.directory+'ind_vars.pkl')
-        store_model_lists(self, False)
+        store_model_lists(self, False, None)
 
         del final_perceived_returns_invested_ideas_flat, ind_vars_dict, data1_dict, idea, tp, prop_invested, avg_k,\
             total_perceived_returns, total_actual_returns
 
 
-def mp_helper(model, i):
-    model.schedule.agents[i].step()
-
-
-# def scientist_creator(i, model):
-#     return Scientist(i, model)
+def mp_helper(lock, model, i):
+    model.schedule.agents[i].step(lock)

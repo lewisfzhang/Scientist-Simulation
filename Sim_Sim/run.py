@@ -3,10 +3,6 @@
 from model import *
 import input_file
 import timeit
-import multiprocessing as mp
-import shared_mp as s
-import os
-import stat
 
 
 def main():

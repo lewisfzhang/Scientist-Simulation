@@ -5,7 +5,7 @@ import input_file
 import timeit
 import glob
 import os
-import resource
+# import resource
 from pympler import asizeof
 import gc
 
@@ -102,10 +102,10 @@ def png_to_html():
 
 
 # returns current resources used
-def mem():
-    print('Memory usage         : % 2.2f MB' % round(
-        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024.0/1024.0, 1)
-    )
+# def mem():
+#     print('Memory usage         : % 2.2f MB' % round(
+#         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024.0/1024.0, 1)
+#     )
 
 
 # returns size of object
@@ -120,9 +120,10 @@ def create_directory(directory):
 
 
 def gc_collect():
+    gc.collect()
     # print("\nBEFORE", end="")
     # mem()
-    collected = gc.collect()
+    # collected = gc.collect()
     # print("Collected", collected, "objects")
     # print("AFTER", end="")
     # mem()
