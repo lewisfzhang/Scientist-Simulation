@@ -289,20 +289,26 @@ class ScientistModel(Model):
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
         if input_file.use_multiprocessing:
-            p = mp.Pool()
+            # NOTE: Starting a process using this method is rather slow compared to using fork or forkserver.
+            p = mp.Pool(processes=input_file.num_processors)
             m = mp.Manager()
             lock1 = m.Lock()  # for model_arrays
             lock2 = m.Lock()  # for model_arrays_data
             lock3 = m.Lock()  # for model_lists
             lock4 = m.Lock()  # for model df
-            func = partial(mp_helper, [lock1, lock2, lock3, lock4])
-            p.starmap(func, [(self, i) for i in range(self.num_scientists)])
+            func = partial(mp_helper_spawn, [lock1, lock2, lock3, lock4])
+            # split scientists by num_processes available
+            agent_list = list(chunks(range(0, self.num_scientists), input_file.num_processors))
+            p.starmap(func, [(self, i) for i in agent_list])
             p.close()
             p.join()
+            func = None
+            agent_list = None
             p = None
         else:
             for i in range(self.num_scientists):
-                self.schedule.agents[i].step()
+                # NoneType for locks is handled in store.py
+                self.schedule.agents[i].step([None, None, None, None])
 
         self.call_back()
         self.schedule.time += 1
@@ -400,5 +406,10 @@ class ScientistModel(Model):
             total_perceived_returns, total_actual_returns
 
 
-def mp_helper(lock, model, i):
+def mp_helper_fork(lock, model, i):
     model.schedule.agents[i].step(lock)
+
+
+def mp_helper_spawn(lock, model, agent_list):
+    for i in agent_list:
+        model.schedule.agents[i].step(lock)

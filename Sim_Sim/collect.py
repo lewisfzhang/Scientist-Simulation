@@ -18,7 +18,7 @@ def main():
     # slow down the program due to the additional overhead needed for process switching
     # NOTE: fork doesn't work on Mac, spawn is best because it works on Mac and is default on Windows
     mp.set_start_method('spawn')
-    p = mp.Pool()  # default number is mp.cpu_count()
+    p = mp.Pool(processes=input_file.num_processors)  # default number is mp.cpu_count()
 
     # get starting time from run.py
     start_prog = int(open('tmp/start_prog.txt', 'r').read())
@@ -72,11 +72,7 @@ def main():
                 ("two_var_scatterplot", data1['avg_k'], data1['total_pr'], "k", "perceived returns",
                  "perceived return vs cost for INVESTED ideas (plot to check for bias)", False)]
 
-    if input_file.use_multiprocessing:
-        p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
-    else:
-        for i in range(0, len(arg_list)):
-            func_distr(*arg_list[i])  # passes parameters in arg_list from list form to a series of arguments
+    p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
 
     # saves all of the images to an html file
     png_to_html()
