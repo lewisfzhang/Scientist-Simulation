@@ -2,6 +2,8 @@
   <dictionary name="stanford">
     <words>
       <w>dereferencing</w>
+      <w>forkserver</w>
+      <w>multithreading</w>
       <w>scatterplot</w>
     </words>
   </dictionary>

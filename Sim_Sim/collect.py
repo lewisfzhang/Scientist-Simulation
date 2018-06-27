@@ -73,6 +73,8 @@ def main():
                  "perceived return vs cost for INVESTED ideas (plot to check for bias)", False)]
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
+    p.close()
+    p.join()
 
     # saves all of the images to an html file
     png_to_html()

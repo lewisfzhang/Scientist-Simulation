@@ -1,1 +1,1 @@
-{'seed': 123456, 'use_multiprocessing': True, 'time_periods': 8, 'ideas_per_time': 5, 'N': 3, 'true_means_lam': 300, 'true_sds_lam': 48, 'start_effort_lam': 9, 'noise_factor': 1, 'k_lam': 3, 'time_periods_alive': 4}
+{'seed': 123456, 'use_multiprocessing': True, 'use_multithreading': False, 'time_periods': 8, 'ideas_per_time': 5, 'N': 3, 'true_means_lam': 300, 'true_sds_lam': 48, 'start_effort_lam': 9, 'noise_factor': 1, 'k_lam': 3, 'time_periods_alive': 4}

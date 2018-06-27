@@ -3,7 +3,8 @@
 from random import randint
 # randint(1000,9999) --> when necessary
 # to reproduce same data, use CONSTANT seed value
-# for randomization best practice
+# NOTE: with multithreading to instantiate scientists, seed does not guarantee same results due to variability
+# of the CPU resources at a certain time!
 seed = 123456  # randint(100000, 999999)
 
 # number of stable time_periods in the model
@@ -42,6 +43,9 @@ start = 0
 
 # whether we want parallel processing (depending if it works on the system being run)
 use_multiprocessing = True
+
+# where to instantiate multiple scientists simultaneously
+use_multithreading = True
 
 # Optimal processors by system
 # Mac w/ 4 cores --> 3

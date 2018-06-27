@@ -12,9 +12,11 @@ import pandas as pd
 import multiprocessing as mp
 import input_file
 import pickle
-from collections import Counter
+from collections import Counter, defaultdict
 from store import *
 from functools import partial
+import threading
+from multiprocessing.pool import ThreadPool
 
 
 # utility = important, don't run GC on it
@@ -45,10 +47,6 @@ class Scientist(Agent):
         # SCALAR: Each scientist is assigned a unique ID. We also use unique IDs to determine
         # scientists' ages and thus which scientists are alive in a given time period and which ideas they can invest in
         self.birth_order = math.ceil(unique_id / input_file.N)  # utility
-
-        # Check a scientist's age in the current time period
-        # NOTE: model time begins at 0
-        self.current_age = self.model.schedule.time - self.birth_order  # utility
 
         # create specific tmp directory for agent
         self.directory = 'tmp/agent_' + str(self.unique_id) + '/'
@@ -145,10 +143,6 @@ class Scientist(Agent):
                 # reset returns because scientists is not active
                 self.perceived_returns[:] = 0
                 self.actual_returns[:] = 0
-
-            # updating 0's to agent_df
-            # comment out to get more concise agent df that only displays active scientists in a TP
-            # self.update_agent_df()
 
             store_agent_arrays_tp(self)
             store_agent_arrays_data(self)
@@ -257,16 +251,21 @@ class ScientistModel(Model):
         # for each step of the model (i.e. within a time period, the order
         # in which young and old scientists get to invest in ideas is random)
         self.schedule = BaseScheduler(self)  # NOTE: doesn't skew results if not random due to call_back
+        self.agent_dict = defaultdict(int)
 
-        # creates Agent objects
-        # p = mp.Pool()
-        # scientists = p.starmap(scientist_creator, [(i, self) for i in range(1, self.num_scientists + 1)])
-        # p.close()
-        # p.join()
-
-        # adds Agent objects to the schedule
-        for i in range(1, self.num_scientists + 1):
-            self.schedule.add(Scientist(i, self))
+        # creates Agent objects and adds them to the schedule
+        # NOTE: with multithreading results will vary each time
+        if input_file.use_multithreading:
+            p = ThreadPool()
+            m = mp.Manager()
+            func = partial(create_scientists, m.Lock())
+            p.starmap(func, [(self, i) for i in range(1, self.num_scientists + 1)])
+            p.close()
+            p.join()
+        else:
+            for i in range(1, self.num_scientists + 1):
+                self.schedule.add(Scientist(i, self))
+                self.agent_dict[i] = i-1  # shift index one to the left
 
         # dereferencing variables
         self.k = None
@@ -298,7 +297,7 @@ class ScientistModel(Model):
             lock4 = m.Lock()  # for model df
             func = partial(mp_helper_spawn, [lock1, lock2, lock3, lock4])
             # split scientists by num_processes available
-            agent_list = list(chunks(range(0, self.num_scientists), input_file.num_processors))
+            agent_list = list(chunks(range(1, self.num_scientists+1), input_file.num_processors))
             p.starmap(func, [(self, i) for i in agent_list])
             p.close()
             p.join()
@@ -352,25 +351,27 @@ class ScientistModel(Model):
                                             "Actual Return": row['Actual Return']})
 
         # list that stores scientists who get returns (optional, see below)
-        # happy_scientist = []
+        happy_scientist = set()
 
         # update model data collecting variables, and back for the old scientist who won all the returns for the idea
         for idea_choice in list_dict:
             idx_id = int(idea_choice["Oldest ID"]) - 1  # shift to left 1 since scientist id's start from 1
             if idx_id != -1:  # only active ideas needed
-                # happy_scientist.append(idx_id)
-                self.schedule.agents[idx_id].update(idea_choice)
+                happy_scientist.add(idx_id)
+                self.schedule.agents[self.agent_dict[idx_id]].update(idea_choice)
 
         # updating data for remaining scientists who did not get any returns / inactive scientists
         # NOTE: OPTIONAL, only for agent_df. can speed up model simulation greatly if we don't care about
         # agent df with NaN for active scientists (happy_scientists would also be optional in this case)
-        # for i in list(set(range(self.num_scientists))-set(happy_scientist)):  # difference between two sets
-        #     self.schedule.agents[i].update(None)
+        # but then you wouldn't be able to see how much all scientists invested in this period
+        for i in list(set(range(1, self.num_scientists+1))-happy_scientist):  # difference between two sets
+            self.schedule.agents[self.agent_dict[i]].update(None)
 
         investing_queue = None
         list_dict = None
         idea_dict = None
         idea = None
+        happy_scientist = None
 
     # for data collecting after model has finished running
     def collect_vars(self):
@@ -412,4 +413,12 @@ def mp_helper_fork(lock, model, i):
 
 def mp_helper_spawn(lock, model, agent_list):
     for i in agent_list:
-        model.schedule.agents[i].step(lock)
+        model.schedule.agents[model.agent_dict[i]].step(lock)
+
+
+def create_scientists(lock, model, i):
+    a = Scientist(i, model)
+    lock.acquire()
+    model.agent_dict[i] = len(model.schedule.agents)  # index of the scientist in the schedule
+    model.schedule.add(a)
+    lock.release()
