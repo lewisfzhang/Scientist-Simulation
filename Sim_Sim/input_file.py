@@ -23,14 +23,14 @@ true_sds_lam = int(0.16 * true_means_lam)
 
 # agent constants (Use 0.03 for Windows due to GPU limit)
 # possibly try 0.05*N/100?
-start_effort_lam = int(0.03*true_means_lam)  # make sure this is >= 9 to ensure start_effort isn't too small
+start_effort_lam = int(0.2*true_means_lam)  # make sure this is >= 9 to ensure start_effort isn't too small
 
 # the amount of variance from the actual perceived return
 noise_factor = 1
 
 # keep k and start effort ratio fixed (see next line)
 # keep learning cost relatively low to promote new ideas (but model could still be flawed)
-k_lam = int(0.4*start_effort_lam)  # make sure this is still > 0
+k_lam = int(0.3*start_effort_lam)  # make sure this is still > 0
 
 # the number of TP a scientist can actively invest in ideas
 time_periods_alive = 4
@@ -44,14 +44,20 @@ start = 0
 # whether we want parallel processing (depending if it works on the system being run)
 use_multiprocessing = True
 
-# where to instantiate multiple scientists simultaneously
-use_multithreading = True
+# whether to instantiate multiple scientists simultaneously
+use_multithreading = False
 
-# Optimal processors by system
+# whether to store arrays
+use_store = True
+
+# Optimal processors by system (not exactly accurate)
 # Mac w/ 4 cores --> 3
 # Windows w/ 8 cores --> 3
 # Windows w/ 24 cores --> 8
-num_processors = 3
+num_processors = 4
+
+# whether to report all scientists in agent_df
+all_scientists = False
 
 # Potential variables for future use
 start_effort_decay = int(0.2*start_effort_lam)

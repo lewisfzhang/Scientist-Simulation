@@ -6,7 +6,7 @@ import timeit
 import glob
 import os
 # import resource
-from pympler import asizeof
+# from pympler import asizeof
 import gc
 
 
@@ -45,6 +45,15 @@ def create_return_matrix(num_ideas, sds, means, M, sds_lam, means_lam):
     return np.array(returns_list)
 
 
+def get_returns(idea, returns_info, start_idx, end_idx):
+    M = returns_info[0][idea]
+    sds = returns_info[1][idea]
+    means = returns_info[2][idea]
+    start = M * logistic_cdf(start_idx, loc=means, scale=sds)
+    end = M * logistic_cdf(end_idx, loc=means, scale=sds)
+    return end-start
+
+
 # for counting number of html pages generated
 def page_counter():
     input_file.count += 1
@@ -65,7 +74,7 @@ def append_list(big_list, small_list):
 def flatten_list(list_name):
     return_list = []
     for x in range(len(list_name)):
-        for idx,val in enumerate(list_name[x]):
+        for idx, val in enumerate(list_name[x]):
             return_list.append(val)
     return return_list
 
@@ -109,8 +118,8 @@ def png_to_html():
 
 
 # returns size of object
-def get_size(obj):
-    return asizeof.asizeof(obj)
+# def get_size(obj):
+#     return asizeof.asizeof(obj)
 
 
 # create directory in tmp if it doesn't already exist
@@ -133,3 +142,13 @@ def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
+
+def df_formatter(array, title):
+    s = ''
+    for idx, val in enumerate(array):
+        if val != 0:
+            s += "Idea "+str(idx)+", "+title+": "+str(round(val, 2))+"\r\n"
+    if s == '':
+        s = '-'
+    return s

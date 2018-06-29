@@ -50,7 +50,7 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
     fig, ax = plt.subplots(figsize=(high2-int(low2)+1, high1-int(low1)+1))  # swapping x and y has no effect on scatterplot
     im_graph = np.zeros((high2-int(low2)+1, high1-int(low1)+1))
     for i in range(num_cells):
-        if not withZero and agent2[i] == 0:
+        if not withZero and (agent2[i] == 0 or agent1[i] == 0):
             continue
         x = int(agent1[i] - low1)
         y = int(agent2[i] - low2)

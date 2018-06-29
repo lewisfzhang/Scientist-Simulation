@@ -3,13 +3,16 @@
 from model import *
 import input_file
 import timeit
+import time
 
 
 def main():
     # start runtime
     start_prog = timeit.default_timer()
+
+    create_directory('tmp/')
     with open('tmp/start_prog.txt', 'w')as f:
-        f.write('%d' % start_prog)
+        f.write('%d' % time.time())
 
     input_file.start = timeit.default_timer()
 
