@@ -8,6 +8,9 @@ import math
 import pandas as pd
 from functions import *
 import matplotlib as mpl
+from scipy.interpolate import spline
+import timeit
+import input_file
 
 
 # settings for images
@@ -73,12 +76,18 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
 # CONDITION: k array should be equal to length of perceived returns
 def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
     settings_small()
+    start = timeit.default_timer()
+    random.seed(input_file.seed)
     plt.figure(randint(1000, 9999))
     resid = np.asarray(actual)-np.asarray(perceived)
     agent_id = []
+    print('create resid', timeit.default_timer()-start)
+    start = timeit.default_timer()
     for array_idx in range(len(perceived_2d)):
         for i in range(len(perceived_2d[array_idx])):
             agent_id.append(array_idx+1)  # index shift
+    print('create agennt id', timeit.default_timer() - start)
+    start = timeit.default_timer()
     min_scale = int(min(resid))
     max_scale = int(max(resid))+1
     step = int((max_scale-min_scale)/10)+1
@@ -86,12 +95,22 @@ def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
     plt.xticks(np.arange(1, len(perceived_2d)+1, 1))
     plt.scatter(agent_id, resid)
     plt.axhline(0, color='black')
+    print('create scatter', timeit.default_timer() - start)
+    start = timeit.default_timer()
     labels(x_label, y_label, title)
     fig = plt.gcf()
     DPI = fig.get_dpi()
+    print('init dpi', timeit.default_timer() - start)
+    start = timeit.default_timer()
     fig.set_size_inches((2000.0+30*len(actual)) / float(DPI), 2000.0 / float(DPI))
+    print('set size', timeit.default_timer() - start)
+    start = timeit.default_timer()
     plt.savefig('web/images/scatterplot_resid')
+    print('save fig', timeit.default_timer() - start)
+    start = timeit.default_timer()
     plt.close()
+    print('time to finish', timeit.default_timer() - start)
+    start = timeit.default_timer()
     del actual, perceived, perceived_2d, resid, agent_id, fig
 
 
@@ -107,6 +126,7 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
         title = "Log of " + title
         vary = log_0(vary)
         step_y = 1
+    random.seed(input_file.seed)
     plt.figure(randint(1000,9999))
     max_y = max(vary)
     plt.scatter(varx, vary)
@@ -142,3 +162,43 @@ def two_var_bar_graph(data, x_label, y_label, title, linear):
     plt.savefig('web/images/2-var_bar_graph_young_old_'+name)
     plt.close()
     del data, fig, dict_data, df
+
+
+# plots like a scatterplot but also has a line
+# condition: y_var is a numpy array, not a list!
+def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
+    settings_big()
+    if average:
+        name = "average_"
+        y_var = divide_0(y_var, x_var)
+    else:
+        name = "total_"
+    if linear:
+        name += 'linear'
+    else:
+        name += 'exp'
+        y_label = "Log of " + y_label
+        title = "Log of " + title
+        y_var = log_0(y_var)
+    random.seed(input_file.seed)
+    plt.figure(randint(1000,9999))
+    x_var = np.arange(1, len(y_var))
+    x_smooth = np.linspace(x_var.min(), x_var.max(), 200)
+    y_smooth = spline(x_var, y_var[1:], x_smooth)
+    plt.plot(x_smooth, y_smooth)
+    plt.scatter(x_var, y_var[1:])
+    labels(x_label, y_label, title)
+    plt.savefig('web/images/line_graph_'+name)
+    plt.close()
+
+
+def one_var_bar_graph(data, x_label, y_label, title):
+    settings_big()
+    random.seed(input_file.seed)
+    plt.figure(randint(1000, 9999))
+    x_var = np.arange(len(data))
+    plt.bar(x_var, data, align='center', alpha=0.5)
+    labels(x_label, y_label, title)
+    plt.savefig('web/images/1-var_bar_graph_prop_age')
+    plt.close()
+    del data, x_var

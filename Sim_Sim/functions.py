@@ -8,6 +8,7 @@ import os
 # import resource
 # from pympler import asizeof
 import gc
+import ast
 
 
 # Input: Parameters for the logistic cumulative distribution function
@@ -62,13 +63,6 @@ def page_counter():
 
 def reset_counter():
     input_file.count = 0
-
-
-# appends lists in loop
-def append_list(big_list, small_list):
-    for i in range(len(small_list)):
-        big_list.append(small_list[i])
-    return big_list
 
 
 def flatten_list(list_name):
@@ -148,7 +142,11 @@ def df_formatter(array, title):
     s = ''
     for idx, val in enumerate(array):
         if val != 0:
-            s += "Idea "+str(idx)+", "+title+": "+str(round(val, 2))+"\r\n"
+            s += "{'idea': "+str(idx)+", '"+title+"': "+str(round(val, 2))+"}\r\n"
     if s == '':
         s = '-'
     return s
+
+
+def str_to_dict(s):
+    return ast.literal_eval(s)

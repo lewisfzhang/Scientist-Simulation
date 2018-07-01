@@ -3,7 +3,7 @@
 import numpy as np
 from functions import *
 from model import *
-from random import randint
+import random
 import input_file
 import pandas as pd
 import input_file
@@ -168,7 +168,8 @@ def calc_cum_returns(scientist, lock):
     # Array: finds the index of the maximum return over all the available ideas
     idx_max_return = np.where(np.asarray(final_perceived_returns_avail_ideas) == max_return)[0]
     # choosing random value out of all possible values
-    idea_choice = idx_max_return[randint(0, len(idx_max_return)-1)]
+    random.seed(input_file.seed)
+    idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
 
     # convert back from above
     actual_return = final_actual_returns_avail_ideas[idea_choice]
@@ -177,6 +178,9 @@ def calc_cum_returns(scientist, lock):
     scientist.model.final_perceived_returns_invested_ideas[scientist.unique_id-1].append(max_return)
     scientist.model.final_actual_returns_invested_ideas[scientist.unique_id-1].append(actual_return)
     scientist.model.final_k_invested_ideas[scientist.unique_id-1].append(scientist.curr_k[idea_choice])
+    scientist.model.final_marginal_invested_ideas[scientist.unique_id-1].append(scientist.marginal_effort[idea_choice])
+    scientist.model.final_scientist_id[scientist.unique_id-1].append(scientist.unique_id)
+    scientist.model.final_idea_idx[scientist.unique_id-1].append(idea_choice)
 
     store_model_lists(scientist.model, False, lock)
     final_perceived_returns_avail_ideas = None

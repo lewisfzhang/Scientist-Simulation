@@ -1,11 +1,12 @@
 # input_file.py
 
-from random import randint
-# randint(1000,9999) --> when necessary
+import random
+# random.seed(123456)
+# random.randint(1000,9999) --> when necessary
 # to reproduce same data, use CONSTANT seed value
 # NOTE: with multithreading to instantiate scientists, seed does not guarantee same results due to variability
 # of the CPU resources at a certain time!
-seed = 123456  # randint(100000, 999999)
+seed = 123456  # random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)

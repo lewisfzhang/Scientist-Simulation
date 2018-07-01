@@ -37,6 +37,7 @@ class Scientist(Agent):
 
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
+        np.random.seed(input_file.seed)
         self.start_effort = poisson(lam=input_file.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
@@ -59,12 +60,17 @@ class Scientist(Agent):
         # additional investment (so each scientist has different cost for each idea)
         #
         # plucking from random since scientists will inherently be better/worse than others at learning
+        random.seed(input_file.seed)
         self.sds = random.choice([i for i in range(5, 15)])  # follows N
+        random.seed(input_file.seed)
         self.means = random.choice([i for i in range(50, 150)])  # follows num_TP
+        np.random.seed(input_file.seed)
         self.k = np.rint(self.model.k * (np.random.normal(self.means, self.sds, self.model.total_ideas)/100))  # utility
 
         # ARRAY: error each scientist has for perceived compared to the true actual returns
+        random.seed(input_file.seed)
         self.sds = random.choice([i for i in range(1, 100)])
+        np.random.seed(input_file.seed)
         self.noise = input_file.noise_factor * np.random.normal(0, self.sds, model.total_ideas) / self.sds  # void
 
         # Arrays: parameters determining perceived returns for ideas, which are
@@ -211,10 +217,13 @@ class ScientistModel(Model):
         self.idea_periods = np.arange(self.total_ideas) // input_file.ideas_per_time  # utility
 
         # k is the learning cost for each idea
+        np.random.seed(input_file.seed)
         self.k = poisson(lam=input_file.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
 
         # Array: store parameters for true idea return distribution
+        np.random.seed(input_file.seed)
         self.true_sds = poisson(lam=input_file.true_sds_lam, size=self.total_ideas)  # void
+        np.random.seed(input_file.seed)
         self.true_means = poisson(lam=input_file.true_means_lam, size=self.total_ideas)  # void
 
         # Ensures that none of the standard devs are equal to 0, this is OKAY
@@ -222,6 +231,7 @@ class ScientistModel(Model):
 
         # M is a scalar that multiples based on each idea
         # not sure if this is redundant since we already have random poisson values for true_means and true_sds
+        np.random.seed(input_file.seed)
         self.M = poisson(lam=10000, size=self.total_ideas)  # void
 
         # creates actual returns matrix
@@ -247,6 +257,9 @@ class ScientistModel(Model):
         self.final_perceived_returns_invested_ideas = [[] for i in range(self.num_scientists)]
         self.final_k_invested_ideas = [[] for i in range(self.num_scientists)]
         self.final_actual_returns_invested_ideas = [[] for i in range(self.num_scientists)]
+        self.final_idea_idx = [[] for i in range(self.num_scientists)]
+        self.final_scientist_id = [[] for i in range(self.num_scientists)]
+        self.final_marginal_invested_ideas = [[] for i in range(self.num_scientists)]
 
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
@@ -404,23 +417,7 @@ class ScientistModel(Model):
         print("\n\n\ndone with step 9")
         start = timeit.default_timer()
 
-        # for i in range(1, self.num_scientists+1):
-        #     agent_directory = 'tmp/agent_'+str(i)+'/'
-        #     marginal_invested_by_scientist = np.load(agent_directory + 'marginal_invested_by_scientist.npy')
-        #     k_invested_by_scientist = np.load(agent.directory + 'k_invested_by_scientist.npy')
-        #     total_
-        # agent_total_dict = {
-        #
-        # }
-
         # PART 1
-        # reformat dfs
-        pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True) \
-            .replace("\\r\\n", "<br>", regex=True).to_pickle(self.directory+'agent_vars_df.pkl')
-        pd.read_pickle(self.directory + 'model_vars_df.pkl').replace(np.nan, '', regex=True) \
-            .replace("\\r\\n", "<br>", regex=True).transpose().to_pickle(self.directory+'model_vars_df.pkl')
-
-        # PART 2
         unpack_model_arrays_data(self, None)
         idea = range(0, self.total_ideas, 1)
         tp = np.arange(self.total_ideas) // input_file.ideas_per_time
@@ -440,18 +437,77 @@ class ScientistModel(Model):
                       "total_ar": total_actual_returns}
         pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(self.directory+'ideas.pkl')
         store_model_arrays_data(self, False, None)
+        del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns
 
-        # PART 3
+
+        # PART 2
         unpack_model_lists(self, None)
-        ind_ideas_dict = {"agent_k_invested_ideas": rounded_tuple(flatten_list(self.final_k_invested_ideas)),
+        ind_ideas_dict = {"idea_idx": rounded_tuple(flatten_list(self.final_idea_idx)),
+                          "scientist_id": rounded_tuple(flatten_list(self.final_scientist_id)),
+                          "agent_k_invested_ideas": rounded_tuple(flatten_list(self.final_k_invested_ideas)),
+                          "agent_marginal_invested_ideas": rounded_tuple(flatten_list(self.final_marginal_invested_ideas)),
                           "agent_perceived_return_invested_ideas": rounded_tuple(flatten_list(self.final_perceived_returns_invested_ideas)),
                           "agent_actual_return_invested_ideas": rounded_tuple(flatten_list(self.final_actual_returns_invested_ideas))}
         pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(self.directory+'ind_ideas.pkl')
         store_model_lists(self, False, None)
+        del ind_ideas_dict
 
-        del ind_ideas_dict, ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns
 
-        print("time elapsed:",timeit.default_timer()-start)
+        # PART 3
+        ind_vars = pd.read_pickle(self.directory + 'ind_ideas.pkl')
+        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl')
+
+        actual_returns = agent_vars[agent_vars['Actual Returns'].str.startswith("{", na=False)]['Actual Returns']
+
+        num_scientists = input_file.N * (input_file.time_periods + 1)  # same as in the model
+        # format of scientist_tracker: [agent_id][num_ideas_invested][total_returns]
+        returns_tracker = np.zeros(num_scientists)
+
+        # getting total returns from each scientists in their entire lifetime
+        # idx format: (step, agent id), val is a dictionary is in string format
+        for idx, val in actual_returns.items():
+            agent_id = idx[1]
+            val = val.replace("\\r\\n", "")
+            returns = str_to_dict(val)['returns']
+            returns_tracker[agent_id - 1] += returns
+            del agent_id, returns
+
+        curr_id = 1
+        counter_x = 0
+        x_var = [0]
+        y_var = [0]
+        for idx, val in enumerate(ind_vars['scientist_id']):
+            if curr_id != val:
+                curr_id = val
+                while len(x_var) <= counter_x:
+                    x_var.append(0)
+                    y_var.append(0)
+                x_var[counter_x] += 1
+                y_var[counter_x] += returns_tracker[curr_id - 1]
+                counter_x = 0
+            if ind_vars['agent_k_invested_ideas'][idx] != 0:
+                counter_x += 1
+        np.save(self.directory+'social_output.npy', np.asarray(y_var))
+        np.save(self.directory+'ideas_entered.npy', np.asarray(x_var))
+        del ind_vars, agent_vars, actual_returns, num_scientists, returns_tracker, curr_id, counter_x, x_var, y_var
+
+
+        # PART 4
+        agent_k = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)['Effort Invested In Period (K)']
+        # format: [prop paying k][total num of scientists] || two rows, TP_alive columns
+        age_tracker = np.zeros(2 * input_file.time_periods_alive).reshape(2, input_file.time_periods_alive)
+        for idx, val in agent_k.items():
+            curr_age = idx[0] - math.ceil(idx[1] / input_file.N)  # same as TP - birth order in agent step function
+            # if statements should only pass if curr_age is within range in the array
+            if val != '':
+                age_tracker[1][curr_age] += 1
+                if val[0] == '{':
+                    age_tracker[0][curr_age] += 1
+        prop_age = divide_0(age_tracker[0], age_tracker[1])
+        np.save(self.directory+'prop_age.npy', prop_age)
+        del prop_age, age_tracker, agent_k
+
+        print("time elapsed:", timeit.default_timer()-start)
 
 
 def mp_helper_spawn(lock, model, agent_list):

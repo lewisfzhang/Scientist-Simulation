@@ -62,6 +62,18 @@ def store_model_lists(model, isFirst, lock):
             pickle.dump(model.final_actual_returns_invested_ideas, fp)
         model.final_actual_returns_invested_ideas = None
 
+        with open(model.directory + "final_idea_idx.txt", "wb") as fp:
+            pickle.dump(model.final_idea_idx, fp)
+        model.final_idea_idx = None
+
+        with open(model.directory + "final_scientist_id.txt", "wb") as fp:
+            pickle.dump(model.final_scientist_id, fp)
+        model.final_scientist_id = None
+
+        with open(model.directory + "final_marginal_invested_ideas.txt", "wb") as fp:
+            pickle.dump(model.final_marginal_invested_ideas, fp)
+        model.final_marginal_invested_ideas = None
+
         if isFirst:
             np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
         model.actual_returns_matrix = None
@@ -115,6 +127,15 @@ def unpack_model_lists(model, lock):
 
         with open(model.directory + "final_actual_returns_invested_ideas.txt", "rb") as fp:
             model.final_actual_returns_invested_ideas = pickle.load(fp)
+
+        with open(model.directory + "final_scientist_id.txt", "rb") as fp:
+            model.final_scientist_id = pickle.load(fp)
+
+        with open(model.directory + "final_idea_idx.txt", "rb") as fp:
+            model.final_idea_idx = pickle.load(fp)
+
+        with open(model.directory + "final_marginal_invested_ideas.txt", "rb") as fp:
+            model.final_marginal_invested_ideas = pickle.load(fp)
 
         model.actual_returns_matrix = np.load(model.directory + 'actual_returns_matrix.npy')
 
