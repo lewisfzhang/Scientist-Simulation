@@ -186,11 +186,34 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
     plt.close()
 
 
-def one_var_bar_graph(data, x_label, y_label, title):
+def one_var_bar_graph(data, x_label, y_label, title, name):
     settings_big()
     x_var = np.arange(len(data))
     plt.bar(x_var, data, align='center', alpha=0.5)
     labels(x_label, y_label, title)
-    plt.savefig('web/images/1-var_bar_graph_prop_age')
+    plt.savefig('web/images/1-var_bar_graph_prop_'+name)
     plt.close()
     del data, x_var
+
+
+def two_var_line_graph(data, x_label, y_label, title, linear):
+    if linear:
+        name = 'linear'
+    else:
+        name = 'exp'
+        y_label = "Log of " + y_label
+        title = "Log of " + title
+        data[0] = log_0(data[0])
+        data[1] = log_0(data[1])
+    x_var = np.arange(len(data[0]))
+    x_smooth = np.linspace(x_var.min(), x_var.max(), 200)
+    y_smooth_1 = spline(x_var, data[0], x_smooth)
+    y_smooth_2 = spline(x_var, data[1], x_smooth)
+    plt.plot(x_smooth, y_smooth_1, color='red', label='Young')
+    plt.plot(x_smooth, y_smooth_2, color='blue', label='Old')
+    plt.scatter(x_var, data[0], color='red')
+    plt.scatter(x_var, data[1], color='blue')
+    labels(x_label, y_label, title)
+    plt.legend()
+    plt.savefig('web/images/line_graph_'+name)
+    plt.close()

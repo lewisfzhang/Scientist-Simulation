@@ -35,6 +35,8 @@ def main():
     social_output = np.load(model_directory + 'social_output.npy')
     ideas_entered = np.load(model_directory + 'ideas_entered.npy')
     prop_age = np.load(model_directory + 'prop_age.npy')
+    prop_idea = np.load(model_directory + 'prop_idea.npy')
+    marginal_effort_by_age = np.load(model_directory + 'marginal_effort_by_age.npy')
     with open(model_directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         final_perceived_returns_invested_ideas = pickle.load(fp)
 
@@ -99,7 +101,14 @@ def main():
                 # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
                 #  "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
-                ("one_var_bar_graph", prop_age, "age", "fraction paying k", "Proportion of Scientists Paying to Learn By Age")]
+                ("one_var_bar_graph", prop_age, "scientist age", "fraction paying k",
+                 "Proportion of Scientists Paying to Learn By Age", "age"),
+
+                ("one_var_bar_graph", prop_idea, "age of idea", "proportion of scientists working on the idea",
+                 "Proportion of Scientists Working Based on Age of Idea", "idea"),
+
+                ("two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
+                 "Effort Invested By Ages of Ideas and Scientists", False)]
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
     p.close()
@@ -169,6 +178,8 @@ def func_distr(graph_type, *other):
         two_var_bar_graph(*other)
     elif graph_type == "one_var_bar_graph":
         one_var_bar_graph(*other)
+    elif graph_type == "two_var_line_graph":
+        two_var_line_graph(*other)
 
     gc_collect()
     stop = timeit.default_timer()

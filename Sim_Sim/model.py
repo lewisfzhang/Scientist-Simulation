@@ -524,6 +524,46 @@ class ScientistModel(Model):
         np.save(self.directory+'prop_age.npy', prop_age)
         del prop_age, age_tracker, agent_vars
 
+
+        # PART 5
+        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)
+        agent_marg = agent_vars[agent_vars['Effort Invested In Period (Marginal)'].str.startswith("{", na=False)]['Effort Invested In Period (Marginal)']
+        self.idea_periods = np.load(self.directory + "idea_periods.npy")
+
+        marginal_effort = [[0, 0]]  # format: [young, old]
+        prop_idea = [0]
+        total_ideas = 0
+        for idx, val in agent_marg.items():
+            last_bracket = 0
+            for i in range(val.count('idea')):
+                left_bracket = val[last_bracket:].index('{')
+                right_bracket = val[last_bracket:].index('}') + 1
+                effort = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['effort']
+                idea = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['idea']
+                last_bracket = right_bracket
+
+                idea_age = idx[0] - self.idea_periods[idea]  # current tp - tp born
+                curr_age = idx[0] - math.ceil(idx[1] / input_file.N)  # same as model TP - scientist birth order
+                rel_age = int(curr_age * 2 / input_file.time_periods_alive)  # halflife defines young vs old
+
+                while len(marginal_effort) <= idea_age:
+                    marginal_effort.append([0, 0])
+                    prop_idea.append(0)
+
+                marginal_effort[idea_age][rel_age] += effort
+                prop_idea[idea_age] += 1
+                total_ideas += 1
+
+        prop_idea = np.asarray(prop_idea) / total_ideas
+        marginal_effort = flatten_list((marginal_effort))
+        marginal_effort = np.asarray([marginal_effort[::2], marginal_effort[1::2]])
+        np.save(self.directory + "marginal_effort_by_age.npy", marginal_effort)
+        np.save(self.directory + "prop_idea.npy", prop_idea)
+
+
+        # PART 6
+
+
         print("time elapsed:", timeit.default_timer()-start)
 
 
