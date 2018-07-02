@@ -37,7 +37,7 @@ class Scientist(Agent):
 
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
-        np.random.seed(input_file.seed)
+        np.random.seed(input_file.seed_array[unique_id][0])
         self.start_effort = poisson(lam=input_file.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
@@ -55,23 +55,27 @@ class Scientist(Agent):
         self.directory = 'tmp/agent_' + str(self.unique_id) + '/'
         create_directory(self.directory)
 
+        random.seed(input_file.seed_array[unique_id][1])
+        self.sds = random.choice([i for i in range(5, 15)])  # follows N
+
+        random.seed(input_file.seed_array[unique_id][2])
+        self.means = random.choice([i for i in range(50, 150)])  # follows num_TP
+
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
         # additional investment (so each scientist has different cost for each idea)
         #
         # plucking from random since scientists will inherently be better/worse than others at learning
-        random.seed(input_file.seed)
-        self.sds = random.choice([i for i in range(5, 15)])  # follows N
-        random.seed(input_file.seed)
-        self.means = random.choice([i for i in range(50, 150)])  # follows num_TP
-        np.random.seed(input_file.seed)
+        np.random.seed(input_file.seed_array[unique_id][3])
         self.k = np.rint(self.model.k * (np.random.normal(self.means, self.sds, self.model.total_ideas)/100))  # utility
 
         # ARRAY: error each scientist has for perceived compared to the true actual returns
-        random.seed(input_file.seed)
-        self.sds = random.choice([i for i in range(1, 100)])
-        np.random.seed(input_file.seed)
-        self.noise = input_file.noise_factor * np.random.normal(0, self.sds, model.total_ideas) / self.sds  # void
+        random.seed(input_file.seed_array[unique_id][4])
+        self.sds = random.choice([i for i in range(1, input_file.end_limit)])
+
+        # ARRAY: the 'noise' or error based on each specific scientist
+        np.random.seed(input_file.seed_array[unique_id][5])
+        self.noise = np.random.normal(0, self.sds, model.total_ideas)  # void
 
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
@@ -97,6 +101,10 @@ class Scientist(Agent):
         self.perceived_returns = np.zeros(self.model.total_ideas)  # utility
         self.actual_returns = np.zeros(self.model.total_ideas)  # utility
 
+        # two new data collecting variables for the TP used in update() function
+        self.perceived_returns_tp = np.zeros(self.model.total_ideas)
+        self.actual_returns_tp = np.zeros(self.model.total_ideas)
+
         # Array: keeps track of effort invested ONLY during the current time period
         # NOTE: resets to 0 after each time period and DOES include investment costs
         self.eff_inv_in_period_k = np.zeros(self.model.total_ideas)  # utility
@@ -117,9 +125,11 @@ class Scientist(Agent):
             unpack_agent_arrays(self)
             unpack_agent_arrays_tp(self)
 
-            # reset effort in new time period
+            # reset effort and returns in new time period
             self.eff_inv_in_period_k[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
+            self.perceived_returns_tp[:] = 0
+            self.actual_returns_tp[:] = 0
 
             # reset effort
             self.avail_effort = self.start_effort
@@ -158,8 +168,6 @@ class Scientist(Agent):
     def update(self, df_row):
         unpack_agent_arrays_data(self)
         unpack_agent_arrays_tp(self)
-        self.perceived_returns_tp = np.zeros(self.model.total_ideas)
-        self.actual_returns_tp = np.zeros(self.model.total_ideas)
         if df_row is not None:
             # Updates parameters after idea selection and effort expenditure
             # NOTE: self.avail_effort and self.eff_inv_in_period should be
@@ -172,10 +180,7 @@ class Scientist(Agent):
             self.actual_returns[idea] += df_row['Actual Return']
             self.actual_returns_tp[idea] += df_row['Actual Return']
             idea = None
-
         self.update_agent_df()
-        self.perceived_returns_tp = None
-        self.actual_returns_tp = None
         store_agent_arrays_data(self)
         store_agent_arrays_tp(self)
 
@@ -189,6 +194,9 @@ class Scientist(Agent):
                     'Effort Invested In Period (Marginal)': df_formatter(self.eff_inv_in_period_marginal, "effort"),
                     'Perceived Returns': df_formatter(self.perceived_returns_tp, "returns"),
                     'Actual Returns': df_formatter(self.actual_returns_tp, "returns")}
+        # s = df_formatter(self.perceived_returns_tp, "returns")
+        # if s != '-':
+        #     print(s)
         df_agent.loc[self.model.schedule.time].loc[self.unique_id] = new_data
         df_agent.to_pickle(self.model.directory+'agent_vars_df.pkl')
 
@@ -217,22 +225,22 @@ class ScientistModel(Model):
         self.idea_periods = np.arange(self.total_ideas) // input_file.ideas_per_time  # utility
 
         # k is the learning cost for each idea
-        np.random.seed(input_file.seed)
+        np.random.seed(input_file.seed_array[0][0])
         self.k = poisson(lam=input_file.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
 
         # Array: store parameters for true idea return distribution
-        np.random.seed(input_file.seed)
+        np.random.seed(input_file.seed_array[0][1])
         self.true_sds = poisson(lam=input_file.true_sds_lam, size=self.total_ideas)  # void
-        np.random.seed(input_file.seed)
+        np.random.seed(input_file.seed_array[0][2])
         self.true_means = poisson(lam=input_file.true_means_lam, size=self.total_ideas)  # void
 
         # Ensures that none of the standard devs are equal to 0, this is OKAY
-        self.true_sds += 1 + input_file.noise_factor  # void
+        self.true_sds += 1  # void
 
         # M is a scalar that multiples based on each idea
         # not sure if this is redundant since we already have random poisson values for true_means and true_sds
-        np.random.seed(input_file.seed)
-        self.M = poisson(lam=10000, size=self.total_ideas)  # void
+        np.random.seed(input_file.seed_array[0][3])
+        self.M = 100 * poisson(lam=100, size=self.total_ideas)  # void
 
         # creates actual returns matrix
         self.actual_returns_matrix = np.asarray([self.M, self.true_sds, self.true_means])  # utility
@@ -293,7 +301,6 @@ class ScientistModel(Model):
         store_model_arrays_data(self, True, None)
         store_model_lists(self, True, None)
 
-
     def step(self):
         # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
         #               actual_return, scientist.unique_id
@@ -310,7 +317,7 @@ class ScientistModel(Model):
             lock1 = m.Lock()  # for model_arrays
             lock2 = m.Lock()  # for model_arrays_data
             lock3 = m.Lock()  # for model_lists
-            lock4 = m.Lock()  # for model df
+            lock4 = m.Lock()  # for model investing queue df
             func = partial(mp_helper_spawn, [lock1, lock2, lock3, lock4])
             # split scientists by num_processes available
             agent_list = list(chunks(range(1, self.num_scientists+1), input_file.num_processors))
@@ -359,7 +366,8 @@ class ScientistModel(Model):
         # young scientists get 0 returns, old scientists get all of the returns
         for index, row in investing_queue.iterrows():
             idx_idea = int(row['Idea Choice'])
-            if list_dict[idx_idea]['Oldest ID'] < row['ID']:
+            # NOTE: OLDER SCIENTIST HAS THE YOUNGER UNIQUE ID!!!
+            if list_dict[idx_idea]['Oldest ID'] > row['ID']:
                 list_dict[idx_idea]['Oldest ID'] = row['ID']
 
             # update current stats for idea_dict
@@ -386,8 +394,9 @@ class ScientistModel(Model):
         # update model data collecting variables, and back for the old scientist who won all the returns for the idea
         for idx, idea_choice in enumerate(list_dict):
             idx_id = int(idea_choice["Oldest ID"])
-            if idx_id != 0:  # only active ideas needed
+            if idx_id != self.num_scientists + 1:  # only active ideas needed
                 happy_scientist.add(idx_id)
+                # print('\nid',idx_id,'idea',idea_choice['Idea Choice'])
                 self.schedule.agents[self.agent_dict[idx_id]].update(idea_choice)
 
         # updating data for remaining scientists who did not get any returns / inactive scientists
@@ -467,10 +476,14 @@ class ScientistModel(Model):
         # idx format: (step, agent id), val is a dictionary is in string format
         for idx, val in actual_returns.items():
             agent_id = idx[1]
-            val = val.replace("\\r\\n", "")
-            returns = str_to_dict(val)['returns']
-            returns_tracker[agent_id - 1] += returns
-            del agent_id, returns
+            last_bracket = 0
+            for i in range(val.count('idea')):
+                left_bracket = val[last_bracket:].index('{')
+                right_bracket = val[last_bracket:].index('}') + 1
+                returns = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['returns']
+                last_bracket = right_bracket
+                returns_tracker[agent_id - 1] += returns
+            del agent_id, returns, last_bracket, left_bracket
 
         curr_id = 1
         counter_x = 0
@@ -493,19 +506,23 @@ class ScientistModel(Model):
 
 
         # PART 4
-        agent_k = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)['Effort Invested In Period (K)']
+        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)
         # format: [prop paying k][total num of scientists] || two rows, TP_alive columns
         age_tracker = np.zeros(2 * input_file.time_periods_alive).reshape(2, input_file.time_periods_alive)
-        for idx, val in agent_k.items():
+        for idx, val in agent_vars['Effort Invested In Period (K)'].items():
             curr_age = idx[0] - math.ceil(idx[1] / input_file.N)  # same as TP - birth order in agent step function
             # if statements should only pass if curr_age is within range in the array
             if val != '':
-                age_tracker[1][curr_age] += 1
+                # total number of ideas / occurrences
+                num_ideas = agent_vars.loc[idx[0]].loc[idx[1]]['Effort Invested In Period (Marginal)'].count('idea')
+                age_tracker[1][curr_age] += num_ideas  # DEPENDS ON WHAT JAY WANTS --> (could use 1)
+
+                # checks those that paid k
                 if val[0] == '{':
-                    age_tracker[0][curr_age] += 1
+                    age_tracker[0][curr_age] += val.count('idea')
         prop_age = divide_0(age_tracker[0], age_tracker[1])
         np.save(self.directory+'prop_age.npy', prop_age)
-        del prop_age, age_tracker, agent_k
+        del prop_age, age_tracker, agent_vars
 
         print("time elapsed:", timeit.default_timer()-start)
 

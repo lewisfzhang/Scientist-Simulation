@@ -77,8 +77,6 @@ def im_graph(agent1, agent2, x_label, y_label, title, withZero, file_name, linea
 def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
     settings_small()
     start = timeit.default_timer()
-    random.seed(input_file.seed)
-    plt.figure(randint(1000, 9999))
     resid = np.asarray(actual)-np.asarray(perceived)
     agent_id = []
     print('create resid', timeit.default_timer()-start)
@@ -126,8 +124,6 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
         title = "Log of " + title
         vary = log_0(vary)
         step_y = 1
-    random.seed(input_file.seed)
-    plt.figure(randint(1000,9999))
     max_y = max(vary)
     plt.scatter(varx, vary)
     labels(x_label, y_label, title)
@@ -180,8 +176,6 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
         y_label = "Log of " + y_label
         title = "Log of " + title
         y_var = log_0(y_var)
-    random.seed(input_file.seed)
-    plt.figure(randint(1000,9999))
     x_var = np.arange(1, len(y_var))
     x_smooth = np.linspace(x_var.min(), x_var.max(), 200)
     y_smooth = spline(x_var, y_var[1:], x_smooth)
@@ -194,8 +188,6 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
 
 def one_var_bar_graph(data, x_label, y_label, title):
     settings_big()
-    random.seed(input_file.seed)
-    plt.figure(randint(1000, 9999))
     x_var = np.arange(len(data))
     plt.bar(x_var, data, align='center', alpha=0.5)
     labels(x_label, y_label, title)

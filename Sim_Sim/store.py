@@ -188,6 +188,12 @@ def store_agent_arrays_tp(agent):
         np.save(agent.directory + 'eff_inv_in_period_marginal.npy', agent.eff_inv_in_period_marginal)
         agent.eff_inv_in_period_marginal = None
 
+        np.save(agent.directory + 'perceived_returns_tp.npy', agent.perceived_returns_tp)
+        agent.perceived_returns_tp = None
+
+        np.save(agent.directory + 'actual_returns_tp.npy', agent.actual_returns_tp)
+        agent.actual_returns_tp = None
+
 
 def unpack_agent_arrays(agent):
     if input_file.use_store:
@@ -213,12 +219,18 @@ def unpack_agent_arrays_tp(agent):
 
         agent.k_invested_by_scientist = np.load(agent.directory + 'k_invested_by_scientist.npy')
 
+        agent.perceived_returns_tp = np.load(agent.directory + 'perceived_returns_tp.npy')
+
+        agent.actual_returns_tp = np.load(agent.directory + 'actual_returns_tp.npy')
+
 
 def create_list_dict(model):
     list_dict = []
     for i in range(model.total_ideas):
         # Counter class can be treated as a dictionary, but useful for adding dicts
-        idea_dict = Counter({"Idea Choice": i, "Max Return": 0, "Actual Return": 0, "Oldest ID": 0, "Updated": False})
+        # NOTE: model.num_scientists+1 is one greater than the 'greatest'/'last' scientist's id
+        idea_dict = Counter({"Idea Choice": i, "Max Return": 0, "Actual Return": 0,
+                             "Oldest ID": model.num_scientists+1, "Updated": False})
         list_dict.append(idea_dict)
 
     with open(model.directory + "list_dict.txt", "wb") as fp:

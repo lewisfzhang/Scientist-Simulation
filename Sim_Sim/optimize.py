@@ -16,7 +16,7 @@ def greedy_investing(scientist, lock):
     # temp df for ideas scientist has invested in
     temp_df = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID'])
 
-    if input_file.use_multiprocessing and lock[0] is not None:
+    if input_file.use_multiprocessing and lock[0] is not None:  # corresponding checks if we are using multiprocessing
         lock[0].acquire()
         scientist.total_effort_start = np.load(scientist.model.directory + 'total_effort.npy')
         lock[0].release()
@@ -168,7 +168,7 @@ def calc_cum_returns(scientist, lock):
     # Array: finds the index of the maximum return over all the available ideas
     idx_max_return = np.where(np.asarray(final_perceived_returns_avail_ideas) == max_return)[0]
     # choosing random value out of all possible values
-    random.seed(input_file.seed)
+    random.seed(input_file.seed_array[scientist.unique_id][scientist.model.schedule.time+4])
     idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
 
     # convert back from above

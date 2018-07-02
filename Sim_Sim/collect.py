@@ -40,25 +40,25 @@ def main():
 
     arg_list = [("agent", agent_vars), ("model", model_vars), ("ideas", ideas), ("ind_ideas", ind_ideas),
 
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
-                 "perceived returns",
-                 "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "perceived", True),
-
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
-                 "perceived returns",
-                 "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "perceived", False),
-
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
-                 "actual returns",
-                 "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "actual", True),
-
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
-                 "actual returns",
-                 "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "actual", False),
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
+                #  "perceived returns",
+                #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                #  "perceived", True),
+                #
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
+                #  "perceived returns",
+                #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                #  "perceived", False),
+                #
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
+                #  "actual returns",
+                #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                #  "actual", True),
+                #
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
+                #  "actual returns",
+                #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                #  "actual", False),
 
                 # COMMENTED OUT PARAMS ARE GRAPHS THAT PLOT FOR EACH INDIVIDUAL SCIENTIST THAT AREN"T WORTH GRAPHING
                 # (they take a lot of time to graph since there's so many scientists but they don't tell use anything)
@@ -78,23 +78,26 @@ def main():
                 # ("two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
                 #  "perceived return vs cost for INVESTED ideas (plot to check for bias)", True),
 
-                ("two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
-                 "perceived return vs cost for INVESTED ideas (plot to check for bias)", False),
-
-                # puts the above scatterplot in perspective with other imgraphs
-                # this is for invested ideas across all scientists/tp while the other ones are just all the ideas that
-                # scientists invested in
-                ("im_graph", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
-                 "(IM) perceived return vs cost for INVESTED ideas (plot to check for bias)", False, "IM", False),
+                # ("two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
+                #  "perceived return vs cost for INVESTED ideas (plot to check for bias)", False),
+                #
+                # # puts the above scatterplot in perspective with other imgraphs
+                # # this is for invested ideas across all scientists/tp while the other ones are just all the ideas that
+                # # scientists invested in
+                # ("im_graph", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
+                #  "(IM) perceived return vs cost for INVESTED ideas (plot to check for bias)", False, "IM", False),
+                #
+                # ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime", "total research output",
+                #  "Average Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                #
+                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
+                #  "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", False),
 
                 ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime", "total research output",
-                 "Average Research Output Vs # Of Ideas Entered in Lifetime", False),
+                 "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
-                ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
-                 "Total Research Output Vs # Of Ideas Entered in Lifetime", False),
-
-                ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime", "total research output",
-                 "Average Research Output Vs # Of Ideas Entered in Lifetime", True),
+                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
+                #  "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
                 ("one_var_bar_graph", prop_age, "age", "fraction paying k", "Proportion of Scientists Paying to Learn By Age")]
 
