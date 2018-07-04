@@ -1,4 +1,4 @@
-# input_file.py
+# config.py
 
 from random import randint
 # randint(1000,9999) --> when necessary

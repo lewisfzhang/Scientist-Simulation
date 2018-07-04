@@ -1,7 +1,7 @@
 # functions.py
 
 import numpy as np
-import input_file
+import config
 import timeit
 import glob
 import os
@@ -61,12 +61,12 @@ def second_largest(numbers):
 
 # for counting number of html pages generated
 def page_counter():
-    input_file.count += 1
-    return input_file.count
+    config.count += 1
+    return config.count
 
 
 def reset_counter():
-    input_file.count = 0
+    config.count = 0
 
 
 # appends lists in loop
@@ -88,8 +88,8 @@ def flatten_list(list_name):
 def stop_run():
     # end runtime
     stop = timeit.default_timer()
-    print("Elapsed runtime: ", stop - input_file.start, "seconds")
-    input_file.start = stop
+    print("Elapsed runtime: ", stop - config.start, "seconds")
+    config.start = stop
 
 
 # np.log() that handles 0 (and very small values that will return infinity)

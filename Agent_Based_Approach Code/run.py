@@ -2,7 +2,7 @@
 
 from functions import *
 from model import *
-import input_file
+import config
 import numpy as np
 from run_graphs import *
 import pandas as pd
@@ -14,30 +14,30 @@ import gc
 def main():
     # start runtime
     start = timeit.default_timer()
-    input_file.start = timeit.default_timer()
+    config.start = timeit.default_timer()
 
     # whether we want parallel processing (depending if it works on the system being run)
     use_multiprocessing = True
 
     # number of processors for multiprocessing
-    num_processors = input_file.num_processors
+    num_processors = config.num_processors
 
     # import variables from input_file
-    seed = input_file.seed
-    time_periods = input_file.time_periods
-    ideas_per_time = input_file.ideas_per_time
-    N = input_file.N
-    max_investment_lam = input_file.max_investment_lam
-    true_sds_lam = input_file.true_sds_lam
-    true_means_lam = input_file.true_means_lam
+    seed = config.seed
+    time_periods = config.time_periods
+    ideas_per_time = config.ideas_per_time
+    N = config.N
+    max_investment_lam = config.max_investment_lam
+    true_sds_lam = config.true_sds_lam
+    true_means_lam = config.true_means_lam
 
-    start_effort_lam = input_file.start_effort_lam
-    start_effort_decay = input_file.start_effort_decay
-    noise_factor = input_file.noise_factor
-    k_lam = input_file.k_lam
-    sds_lam = input_file.sds_lam
-    means_lam = input_file.means_lam
-    time_periods_alive = input_file.time_periods_alive
+    start_effort_lam = config.start_effort_lam
+    start_effort_decay = config.start_effort_decay
+    noise_factor = config.noise_factor
+    k_lam = config.k_lam
+    sds_lam = config.sds_lam
+    means_lam = config.means_lam
+    time_periods_alive = config.time_periods_alive
 
     # default parameters for modelas a dictionary
     all_params = {"time_periods": time_periods, "ideas_per_time": ideas_per_time, "N": N,
