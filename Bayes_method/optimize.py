@@ -11,14 +11,18 @@ from store import *
 
 
 # scientist chooses the idea that returns the most at each step
-def greedy_investing(scientist, lock):
+def investing_helper(scientist, lock):
     # load arrays needed
     # temp df for ideas scientist has invested in
     temp_df = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID'])
 
     if config.use_multiprocessing and lock[0] is not None:  # corresponding checks if we are using multiprocessing
         lock[0].acquire()
+    if config.use_store:
         scientist.total_effort_start = np.load(scientist.model.directory + 'total_effort.npy')
+    else:
+        scientist.total_effort_start = np.copy(scientist.model.total_effort)
+    if config.use_multiprocessing and lock[0] is not None:
         lock[0].release()
 
     # Scientists continue to invest in ideas until they run out of
@@ -103,9 +107,9 @@ def greedy_investing(scientist, lock):
     # appending current dataframe to model investing queue
     if config.use_multiprocessing:
         lock[2].acquire()
-    investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
+    investing_queue = pd.read_pickle(scientist.model.directory + 'investing_queue.pkl')
     investing_queue = investing_queue.append(temp_df, ignore_index=True)
-    investing_queue.to_pickle('tmp/model/investing_queue.pkl')
+    investing_queue.to_pickle(scientist.model.directory + 'investing_queue.pkl')
     if config.use_multiprocessing:
         lock[2].release()
 

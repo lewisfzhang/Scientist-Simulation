@@ -10,19 +10,19 @@ def main():
     # start runtime
     start_prog = timeit.default_timer()
 
-    create_directory('tmp/')
-    with open('tmp/start_prog.txt', 'w')as f:
+    create_directory(config.tmp_loc)
+    with open(config.tmp_loc + 'start_prog.txt', 'w')as f:
         f.write('%d' % time.time())
 
     config.start = timeit.default_timer()
 
     # default parameters for model as a dictionary
     all_params = {"seed": config.seed, "use_multiprocessing": config.use_multiprocessing,
-                  "use_multithreading": config.use_multithreading, "time_periods": config.time_periods,
+                  "use_store": config.use_store, "time_periods": config.time_periods,
                   "ideas_per_time": config.ideas_per_time, "N": config.N,
-                  "true_means_lam": config.true_means_lam, "true_sds_lam": config.true_sds_lam,
-                  "start_effort_lam": config.start_effort_lam,
-                  "k_lam": config.k_lam, "time_periods_alive": config.time_periods_alive}
+                  "time_periods_alive": config.time_periods_alive, "true_means_lam": config.true_means_lam,
+                  "true_sds_lam": config.true_sds_lam, "start_effort_lam": config.start_effort_lam,
+                  "k_lam": config.k_lam, "use_multithreading": config.use_multithreading}
 
     # initialize model object
     model = ScientistModel(config.seed)

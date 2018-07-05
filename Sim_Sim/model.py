@@ -52,7 +52,7 @@ class Scientist(Agent):
         self.birth_order = math.ceil(unique_id / config.N)  # utility
 
         # create specific tmp directory for agent
-        self.directory = config.tmp_loc['agent'] + str(self.unique_id) + '/'
+        self.directory = config.tmp_loc + 'agent_' + str(self.unique_id) + '/'
         create_directory(self.directory)
 
         random.seed(config.seed_array[unique_id][1])
@@ -141,7 +141,7 @@ class Scientist(Agent):
             self.avail_ideas = np.logical_not(self.model.idea_periods > self.model.schedule.time)
             store_model_arrays(self.model, False, lock[0])
 
-            greedy_investing(self, lock[1:])  # all locks except the first
+            investing_helper(self, lock[1:])  # all locks except the first
 
             del self.avail_ideas
             store_agent_arrays(self)
@@ -185,8 +185,6 @@ class Scientist(Agent):
         store_agent_arrays_tp(self)
 
     def update_agent_df(self):
-        # updating agent dataframe
-        df_agent = pd.read_pickle('tmp/model/agent_vars_df.pkl')
         # format: TP Born, Total effort invested, Effort invested in period (increment),
         #         Effort invested in period (marginal), Perceived returns, Actual returns
         new_data = {'TP Born': self.birth_order,
@@ -194,14 +192,17 @@ class Scientist(Agent):
                     'Effort Invested In Period (Marginal)': df_formatter(self.eff_inv_in_period_marginal, "effort"),
                     'Perceived Returns': df_formatter(self.perceived_returns_tp, "returns"),
                     'Actual Returns': df_formatter(self.actual_returns_tp, "returns")}
-        # s = df_formatter(self.perceived_returns_tp, "returns")
-        # if s != '-':
-        #     print(s)
-        df_agent.loc[self.model.schedule.time].loc[self.unique_id] = new_data
-        df_agent.to_pickle(self.model.directory+'agent_vars_df.pkl')
+        if config.use_store:
+            # updating agent dataframe
+            df_agent = pd.read_pickle(self.model.directory + 'agent_vars_df.pkl')
+            df_agent.loc[self.model.schedule.time].loc[self.unique_id] = new_data
+            df_agent.to_pickle(self.model.directory+'agent_vars_df.pkl')
+            del df_agent
+        else:
+            self.model.agent_df.loc[self.model.schedule.time].loc[self.unique_id] = new_data
 
         # Dereferencing variables
-        del df_agent, new_data
+        del new_data
 
 
 class ScientistModel(Model):
@@ -209,7 +210,7 @@ class ScientistModel(Model):
         super().__init__(seed)
 
         # create specific tmp directory for model
-        self.directory = config.tmp_loc['model']
+        self.directory = config.tmp_loc + 'model/'
         create_directory(self.directory)
 
         # Scalar: indicates the total number of scientists in the model
@@ -300,8 +301,11 @@ class ScientistModel(Model):
     def step(self):
         # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
         #               actual_return, scientist.unique_id
-        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID']).to_pickle('tmp/model/investing_queue.pkl')
-        self.total_effort_start = np.load(self.directory + 'total_effort.npy')
+        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID']).to_pickle(self.directory + 'investing_queue.pkl')
+        if config.use_store:
+            self.total_effort_start = np.load(self.directory + 'total_effort.npy')
+        else:
+            self.total_effort_start = np.copy(self.total_effort)
 
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
@@ -342,19 +346,28 @@ class ScientistModel(Model):
         self.process_winners()
 
         # updating model dataframe
-        df_model = pd.read_pickle(self.directory+'model_vars_df.pkl')
-        df_model.loc[self.schedule.time] = [df_formatter(self.total_effort, "effort"),
-                                            "Young:\r\n" + df_formatter(self.effort_invested_by_age[0], "effort")
-                                            + "\r\nOld:\r\n" + df_formatter(self.effort_invested_by_age[0], "effort")]
-        df_model.to_pickle(self.directory+'model_vars_df.pkl')
-        del df_model
+        data_list = [df_formatter(self.total_effort, "effort"),
+                     "Young:\r\n" + df_formatter(self.effort_invested_by_age[0], "effort")
+                     + "\r\nOld:\r\n" + df_formatter(self.effort_invested_by_age[0], "effort")]
+        if config.use_store:
+            df_model = pd.read_pickle(self.directory+'model_vars_df.pkl')
+            df_model.loc[self.schedule.time] = data_list
+            df_model.to_pickle(self.directory+'model_vars_df.pkl')
+            del df_model
+        else:
+            self.model_df.loc[self.schedule.time] = data_list
+
         store_model_arrays_data(self, False, None)
+        del data_list
 
     def process_winners(self):
-        investing_queue = pd.read_pickle('tmp/model/investing_queue.pkl')
+        investing_queue = pd.read_pickle(self.directory + 'investing_queue.pkl')
 
         # initializing list of dictionaries with returns and investments for each idea in the TP
         list_dict = new_list_dict(self)
+
+        if config.use_store:
+            self.actual_returns_matrix = np.load(self.directory + 'actual_returns_matrix.npy')
 
         # iterating through all investments by each scientists
         # young scientists get 0 returns, old scientists get all of the returns
@@ -369,18 +382,18 @@ class ScientistModel(Model):
                 stop_index = int(self.total_effort[idx_idea])
                 start_index = int(self.total_effort_start[idx_idea])
 
-                self.actual_returns_matrix = np.load(self.directory + 'actual_returns_matrix.npy')
                 actual_return = get_returns(idx_idea, self.actual_returns_matrix, start_index, stop_index)
 
-                list_dict[idx_idea] += Counter({"Actual Return": actual_return})
+                list_dict[idx_idea]['Actual Return'] += actual_return
                 self.total_actual_returns[idx_idea] += actual_return
 
                 list_dict[idx_idea]["Updated"] = True  # so it never runs again
-                del stop_index, start_index, self.actual_returns_matrix
+                del stop_index, start_index
 
             # max (perceived) return is not as accurate since scientists don't know
             # what others are investing --> only can account for in actual return
-            list_dict[idx_idea] += Counter({"Max Return": row['Max Return']})
+            list_dict[idx_idea]['Max Return'] += row['Max Return']
+
             del index, row, idx_idea
 
         # set that stores scientists who get returns (optional, see below)
@@ -391,7 +404,6 @@ class ScientistModel(Model):
             idx_id = int(idea_choice["Oldest ID"])
             if idx_id != self.num_scientists + 1:  # only active ideas needed
                 happy_scientist.add(idx_id)
-                # print('\nid',idx_id,'idea',idea_choice['Idea Choice'])
                 self.schedule.agents[self.agent_dict[idx_id]].update(idea_choice)
             del idx, idea_choice, idx_id
 
@@ -412,6 +424,8 @@ class ScientistModel(Model):
                 self.schedule.agents[self.agent_dict[i]].update(None)
             del range_list
 
+        if config.use_store:
+            del self.actual_returns_matrix
         del investing_queue, list_dict, happy_scientist
 
     # for data collecting after model has finished running
@@ -419,7 +433,15 @@ class ScientistModel(Model):
         print("\n\n\ndone with step 9")
         start = timeit.default_timer()
 
-        # PART 1
+        if config.use_store == True:
+            agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl')
+        else:
+            agent_vars = self.agent_df
+            self.agent_df.to_pickle(self.directory + 'agent_vars_df.pkl')
+            self.model_df.to_pickle(self.directory + 'model_vars_df.pkl')
+
+
+        # <editor-fold desc="Part 1: ideas">
         unpack_model_arrays_data(self, None)
         idea = range(0, self.total_ideas, 1)
         tp = np.arange(self.total_ideas) // config.ideas_per_time
@@ -440,9 +462,9 @@ class ScientistModel(Model):
         pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(self.directory+'ideas.pkl')
         store_model_arrays_data(self, False, None)
         del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns
+        # </editor-fold>
 
-
-        # PART 2
+        # <editor-fold desc="Part 2: ind_ideas">
         unpack_model_lists(self, None)
         ind_ideas_dict = {"idea_idx": rounded_tuple(flatten_list(self.final_idea_idx)),
                           "scientist_id": rounded_tuple(flatten_list(self.final_scientist_id)),
@@ -451,14 +473,15 @@ class ScientistModel(Model):
                           "agent_perceived_return_invested_ideas": rounded_tuple(flatten_list(self.final_perceived_returns_invested_ideas)),
                           "agent_actual_return_invested_ideas": rounded_tuple(flatten_list(self.final_actual_returns_invested_ideas))}
         pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(self.directory+'ind_ideas.pkl')
+        if config.use_store != True:
+            with open(self.directory + "final_perceived_returns_invested_ideas.txt", "wb") as fp:
+                pickle.dump(self.final_perceived_returns_invested_ideas, fp)
         store_model_lists(self, False, None)
         del ind_ideas_dict
+        # </editor-fold>
 
-
-        # PART 3
+        # <editor-fold desc="Part 3: social_output, ideas_entered">
         ind_vars = pd.read_pickle(self.directory + 'ind_ideas.pkl')
-        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl')
-
         actual_returns = agent_vars[agent_vars['Actual Returns'].str.startswith("{", na=False)]['Actual Returns']
 
         num_scientists = config.N * (config.time_periods + 1)  # same as in the model
@@ -497,11 +520,11 @@ class ScientistModel(Model):
             del idx, val
         np.save(self.directory+'social_output.npy', np.asarray(y_var))
         np.save(self.directory+'ideas_entered.npy', np.asarray(x_var))
-        del ind_vars, agent_vars, actual_returns, num_scientists, returns_tracker, curr_id, counter_x, x_var, y_var
+        del ind_vars, actual_returns, num_scientists, returns_tracker, curr_id, counter_x, x_var, y_var
+        # </editor-fold>
 
-
-        # PART 4
-        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)
+        # <editor-fold desc="Part 4: prop_age">
+        agent_vars = agent_vars.replace(np.nan, '', regex=True)
         # format: [prop paying k][total num of scientists] || two rows, TP_alive columns
         age_tracker = np.zeros(2 * config.time_periods_alive).reshape(2, config.time_periods_alive)
         for idx, val in agent_vars['Effort Invested In Period (K)'].items():
@@ -518,13 +541,13 @@ class ScientistModel(Model):
             del idx, val, curr_age
         prop_age = divide_0(age_tracker[0], age_tracker[1])
         np.save(self.directory+'prop_age.npy', prop_age)
-        del prop_age, age_tracker, agent_vars
+        del prop_age, age_tracker
+        # </editor-fold>
 
-
-        # PART 5
-        agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl').replace(np.nan, '', regex=True)
+        # <editor-fold desc="Part 5: marginal_effort_by_age, prop_idea">
+        if config.use_store:
+            self.idea_periods = np.load(self.directory + "idea_periods.npy")
         agent_marg = agent_vars[agent_vars['Effort Invested In Period (Marginal)'].str.startswith("{", na=False)]['Effort Invested In Period (Marginal)']
-        self.idea_periods = np.load(self.directory + "idea_periods.npy")
 
         marginal_effort = [[0, 0]]  # format: [young, old]
         prop_idea = [0]
@@ -558,6 +581,7 @@ class ScientistModel(Model):
         np.save(self.directory + "marginal_effort_by_age.npy", marginal_effort)
         np.save(self.directory + "prop_idea.npy", prop_idea)
         del agent_vars, agent_marg, self.idea_periods, marginal_effort, prop_idea, total_ideas
+        # </editor-fold>
 
         print("time elapsed:", timeit.default_timer()-start)
 

@@ -10,14 +10,14 @@ seed = 654321  # np.random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)
-time_periods = 20
+time_periods = 10
 
 # Scalar: number of ideas unique to each time period
 ideas_per_time = 5
 
 # Scalar: number of scientists born per time period
 # NOTE: according to jay, N should be greater than ideas_per_time
-N = 10
+N = 3
 
 # SCALAR: store means of the mean and sds for returns
 true_means_lam = 300
@@ -37,7 +37,7 @@ time_periods_alive = 6
 
 # <editor-fold desc="Logistics of running the program">
 # whether we want parallel processing (depending if it works on the system being run)
-use_multiprocessing = True
+use_multiprocessing = False
 
 # Optimal processors by system (not exactly accurate)
 # Mac w/ 4 cores --> 3
@@ -46,13 +46,16 @@ use_multiprocessing = True
 num_processors = 3
 
 # handles the locations for model and agent temp objects
-tmp_loc = {'model': 'tmp/model/', 'agent': 'tmp/agent_'}
+tmp_loc = 'tmp/'
 
 # whether to instantiate multiple scientists simultaneously
 use_multithreading = False
 
 # whether to store arrays
-use_store = True
+use_store = False
+
+# GUARD: user cannot do mp without using store as a protection
+use_store = (use_store, True)[use_multiprocessing == True]
 
 # whether to report all scientists in agent_df
 all_scientists = False
@@ -75,10 +78,15 @@ start_effort_decay = int(0.2*start_effort_lam)
 prop_invest_limit = 0.6  # works when <0.5?, for optimizations
 # </editor-fold>
 
-# <editor-fold desc="Global Variables for functions.py">
+# <editor-fold desc="Global Variables for functions.py and run_graphs.py">
 # for counting number of html pages generated / other useful counter value for debugging
 count = 0
 
 # for runtime calculations
 start = 0
+
+# for x,y scale
+x_width = 130
+y_width = 122
+sq_width = 200
 # </editor-fold>

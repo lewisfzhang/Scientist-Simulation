@@ -1,1 +1,1 @@
-{'seed': 654321, 'use_multiprocessing': True, 'use_multithreading': False, 'time_periods': 20, 'ideas_per_time': 5, 'N': 10, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 75, 'time_periods_alive': 6}
+{'seed': 654321, 'use_multiprocessing': True, 'use_store': True, 'time_periods': 10, 'ideas_per_time': 5, 'N': 3, 'time_periods_alive': 6, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 75, 'use_multithreading': False}

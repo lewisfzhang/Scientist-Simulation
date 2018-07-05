@@ -23,10 +23,10 @@ def main():
     p = mp.Pool(processes=config.num_processors)  # default number is mp.cpu_count()
 
     # get starting time from run.py
-    start_prog = int(open('tmp/start_prog.txt', 'r').read())
+    start_prog = int(open(config.tmp_loc + 'start_prog.txt', 'r').read())
 
     # loading variables after model is done running
-    model_directory = 'tmp/model/'
+    model_directory = config.tmp_loc + 'model/'
     agent_vars = pd.read_pickle(model_directory + 'agent_vars_df.pkl')
     model_vars = pd.read_pickle(model_directory + 'model_vars_df.pkl')
     ideas = pd.read_pickle(model_directory + 'ideas.pkl')

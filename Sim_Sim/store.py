@@ -14,8 +14,8 @@ def store_model_arrays(model, isFirst, lock):
             np.save(model.directory + 'idea_periods.npy', model.idea_periods)
         del model.idea_periods
 
-        if not isFirst and config.use_multiprocessing and lock is not None:
-            lock.release()
+    if not isFirst and config.use_multiprocessing and lock is not None:
+        lock.release()
 
 
 def store_model_arrays_data(model, isFirst, lock):
@@ -44,8 +44,8 @@ def store_model_arrays_data(model, isFirst, lock):
         np.save(model.directory + 'total_scientists_invested_helper.npy', model.total_scientists_invested_helper)
         model.total_scientists_invested_helper = None
 
-        if not isFirst and config.use_multiprocessing and lock is not None:
-            lock.release()
+    if not isFirst and config.use_multiprocessing and lock is not None:
+        lock.release()
 
 
 def store_model_lists(model, isFirst, lock):
@@ -78,25 +78,23 @@ def store_model_lists(model, isFirst, lock):
             np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
         model.actual_returns_matrix = None
 
-        if not isFirst and config.use_multiprocessing and lock is not None:
-            lock.release()
+    if not isFirst and config.use_multiprocessing and lock is not None:
+        lock.release()
   
 
 def unpack_model_arrays(model, lock):
+    if config.use_multiprocessing and lock is not None:
+        lock.acquire()
     if config.use_store:
-        if config.use_multiprocessing and lock is not None:
-            lock.acquire()
-
         # unlimited access to past ideas, too lazy to think of another way to implement double negative
         # what this statement really wants is idea_periods <= schedule.time
         model.idea_periods = np.load(model.directory + "idea_periods.npy")
 
 
 def unpack_model_arrays_data(model, lock):
+    if config.use_multiprocessing and lock is not None:
+        lock.acquire()
     if config.use_store:
-        if config.use_multiprocessing and lock is not None:
-            lock.acquire()
-
         model.total_effort = np.load(model.directory + 'total_effort.npy')
 
         model.effort_invested_by_age = np.load(model.directory + 'effort_invested_by_age.npy')
@@ -115,10 +113,9 @@ def unpack_model_arrays_data(model, lock):
 
 
 def unpack_model_lists(model, lock):
+    if config.use_multiprocessing and lock is not None:
+        lock.acquire()
     if config.use_store:
-        if config.use_multiprocessing and lock is not None:
-            lock.acquire()
-
         with open(model.directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
             model.final_perceived_returns_invested_ideas = pickle.load(fp)
 
@@ -146,12 +143,18 @@ def create_datacollectors(model):
                                        names=['Step', 'AgentID'])
     columns = ['TP Born', 'Effort Invested In Period (K)', 'Effort Invested In Period (Marginal)',
                'Perceived Returns', 'Actual Returns']
-    pd.DataFrame(index=index, columns=columns).to_pickle(model.directory+'agent_vars_df.pkl')
+    if config.use_store:
+        pd.DataFrame(index=index, columns=columns).to_pickle(model.directory+'agent_vars_df.pkl')
+    else:
+        model.agent_df = pd.DataFrame(index=index, columns=columns)
 
     # for model
     index = range(config.time_periods + 2)
     columns = ['Total Effort List', 'Total Effort By Age']
-    pd.DataFrame(index=index, columns=columns).to_pickle(model.directory+'model_vars_df.pkl')
+    if config.use_store:
+        pd.DataFrame(index=index, columns=columns).to_pickle(model.directory+'model_vars_df.pkl')
+    else:
+        model.model_df = pd.DataFrame(index=index, columns=columns)
 
     del index, columns
     
