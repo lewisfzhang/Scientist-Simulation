@@ -2,22 +2,23 @@
 # run simulation and data collection
 # if succeed, open result web page
 
+# check params
+[ $# -gt 0 -a $# -lt 4 ] && echo $0 need 4 parameter values && exit 1
+
 curdir=$(dirname $0)
 cd $curdir
-venvdir=../venv
-bindir=$venvdir/bin
-pkgdir=$venvdir/lib/python3.7/site-packages
-[ ! -d $venvdir ] && echo missing venv directory : $venvdir && exit 1
-[ ! -d $bindir ] && echo missing bin directory : $bindir && exit 2
-[ ! -d $pkgdir ] && echo missing packages directory : $pkgdir && exit 3
+venvdir=$(cd .. && pwd)/venv
+venvact=$venvdir/bin/activate
+[ ! -e $venvact ] && [ -x ./install.sh ] && ./install.sh $venvdir 
 [ -d tmp ] && rm -r tmp
-export PATH=$PATH:$bindir
-export PYTHONPATH=$pkgdir
-python3 run.py && python3 collect.py
+(source $venvact; python3 run.py $* && python3 collect.py)
 if [ $? -eq 0 ]; then
 	open $curdir/web/pages/all_images.html
 	echo *** Succeed ***
-	echo tar czf pages.##_##_##_##.tar.gz images pages parameters.txt
+	echo
+	echo tar -C web -czf web/pages.$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
+	/usr/bin/tar -C web -czf web/pages.$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
+	#/usr/bin/tar -C web -cf - images pages parameters.txt | gzip > pages.$(echo $* | tr ' ' '_').tar.gz
 else
 	echo !!! Error !!!
 fi

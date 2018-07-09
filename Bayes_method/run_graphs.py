@@ -1,5 +1,9 @@
 # run_graphs.py
 
+# workaround matplotlib bug
+import matplotlib
+matplotlib.use('Agg')
+
 from model import *
 import matplotlib.pyplot as plt
 import numpy as np
