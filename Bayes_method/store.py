@@ -6,6 +6,7 @@ import pickle
 import config
 import pandas as pd
 from collections import Counter
+from thinkbayes2 import Pmf
 
 
 def store_model_arrays(model, isFirst, lock):
@@ -134,7 +135,20 @@ def unpack_model_lists(model, lock):
         with open(model.directory + "final_marginal_invested_ideas.txt", "rb") as fp:
             model.final_marginal_invested_ideas = pickle.load(fp)
 
+
+def unlock_actual_returns(model, lock):
+    if config.use_multiprocessing and lock is not None:
+        lock.acquire()
+    if config.use_store:
         model.actual_returns_matrix = np.load(model.directory + 'actual_returns_matrix.npy')
+    return model.actual_returns_matrix
+
+
+def store_actual_returns(model, lock):
+    if config.use_store:
+        model.actual_returns_matrix = None
+    if config.use_multiprocessing and lock is not None:
+        lock.release()
 
 
 def create_datacollectors(model):
@@ -168,15 +182,6 @@ def store_agent_arrays(agent):
         agent.k = None
 
 
-def store_agent_arrays_data(agent):
-    if config.use_store:
-        np.save(agent.directory + 'perceived_returns.npy', agent.perceived_returns)
-        agent.perceived_returns = None
-
-        np.save(agent.directory + 'actual_returns.npy', agent.actual_returns)
-        agent.actual_returns = None
-
-
 def store_agent_arrays_tp(agent):
     if config.use_store:
         np.save(agent.directory + 'marginal_invested_by_scientist.npy', agent.marginal_invested_by_scientist)
@@ -203,13 +208,6 @@ def unpack_agent_arrays(agent):
         agent.perceived_returns_matrix = np.load(agent.directory + 'perceived_returns_matrix.npy')
 
         agent.k = np.load(agent.directory + 'k.npy')
-
-
-def unpack_agent_arrays_data(agent):
-    if config.use_store:
-        agent.perceived_returns = np.load(agent.directory + 'perceived_returns.npy')
-
-        agent.actual_returns = np.load(agent.directory + 'actual_returns.npy')
 
 
 def unpack_agent_arrays_tp(agent):
@@ -245,3 +243,58 @@ def create_list_dict(model):
 def new_list_dict(model):
     with open(model.directory + "list_dict.txt", "rb") as fp:
         return pickle.load(fp)
+
+
+def update_investing_queue(model, df_data, lock):
+    if config.use_multiprocessing:
+        lock.acquire()
+    if config.use_store:
+        investing_queue = pd.read_pickle(model.directory + 'investing_queue.pkl')
+        investing_queue = investing_queue.append(df_data, ignore_index=True)
+        investing_queue.to_pickle(model.directory + 'investing_queue.pkl')
+        del investing_queue
+    else:
+        model.investing_queue = model.investing_queue.append(df_data, ignore_index=True)
+    if config.use_multiprocessing:
+        lock.release()
+
+
+def get_investing_queue(model):
+    if config.use_store:
+        model.investing_queue = pd.read_pickle(model.directory + 'investing_queue.pkl')
+    else:
+        return model.investing_queue
+
+
+def new_investing_queue(model):
+    if config.use_store:
+        # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
+        #               actual_return, scientist.unique_id
+        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID']).to_pickle(model.directory + 'investing_queue.pkl')
+    else:
+        model.investing_queue = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID'])
+
+
+def get_total_start_effort(model):
+    if config.use_store:
+        model.total_effort_start = np.load(model.directory + 'total_effort.npy')
+    else:
+        model.total_effort_start = np.copy(model.total_effort)
+
+
+# data is the ratio of over/underestimating in the past for the scientist
+def create_pmf(data):
+    pmf = Pmf()
+
+    # scientists initially hypothesize that they have an equal chance of over/underestimating returns
+    # P(m > M)
+    # m is scientist believed impact, M is the actual max impact of the idea
+    pmf.Set('m > M', 0.5)
+    pmf.Set('m <= M', 0.5)
+
+    # scientists adjust their chances based on past investing data (across all ideas)
+    # P(I | m > M) where I is slope
+    pmf.Mult('m > M', data[0])
+    pmf.Mult('m <= M', data[1])
+
+    return pmf.GetDict()['m > M']

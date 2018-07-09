@@ -2,25 +2,29 @@
 
 import numpy as np
 import math
+import init
 
 
 # <editor-fold desc="Config Variables for Program">
 # keeping seed constant ensure identical results
-seed = 654321  # np.random.randint(100000, 999999)
+seed = init.seed  # np.random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)
-time_periods = 10
+time_periods = init.time_periods
 
 # Scalar: number of ideas unique to each time period
-ideas_per_time = 5
+ideas_per_time = init.ideas_per_time
 
 # Scalar: number of scientists born per time period
 # NOTE: according to jay, N should be greater than ideas_per_time
-N = 3
+N = init.N
+
+# the number of TP a scientist can actively invest in ideas
+time_periods_alive = init.time_periods_alive
 
 # SCALAR: store means of the mean and sds for returns
-true_means_lam = 300
+true_means_lam = init.true_means_lam
 true_sds_lam = int(0.4 * true_means_lam)
 
 # agent constants (Use 0.03 for Windows due to GPU limit)
@@ -30,9 +34,6 @@ start_effort_lam = int(0.5*true_means_lam)  # make sure this is >= 9 to ensure s
 # keep k and start effort ratio fixed (see next line)
 # keep learning cost relatively low to promote new ideas (but model could still be flawed)
 k_lam = int(0.5*start_effort_lam)  # make sure this is still > 0
-
-# the number of TP a scientist can actively invest in ideas
-time_periods_alive = 6
 # </editor-fold>
 
 # <editor-fold desc="Logistics of running the program">

@@ -22,30 +22,6 @@ def rounded_tuple(array):
     return tuple(map(lambda x: isinstance(x, float) and round(x, 2) or x, tuple(array)))
 
 
-# Input:
-# 1) num_ideas (scalar): number of ideas to create the return matrix for
-# 2) max_of_max_inv (scalar): the maximum of all the maximum investment limits over all ideas
-# 3) sds (array): the standard deviation parameters of the return curve of each idea
-# 4) means (array): the mean parameters of the return curve of each idea
-# Output:
-# A matrix that is has dimension n x m where n = num_ideas and m = max_of_max_inv
-# where each cell (i,j) contains the return based on the logistic cumulative
-# distribution function of the i-th idea and the j-th extra unit of effort
-def create_return_matrix(num_ideas, sds, means, M, sds_lam, means_lam):
-    # 4 std dev outside normal curve basically guarentees all values
-    x = np.arange(means_lam*2+1)
-    returns_list = []
-    for i in range(num_ideas):
-        # Calculates the return for an idea for all amounts of effort units
-        returns = M[i] * logistic_cdf(x, loc=means[i], scale=sds[i])
-        # Stacks arrays horizontally
-        to_subt_temp = np.hstack((0, returns[:-1]))
-        # Calculates return per unit of effort
-        returns = returns - to_subt_temp
-        returns_list.append(returns)
-    return np.array(returns_list)
-
-
 def get_returns(idea, returns_info, start_idx, end_idx):
     M = returns_info[0][idea]
     sds = returns_info[1][idea]
@@ -99,7 +75,7 @@ def png_to_html():
     image_list = glob.glob('web/images/*.png')
     html = ''
     for i in range(len(image_list)):
-        html += '<img src="'+str(os.getcwd())+'/'+str(image_list[i])+'" />'
+        html += '<img src="'+'../'+str(image_list[i])[4:]+'" />'
     with open("web/pages/all_images.html", "w") as file:
         file.write(html)
 

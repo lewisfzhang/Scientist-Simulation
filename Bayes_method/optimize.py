@@ -8,6 +8,8 @@ import config
 import pandas as pd
 import config
 from store import *
+import collections
+from scipy import stats
 
 
 # scientist chooses the idea that returns the most at each step
@@ -53,7 +55,7 @@ def investing_helper(scientist, lock):
         # Selects idea that gives the max return given equivalent "marginal" efforts
         # NOTE: See above for comments on calc_cum_returns function,
         # and exceptions on when the idea with the max return isn't chosen
-        idea_choice, max_return = calc_cum_returns(scientist, lock[1])
+        idea_choice, max_return = probabilistic_returns(scientist, lock[1], lock[2])
 
         # Accounts for the edge case in which max_return = 0 (implying that a
         # scientist either can't invest in ANY ideas [due to investment
@@ -71,20 +73,15 @@ def investing_helper(scientist, lock):
         scientist.total_effort_start[idea_choice] += scientist.marginal_effort[idea_choice]
 
         unpack_model_arrays_data(scientist.model, lock[0])
-
         scientist.model.total_effort[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.model.total_perceived_returns[idea_choice] += max_return
-        # scientist.model.total_actual_returns[idea_choice] += actual_return
         scientist.model.total_times_invested[idea_choice] += 1
         scientist.model.total_k[idea_choice] += scientist.curr_k[idea_choice]
-
         rel_age = int(scientist.current_age * 2 / config.time_periods_alive)  # halflife defines young vs old
         scientist.model.effort_invested_by_age[rel_age][idea_choice] += scientist.marginal_effort[idea_choice]
-
         if scientist.unique_id not in scientist.model.total_scientists_invested_helper[idea_choice]:
             scientist.model.total_scientists_invested[idea_choice] += 1
             scientist.model.total_scientists_invested_helper[idea_choice].add(scientist.unique_id)
-
         store_model_arrays_data(scientist.model, False, lock[0])
 
         # checks if idea_choice is already in the df
@@ -105,16 +102,10 @@ def investing_helper(scientist, lock):
         scientist.curr_k = None
 
     # appending current dataframe to model investing queue
-    if config.use_multiprocessing:
-        lock[2].acquire()
-    investing_queue = pd.read_pickle(scientist.model.directory + 'investing_queue.pkl')
-    investing_queue = investing_queue.append(temp_df, ignore_index=True)
-    investing_queue.to_pickle(scientist.model.directory + 'investing_queue.pkl')
-    if config.use_multiprocessing:
-        lock[2].release()
+    update_investing_queue(scientist.model, temp_df, lock[3])
 
     # clearing data before running while loop again (no need for GC since it is run right after we exit the method)
-    del scientist.total_effort_start, temp_df, investing_queue
+    del scientist.total_effort_start, temp_df
 
 
 # Function to calculate "marginal" returns for available ideas, taking into account investment costs
@@ -128,8 +119,95 @@ def investing_helper(scientist, lock):
 # Output:
 # 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
-def calc_cum_returns(scientist, lock):
-    unpack_model_lists(scientist.model, lock)
+def probabilistic_returns(scientist, *lock):
+    # Array: keeping track of all the returns of investing in each available ideas
+    slope_ideas = []
+    effort_ideas = []
+    score_ideas = []
+
+    # Loops over all the ideas the scientist is allowed to invest in
+    # condition checks ideas where scientist.avail_ideas is TRUE
+    for idea in np.where(scientist.avail_ideas)[0]:
+        effort = int(scientist.total_effort_start[idea])
+        effort_ideas.append(effort)
+
+        # scientist invested one unit of effort into perceived returns matrix for idea
+        slope = get_returns(idea, scientist.perceived_returns_matrix, effort, effort+1)
+        slope_ideas.append(slope)
+
+        del effort, slope, idea
+
+    z_slope_ideas = stats.zscore(slope_ideas)
+    z_effort_ideas = stats.zscore(effort_ideas)
+
+    for i in range(len(slope_ideas)):
+        p_slope = stats.percentileofscore(slope_ideas, slope_ideas[i])/100
+        p_effort = stats.percentileofscore(effort_ideas, effort_ideas[i])/100
+
+        p_score = p_slope * (1-p_effort)  # penalize low slope, high effort (high score is better idea to invest)
+        z_score = z_slope_ideas - z_effort_ideas
+        score_ideas.append(p_score)
+
+        del p_slope, p_effort, p_score, z_score, i
+
+    # Scalar: finds the maximum return over all the available ideas
+    max_return = max(score_ideas)
+    # Array: finds the index of the maximum return over all the available ideas
+    idx_max_return = np.where(np.asarray(score_ideas) == max_return)[0]
+    # choosing random value out of all possible values
+    random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 4])
+    idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
+
+    # a scientist who can't invest fully in an idea gets 0 return
+    if scientist.marginal_effort[idea_choice] > 0:
+        # indices to calculate total return from an idea, based on marginal effort
+        start_index = int(scientist.total_effort_start[idea_choice])
+        stop_index = int(start_index + scientist.marginal_effort[idea_choice])
+
+        max_return = get_returns(idea_choice, scientist.perceived_returns_matrix, start_index, stop_index)
+        scientist.model.actual_returns_matrix = unlock_actual_returns(scientist.model, lock[1])
+        actual_return = get_returns(idea_choice, scientist.model.actual_returns_matrix, start_index, stop_index)
+        store_actual_returns(scientist.model, lock[1])
+
+        del start_index, stop_index
+
+    # even if scientist can't get returns, at least some of the remaining effort he puts in goes to learning
+    else:
+        max_return = 0
+        actual_return = 0
+        scientist.k[idea_choice] -= scientist.increment
+        scientist.marginal_effort[idea_choice] = 0
+        scientist.curr_k[idea_choice] = scientist.increment
+
+    # update back to the variables/attribute of the Agent object / scientist
+    unpack_model_lists(scientist.model, lock[1])
+    scientist.model.final_perceived_returns_invested_ideas[scientist.unique_id-1].append(max_return)
+    scientist.model.final_actual_returns_invested_ideas[scientist.unique_id-1].append(actual_return)
+    scientist.model.final_k_invested_ideas[scientist.unique_id-1].append(scientist.curr_k[idea_choice])
+    scientist.model.final_marginal_invested_ideas[scientist.unique_id-1].append(scientist.marginal_effort[idea_choice])
+    scientist.model.final_scientist_id[scientist.unique_id-1].append(scientist.unique_id)
+    scientist.model.final_idea_idx[scientist.unique_id-1].append(idea_choice)
+    store_model_lists(scientist.model, False, lock[1])
+
+    del idx_max_return, slope_ideas, effort_ideas, z_slope_ideas, z_effort_ideas, score_ideas, actual_return
+
+    # returns index of the invested idea, as well as its perceived and actual returns
+    return idea_choice, max_return
+
+
+# Function to calculate "marginal" returns for available ideas, taking into account investment costs
+# Input:
+# 1) avail_ideas (array): indexes which ideas are available to a given scientist
+# 2) total_effort (array):  contains cumulative effort already expended by all scientists
+# 3) max_investment (array): contains the max possible investment for each idea
+# 4) marginal_effort (array): "equivalent" marginal efforts, which equals
+#    the max, current investment cost plus one minus individual investment costs for available ideas
+#
+# Output:
+# 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
+# 2) max_return (scalar): the perceived return of the associated, chosen idea
+def greedy_returns(scientist, lock):
+    scientist.model.actual_returns_matrix = unlock_actual_returns(scientist.model, lock[1])
 
     # Array: keeping track of all the returns of investing in each available ideas
     final_perceived_returns_avail_ideas = []
@@ -160,6 +238,8 @@ def calc_cum_returns(scientist, lock):
         actual_returns = get_returns(idea, scientist.model.actual_returns_matrix, start_index, stop_index)
         final_actual_returns_avail_ideas.append(actual_returns)
 
+    store_actual_returns(scientist.model, lock[1])
+
     # Scalar: finds the maximum return over all the available ideas
     max_return = max(final_perceived_returns_avail_ideas)
     # Array: finds the index of the maximum return over all the available ideas
@@ -179,14 +259,15 @@ def calc_cum_returns(scientist, lock):
             scientist.curr_k[idea_choice] = scientist.increment
 
     # update back to the variables/attribute of the Agent object / scientist
+    unpack_model_lists(scientist.model, lock[0])
     scientist.model.final_perceived_returns_invested_ideas[scientist.unique_id-1].append(max_return)
     scientist.model.final_actual_returns_invested_ideas[scientist.unique_id-1].append(actual_return)
     scientist.model.final_k_invested_ideas[scientist.unique_id-1].append(scientist.curr_k[idea_choice])
     scientist.model.final_marginal_invested_ideas[scientist.unique_id-1].append(scientist.marginal_effort[idea_choice])
     scientist.model.final_scientist_id[scientist.unique_id-1].append(scientist.unique_id)
     scientist.model.final_idea_idx[scientist.unique_id-1].append(idea_choice)
+    store_model_lists(scientist.model, False, lock[0])
 
-    store_model_lists(scientist.model, False, lock)
     del final_perceived_returns_avail_ideas, final_actual_returns_avail_ideas, idx_max_return
 
     # returns index of the invested idea, as well as its perceived and actual returns

@@ -96,11 +96,6 @@ class Scientist(Agent):
         self.marginal_invested_by_scientist = np.zeros(self.model.total_ideas)  # utility
         self.k_invested_by_scientist = np.zeros(self.model.total_ideas)  # utility
 
-        # Array: keeps track of total, perceived returns for each idea given
-        # a scientist's level of investment in that idea
-        self.perceived_returns = np.zeros(self.model.total_ideas)  # utility
-        self.actual_returns = np.zeros(self.model.total_ideas)  # utility
-
         # two new data collecting variables for the TP used in update() function
         self.perceived_returns_tp = np.zeros(self.model.total_ideas)
         self.actual_returns_tp = np.zeros(self.model.total_ideas)
@@ -111,7 +106,6 @@ class Scientist(Agent):
         self.eff_inv_in_period_marginal = np.zeros(self.model.total_ideas)  # utility
 
         store_agent_arrays(self)
-        store_agent_arrays_data(self)
         store_agent_arrays_tp(self)
 
     def step(self, lock):
@@ -146,27 +140,18 @@ class Scientist(Agent):
             del self.avail_ideas
             store_agent_arrays(self)
             store_agent_arrays_tp(self)
-            gc_collect()
 
         elif self.current_age == config.time_periods_alive:
-            unpack_agent_arrays_data(self)
             unpack_agent_arrays_tp(self)
 
             # reset effort in new time period
             self.eff_inv_in_period_k[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
 
-            # reset returns because scientists is not active
-            self.perceived_returns[:] = 0
-            self.actual_returns[:] = 0
-
             store_agent_arrays_tp(self)
-            store_agent_arrays_data(self)
-            gc_collect()
 
     # converts mutable numpy arrays into easily accessed tuples
     def update(self, df_row):
-        unpack_agent_arrays_data(self)
         unpack_agent_arrays_tp(self)
         if df_row is not None:
             # Updates parameters after idea selection and effort expenditure
@@ -175,13 +160,10 @@ class Scientist(Agent):
             # increment includes investment costs. We don't care about
             # paid investment costs for the other variables
             idea = int(df_row['Idea Choice'])
-            self.perceived_returns[idea] += df_row['Max Return']
             self.perceived_returns_tp[idea] += df_row['Max Return']
-            self.actual_returns[idea] += df_row['Actual Return']
             self.actual_returns_tp[idea] += df_row['Actual Return']
             del idea, df_row
         self.update_agent_df()
-        store_agent_arrays_data(self)
         store_agent_arrays_tp(self)
 
     def update_agent_df(self):
@@ -299,13 +281,8 @@ class ScientistModel(Model):
         store_model_lists(self, True, None)
 
     def step(self):
-        # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
-        #               actual_return, scientist.unique_id
-        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID']).to_pickle(self.directory + 'investing_queue.pkl')
-        if config.use_store:
-            self.total_effort_start = np.load(self.directory + 'total_effort.npy')
-        else:
-            self.total_effort_start = np.copy(self.total_effort)
+        new_investing_queue(self)
+        get_total_start_effort(self)
 
         # iterates through all scientists in the model
         # below is the same as self.schedule.step()
@@ -316,8 +293,9 @@ class ScientistModel(Model):
             lock1 = m.Lock()  # for model_arrays
             lock2 = m.Lock()  # for model_arrays_data
             lock3 = m.Lock()  # for model_lists
-            lock4 = m.Lock()  # for model investing queue df
-            func = partial(mp_helper_spawn, [lock1, lock2, lock3, lock4])
+            lock4 = m.Lock()  # for actual returns matrix
+            lock5 = m.Lock()  # for model investing queue df
+            func = partial(mp_helper_spawn, [lock1, lock2, lock3, lock4, lock5])
             # split scientists by num_processes available
             agent_list = list(chunks(range(1, self.num_scientists+1), config.num_processors))
             p.starmap(func, [(self, i) for i in agent_list])
@@ -327,11 +305,10 @@ class ScientistModel(Model):
         else:
             for i in range(self.num_scientists):
                 # NoneType for locks is handled in store.py
-                self.schedule.agents[i].step([None, None, None, None])
+                self.schedule.agents[i].step([None, None, None, None, None])
 
         self.call_back()
         self.schedule.time += 1
-        del self.total_effort_start
 
         gc_collect()
 
@@ -361,17 +338,16 @@ class ScientistModel(Model):
         del data_list
 
     def process_winners(self):
-        investing_queue = pd.read_pickle(self.directory + 'investing_queue.pkl')
+        self.investing_queue = get_investing_queue(self)
 
         # initializing list of dictionaries with returns and investments for each idea in the TP
         list_dict = new_list_dict(self)
 
-        if config.use_store:
-            self.actual_returns_matrix = np.load(self.directory + 'actual_returns_matrix.npy')
+        self.actual_returns_matrix = unlock_actual_returns(self, None)
 
         # iterating through all investments by each scientists
         # young scientists get 0 returns, old scientists get all of the returns
-        for index, row in investing_queue.iterrows():
+        for index, row in self.investing_queue.iterrows():
             idx_idea = int(row['Idea Choice'])
             # NOTE: OLDER SCIENTIST HAS THE YOUNGER UNIQUE ID!!!
             if list_dict[idx_idea]['Oldest ID'] > row['ID']:
@@ -424,9 +400,8 @@ class ScientistModel(Model):
                 self.schedule.agents[self.agent_dict[i]].update(None)
             del range_list
 
-        if config.use_store:
-            del self.actual_returns_matrix
-        del investing_queue, list_dict, happy_scientist
+        store_actual_returns(self, None)
+        del self.investing_queue, list_dict, happy_scientist
 
     # for data collecting after model has finished running
     def collect_vars(self):
@@ -445,7 +420,7 @@ class ScientistModel(Model):
         unpack_model_arrays_data(self, None)
         idea = range(0, self.total_ideas, 1)
         tp = np.arange(self.total_ideas) // config.ideas_per_time
-        prop_invested = rounded_tuple(self.total_effort / (2 * config.true_means_lam))
+        prop_invested = rounded_tuple(self.total_effort / (config.true_means_lam + 3*config.true_sds_lam))
         avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
         total_perceived_returns = np.round(self.total_perceived_returns, 2)
         total_actual_returns = np.round(self.total_actual_returns, 2)
@@ -529,6 +504,7 @@ class ScientistModel(Model):
         age_tracker = np.zeros(2 * config.time_periods_alive).reshape(2, config.time_periods_alive)
         for idx, val in agent_vars['Effort Invested In Period (K)'].items():
             curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
+
             # if statements should only pass if curr_age is within range in the array
             if val != '':
                 # total number of ideas / occurrences
@@ -545,8 +521,7 @@ class ScientistModel(Model):
         # </editor-fold>
 
         # <editor-fold desc="Part 5: marginal_effort_by_age, prop_idea">
-        if config.use_store:
-            self.idea_periods = np.load(self.directory + "idea_periods.npy")
+        unpack_model_arrays(self, None)
         agent_marg = agent_vars[agent_vars['Effort Invested In Period (Marginal)'].str.startswith("{", na=False)]['Effort Invested In Period (Marginal)']
 
         marginal_effort = [[0, 0]]  # format: [young, old]
@@ -580,7 +555,8 @@ class ScientistModel(Model):
         marginal_effort = np.asarray([marginal_effort[::2], marginal_effort[1::2]])
         np.save(self.directory + "marginal_effort_by_age.npy", marginal_effort)
         np.save(self.directory + "prop_idea.npy", prop_idea)
-        del agent_vars, agent_marg, self.idea_periods, marginal_effort, prop_idea, total_ideas
+        store_model_arrays(self, False, None)
+        del agent_vars, agent_marg, marginal_effort, prop_idea, total_ideas
         # </editor-fold>
 
         print("time elapsed:", timeit.default_timer()-start)
