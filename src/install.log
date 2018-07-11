@@ -1,0 +1,84 @@
+Collecting pip
+  Using cached https://files.pythonhosted.org/packages/0f/74/ecd13431bcc456ed390b44c8a6e917c1820365cbebcb6a8974d1cd045ab4/pip-10.0.1-py2.py3-none-any.whl
+Installing collected packages: pip
+  Found existing installation: pip 9.0.3
+    Uninstalling pip-9.0.3:
+      Successfully uninstalled pip-9.0.3
+Successfully installed pip-10.0.1
+Collecting IPython
+  Using cached https://files.pythonhosted.org/packages/b1/7f/91d50f28af3e3a24342561983a7857e399ce24093876e6970b986a0b6677/ipython-6.4.0-py3-none-any.whl
+Collecting Mesa
+  Using cached https://files.pythonhosted.org/packages/21/6a/cd526b12643847a5c957b7af8c1867f36d09b92531d3d7f7c3f9b9084687/Mesa-0.8.4-py3-none-any.whl
+Collecting matplotlib
+  Using cached https://files.pythonhosted.org/packages/8a/d5/5337662b714c65100f3545ed3909e9478614d1ebf1f692a52981f3f5167b/matplotlib-2.2.2-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting numpy
+  Using cached https://files.pythonhosted.org/packages/f6/cd/b2c50b5190b66c711c23ef23c41d450297eb5a54d2033f8dcb3b8b13ac85/numpy-1.14.5-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting scipy
+  Using cached https://files.pythonhosted.org/packages/a0/b6/70bf61c1badb5fea82d4c558e05e76c2dee5e77bb072fe465d7c7a87287d/scipy-1.1.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting thinkx
+  Using cached https://files.pythonhosted.org/packages/34/7a/43e0e92fbd96916a11a78ce637b34e9e9416fa48f9d3ef90927234e86c36/thinkx-1.1.3.tar.gz
+Collecting appnope; sys_platform == "darwin" (from IPython)
+  Using cached https://files.pythonhosted.org/packages/87/a9/7985e6a53402f294c8f0e8eff3151a83f1fb901fa92909bb3ff29b4d22af/appnope-0.1.0-py2.py3-none-any.whl
+Collecting simplegeneric>0.8 (from IPython)
+  Using cached https://files.pythonhosted.org/packages/3d/57/4d9c9e3ae9a255cd4e1106bb57e24056d3d0709fc01b2e3e345898e49d5b/simplegeneric-0.8.1.zip
+Collecting prompt-toolkit<2.0.0,>=1.0.15 (from IPython)
+  Using cached https://files.pythonhosted.org/packages/04/d1/c6616dd03701e7e2073f06d5c3b41b012256e42b72561f16a7bd86dd7b43/prompt_toolkit-1.0.15-py3-none-any.whl
+Collecting backcall (from IPython)
+  Using cached https://files.pythonhosted.org/packages/84/71/c8ca4f5bb1e08401b916c68003acf0a0655df935d74d93bf3f3364b310e0/backcall-0.1.0.tar.gz
+Collecting pexpect; sys_platform != "win32" (from IPython)
+  Using cached https://files.pythonhosted.org/packages/89/e6/b5a1de8b0cc4e07ca1b305a4fcc3f9806025c1b651ea302646341222f88b/pexpect-4.6.0-py2.py3-none-any.whl
+Collecting pickleshare (from IPython)
+  Using cached https://files.pythonhosted.org/packages/9f/17/daa142fc9be6b76f26f24eeeb9a138940671490b91cb5587393f297c8317/pickleshare-0.7.4-py2.py3-none-any.whl
+Requirement already satisfied: setuptools>=18.5 in /Users/stanford/Documents/GitHub/Scientist-Simulation/venv/lib/python3.6/site-packages (from IPython) (39.0.1)
+Collecting decorator (from IPython)
+  Using cached https://files.pythonhosted.org/packages/bc/bb/a24838832ba35baf52f32ab1a49b906b5f82fb7c76b2f6a7e35e140bac30/decorator-4.3.0-py2.py3-none-any.whl
+Collecting traitlets>=4.2 (from IPython)
+  Using cached https://files.pythonhosted.org/packages/93/d6/abcb22de61d78e2fc3959c964628a5771e47e7cc60d53e9342e21ed6cc9a/traitlets-4.3.2-py2.py3-none-any.whl
+Collecting jedi>=0.10 (from IPython)
+  Using cached https://files.pythonhosted.org/packages/3d/68/8bbf0ef969095a13ba0d4c77c1945bd86e9811960d052510551d29a2f23b/jedi-0.12.1-py2.py3-none-any.whl
+Collecting pygments (from IPython)
+  Using cached https://files.pythonhosted.org/packages/02/ee/b6e02dc6529e82b75bb06823ff7d005b141037cb1416b10c6f00fc419dca/Pygments-2.2.0-py2.py3-none-any.whl
+Collecting tornado<5.0.0,>=4.2 (from Mesa)
+  Using cached https://files.pythonhosted.org/packages/e3/7b/e29ab3d51c8df66922fea216e2bddfcb6430fb29620e5165b16a216e0d3c/tornado-4.5.3.tar.gz
+Collecting tqdm (from Mesa)
+  Using cached https://files.pythonhosted.org/packages/93/24/6ab1df969db228aed36a648a8959d1027099ce45fad67532b9673d533318/tqdm-4.23.4-py2.py3-none-any.whl
+Collecting pandas (from Mesa)
+  Using cached https://files.pythonhosted.org/packages/d8/ba/d2c6578afca709e211ac1cd836a66a6a042f1a773a970be345d9d08be426/pandas-0.23.3-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting click (from Mesa)
+  Using cached https://files.pythonhosted.org/packages/34/c1/8806f99713ddb993c5366c362b2f908f18269f8d792aff1abfd700775a77/click-6.7-py2.py3-none-any.whl
+Collecting networkx (from Mesa)
+  Using cached https://files.pythonhosted.org/packages/11/42/f951cc6838a4dff6ce57211c4d7f8444809ccbe2134179950301e5c4c83c/networkx-2.1.zip
+Collecting kiwisolver>=1.0.1 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/fb/96/619db9bf08f652790fa9f3c3884a67dc43da4bdaa185a5aa2117eb4651e1/kiwisolver-1.0.1-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting six>=1.10 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl
+Collecting python-dateutil>=2.1 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/cf/f5/af2b09c957ace60dcfac112b669c45c8c97e32f94aa8b56da4c6d1682825/python_dateutil-2.7.3-py2.py3-none-any.whl
+Collecting pytz (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl
+Collecting pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.1 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/6a/8a/718fd7d3458f9fab8e67186b00abdd345b639976bc7fb3ae722e1b026a50/pyparsing-2.2.0-py2.py3-none-any.whl
+Collecting cycler>=0.10 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/f7/d2/e07d3ebb2bd7af696440ce7e754c59dd546ffe1bbe732c8ab68b9c834e61/cycler-0.10.0-py2.py3-none-any.whl
+Collecting markdown (from thinkx)
+  Using cached https://files.pythonhosted.org/packages/6d/7d/488b90f470b96531a3f5788cf12a93332f543dbab13c423a5e7ce96a0493/Markdown-2.6.11-py2.py3-none-any.whl
+Collecting wcwidth (from prompt-toolkit<2.0.0,>=1.0.15->IPython)
+  Using cached https://files.pythonhosted.org/packages/7e/9f/526a6947247599b084ee5232e4f9190a38f398d7300d866af3ab571a5bfe/wcwidth-0.1.7-py2.py3-none-any.whl
+Collecting ptyprocess>=0.5 (from pexpect; sys_platform != "win32"->IPython)
+  Using cached https://files.pythonhosted.org/packages/d1/29/605c2cc68a9992d18dada28206eeada56ea4bd07a239669da41674648b6f/ptyprocess-0.6.0-py2.py3-none-any.whl
+Collecting ipython-genutils (from traitlets>=4.2->IPython)
+  Using cached https://files.pythonhosted.org/packages/fa/bc/9bd3b5c2b4774d5f33b2d544f1460be9df7df2fe42f352135381c347c69a/ipython_genutils-0.2.0-py2.py3-none-any.whl
+Collecting parso>=0.3.0 (from jedi>=0.10->IPython)
+  Using cached https://files.pythonhosted.org/packages/09/51/9c48a46334be50c13d25a3afe55fa05c445699304c5ad32619de953a2305/parso-0.3.1-py2.py3-none-any.whl
+Installing collected packages: appnope, simplegeneric, six, wcwidth, prompt-toolkit, backcall, ptyprocess, pexpect, pickleshare, decorator, ipython-genutils, traitlets, parso, jedi, pygments, IPython, numpy, tornado, tqdm, python-dateutil, pytz, pandas, click, networkx, Mesa, kiwisolver, pyparsing, cycler, matplotlib, scipy, markdown, thinkx
+  Running setup.py install for simplegeneric: started
+    Running setup.py install for simplegeneric: finished with status 'done'
+  Running setup.py install for backcall: started
+    Running setup.py install for backcall: finished with status 'done'
+  Running setup.py install for tornado: started
+    Running setup.py install for tornado: finished with status 'done'
+  Running setup.py install for networkx: started
+    Running setup.py install for networkx: finished with status 'done'
+  Running setup.py install for thinkx: started
+    Running setup.py install for thinkx: finished with status 'done'
+Successfully installed IPython-6.4.0 Mesa-0.8.4 appnope-0.1.0 backcall-0.1.0 click-6.7 cycler-0.10.0 decorator-4.3.0 ipython-genutils-0.2.0 jedi-0.12.1 kiwisolver-1.0.1 markdown-2.6.11 matplotlib-2.2.2 networkx-2.1 numpy-1.14.5 pandas-0.23.3 parso-0.3.1 pexpect-4.6.0 pickleshare-0.7.4 prompt-toolkit-1.0.15 ptyprocess-0.6.0 pygments-2.2.0 pyparsing-2.2.0 python-dateutil-2.7.3 pytz-2018.5 scipy-1.1.0 simplegeneric-0.8.1 six-1.11.0 thinkx-1.1.3 tornado-4.5.3 tqdm-4.23.4 traitlets-4.3.2 wcwidth-0.1.7

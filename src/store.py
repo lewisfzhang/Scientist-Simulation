@@ -268,8 +268,7 @@ def update_investing_queue(model, df_data, lock):
 def get_investing_queue(model):
     if config.use_store:
         model.investing_queue = pd.read_pickle(model.directory + 'investing_queue.pkl')
-    else:
-        return model.investing_queue
+    return model.investing_queue
 
 
 def new_investing_queue(model):

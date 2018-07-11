@@ -19,11 +19,11 @@ if [ $? -eq 0 ]; then
 	echo *** Succeed ***
 	echo
     if [ $# -eq 0 ]; then
-        echo tar -C data -czf ../data/zipped/run_$(echo 'default_params').tar.gz images pages parameters.txt
-        /usr/bin/tar -C data -czf ../data/zipped/run_$(echo 'default_params').tar.gz images pages parameters.txt
+        echo tar -C ../data -czf ../data/zipped/run_$(echo 'default_params').tar.gz images pages parameters.txt
+        /usr/bin/tar -C ../data -czf ../data/zipped/run_$(echo 'default_params').tar.gz images pages parameters.txt
     else
-        echo tar -C data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
-        /usr/bin/tar -C data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
+        echo tar -C ../data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
+        /usr/bin/tar -C ../data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt
     fi
 else
 	echo !!! Error !!!

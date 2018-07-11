@@ -22,7 +22,7 @@ def main():
     # start runtime
     start_prog = timeit.default_timer()
 
-    func.create_directory('../data/')
+    func.create_directory(config.parent_dir + 'data/')
     func.create_directory(config.tmp_loc)
     with open(config.tmp_loc + 'start_prog.txt', 'w') as f:
         f.write('%d' % time.time())
@@ -31,7 +31,7 @@ def main():
 
     # default parameters for model as a dictionary
     all_params = {"seed": config.seed, "use_multiprocessing": config.use_multiprocessing,
-                  "use_store": config.use_store, "time_periods": config.time_periods,
+                  "use_store": config.use_store, "optimization": config.switch, "time_periods": config.time_periods,
                   "ideas_per_time": config.ideas_per_time, "N": config.N,
                   "time_periods_alive": config.time_periods_alive, "true_means_lam": config.true_means_lam,
                   "true_sds_lam": config.true_sds_lam, "start_effort_lam": config.start_effort_lam,

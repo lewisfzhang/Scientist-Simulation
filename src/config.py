@@ -3,6 +3,7 @@
 import numpy as np
 import math
 import init
+import os
 
 # <editor-fold desc="Config Variables for Program">
 # keeping seed constant ensure identical results
@@ -47,6 +48,9 @@ num_processors = 3
 
 # handles the locations for model and agent temp objects
 tmp_loc = 'tmp/'
+
+# store parent directory location
+parent_dir = os.path.abspath('..') + '/'
 
 # whether to instantiate multiple scientists simultaneously
 use_multithreading = False

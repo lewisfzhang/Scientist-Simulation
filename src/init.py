@@ -5,7 +5,7 @@ seed = 654321  # np.random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)
-time_periods = 10
+time_periods = 7
 
 # Scalar: number of ideas unique to each time period
 ideas_per_time = 5

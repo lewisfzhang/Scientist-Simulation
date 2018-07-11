@@ -22,11 +22,11 @@ def rounded_tuple(array):
 
 
 def get_returns(idea, returns_info, start_idx, end_idx):
-    M = returns_info[0][idea]
+    m = returns_info[0][idea]
     sds = returns_info[1][idea]
     means = returns_info[2][idea]
-    start = M * logistic_cdf(start_idx, loc=means, scale=sds)
-    end = M * logistic_cdf(end_idx, loc=means, scale=sds)
+    start = m * logistic_cdf(start_idx, loc=means, scale=sds)
+    end = m * logistic_cdf(end_idx, loc=means, scale=sds)
     return end-start
 
 
@@ -71,13 +71,12 @@ def divide_0(num, denom):
 
 
 def png_to_html():
-    image_list = glob.glob('../data/images/*.png')
+    image_list = glob.glob(config.parent_dir + 'data/images/*.png')
     html = ''
-    for i in range(len(image_list)):
-        html += '<img src="'+'../'+str(image_list[i])[7:]+'" />'
-    with open("../data/pages/all_images.html", "w") as file:
+    for path in image_list:
+        html += '<img src="../' + str(path)[str(path).find('images'):] + '" />'
+    with open(config.parent_dir + "data/pages/all_images.html", "w") as file:
         file.write(html)
-
 
 # returns current resources used
 # def mem():
@@ -146,4 +145,13 @@ def get_bayesian_stats(data):
     # same as dividing by P(I)
     pmf.Normalize()
 
-    return pmf.GetDict()['m > M']
+    out = pmf.GetDict()['m > M']
+    del pmf
+    return out
+
+
+# same as above method but possibly faster
+def get_bayesian_formula(data):
+    p0 = 0.5 * data[0]
+    p1 = 0.5 * data[1]
+    return p0 / (p0 + p1)

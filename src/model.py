@@ -317,11 +317,10 @@ class ScientistModel(Model):
     # assigned agent returns and updating agent df
     def process_winners(self):
         self.investing_queue = get_investing_queue(self)
+        self.actual_returns_matrix = unlock_actual_returns(self, None)
 
         # initializing list of dictionaries with returns and investments for each idea in the TP
         list_dict = new_list_dict(self)
-
-        self.actual_returns_matrix = unlock_actual_returns(self, None)
 
         # iterating through all investments by each scientists
         # young scientists get 0 returns, old scientists get all of the returns
@@ -332,7 +331,7 @@ class ScientistModel(Model):
                 list_dict[idx_idea]['Oldest ID'] = row['ID']
 
             # update current stats for list_dict
-            if list_dict[idx_idea]["Updated"] == False:
+            if list_dict[idx_idea]["Updated"] is False:
                 stop_index = int(self.total_effort[idx_idea])
                 start_index = int(self.total_effort_start[idx_idea])
 
@@ -386,13 +385,12 @@ class ScientistModel(Model):
         print("\n\n\ndone with step 9")
         start = timeit.default_timer()
 
-        if config.use_store == True:
+        if config.use_store is True:
             agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl')
         else:
             agent_vars = self.agent_df
             self.agent_df.to_pickle(self.directory + 'agent_vars_df.pkl')
             self.model_df.to_pickle(self.directory + 'model_vars_df.pkl')
-
 
         # <editor-fold desc="Part 1: ideas">
         unpack_model_arrays_data(self, None)
@@ -402,7 +400,6 @@ class ScientistModel(Model):
         avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
         total_perceived_returns = np.round(self.total_perceived_returns, 2)
         total_actual_returns = np.round(self.total_actual_returns, 2)
-
         ideas_dict = {"idea": idea,
                       "TP": tp,
                       "scientists_invested": self.total_scientists_invested,
@@ -426,7 +423,7 @@ class ScientistModel(Model):
                           "agent_perceived_return_invested_ideas": rounded_tuple(flatten_list(self.final_perceived_returns_invested_ideas)),
                           "agent_actual_return_invested_ideas": rounded_tuple(flatten_list(self.final_actual_returns_invested_ideas))}
         pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(self.directory+'ind_ideas.pkl')
-        if config.use_store != True:
+        if config.use_store is False:
             with open(self.directory + "final_perceived_returns_invested_ideas.txt", "wb") as fp:
                 pickle.dump(self.final_perceived_returns_invested_ideas, fp)
         store_model_lists(self, False, None)
@@ -437,10 +434,8 @@ class ScientistModel(Model):
         ind_vars = pd.read_pickle(self.directory + 'ind_ideas.pkl')
         actual_returns = agent_vars[agent_vars['Actual Returns'].str.startswith("{", na=False)]['Actual Returns']
 
-        num_scientists = config.N * (config.time_periods + 1)  # same as in the model
         # format of scientist_tracker: [agent_id][num_ideas_invested][total_returns]
-        returns_tracker = np.zeros(num_scientists)
-
+        returns_tracker = np.zeros(self.num_scientists)
         # getting total returns from each scientists in their entire lifetime
         # idx format: (step, agent id), val is a dictionary is in string format
         for idx, val in actual_returns.items():
@@ -473,7 +468,7 @@ class ScientistModel(Model):
             del idx, val
         np.save(self.directory+'social_output.npy', np.asarray(y_var))
         np.save(self.directory+'ideas_entered.npy', np.asarray(x_var))
-        del ind_vars, actual_returns, num_scientists, returns_tracker, curr_id, counter_x, x_var, y_var
+        del ind_vars, actual_returns, returns_tracker, curr_id, counter_x, x_var, y_var
         # </editor-fold>
 
         # <editor-fold desc="Part 4: prop_age">

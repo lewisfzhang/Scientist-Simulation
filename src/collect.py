@@ -38,23 +38,23 @@ def main():
 
     arg_list = [("agent", agent_vars), ("model", model_vars), ("ideas", ideas), ("ind_ideas", ind_ideas),
 
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
-                #  "perceived returns",
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
+                #  "k", "perceived returns",
                 #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "perceived", True),
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'], "k",
-                #  "perceived returns",
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
+                #  "k", "perceived returns",
                 #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "perceived", False),
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
-                #  "actual returns",
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
+                #  "k", "actual returns",
                 #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "actual", True),
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'], "k",
-                #  "actual returns",
+                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
+                #  "k", "actual returns",
                 #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "actual", False),
 
@@ -62,9 +62,8 @@ def main():
                 # (they take a lot of time to graph since there's so many scientists but they don't tell use anything)
 
                 # ("resid_scatterplot", ind_ideas['agent_actual_return_invested_ideas'],
-                #  ind_ideas['agent_perceived_return_invested_ideas'],
-                #  final_perceived_returns_invested_ideas, "Scientist ID", "Residual",
-                #  "Residuals for all INVESTED ideas (actual-perceived)"),
+                #  ind_ideas['agent_perceived_return_invested_ideas'], final_perceived_returns_invested_ideas,
+                #  "Scientist ID", "Residual", "Residuals for all INVESTED ideas (actual-perceived)"),
 
                 # ("two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
                 #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", True),
@@ -85,17 +84,17 @@ def main():
                 # ("im_graph", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
                 #  "(IM) perceived return vs cost for INVESTED ideas (plot to check for bias)", False, "IM", False),
                 #
-                # ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime", "total research output",
-                #  "Average Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                # ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
+                #  "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", False),
                 #
-                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
-                #  "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
+                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                #
+                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
+                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
-                ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime", "total research output",
-                 "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True),
-
-                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime", "total research output",
-                #  "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True),
+                ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
+                 "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
                 ("one_var_bar_graph", prop_age, "scientist age", "fraction paying k",
                  "Proportion of Scientists Paying to Learn By Age", "age"),
@@ -133,13 +132,13 @@ def func_distr(graph_type, *other):
         agent_vars = other[0]
         agent_vars = agent_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)
         HTML(agent_vars.to_html('../data/pages/page_agent_vars.html', escape=False))
-        agent_vars = None
+        del agent_vars
     elif graph_type == "model":
         # model dataframe (other[0] contains model_vars)
         model_vars = other[0]
         model_vars = model_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)  # .transpose()
         HTML(model_vars.to_html('../data/pages/page_model_vars.html', escape=False))
-        model_vars = None
+        del model_vars
     elif graph_type == "ideas":
         # dataframe specifying info per idea
         data1 = other[0].astype(str)
@@ -148,12 +147,12 @@ def func_distr(graph_type, *other):
         for col in columns:
             data1.ix[pd.to_numeric(data1[col], errors='coerce') == 0, [col]] = ''
         data1.to_html('../data/pages/page_ideas.html')
-        data1 = None
+        del data1
     elif graph_type == "ind_ideas":
         ind_vars = other[0]
         ind_vars = ind_vars.transpose()
         ind_vars.to_html('../data/pages/page_ind_ideas.html')
-        ind_vars = None
+        del ind_vars
     elif graph_type == "line_graph":
         line_graph(*other)
     elif graph_type == "im_graph":

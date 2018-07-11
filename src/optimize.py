@@ -5,7 +5,6 @@ import random
 from store import *
 from scipy import stats
 from functions import *
-import matplotlib.pyplot as plt
 
 
 # scientist chooses the idea that returns the most at each step
@@ -111,9 +110,9 @@ def investing_helper(scientist, lock):
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
 def probabilistic_returns(scientist, *lock):
     # Array: keeping track of all the returns of investing in each available ideas
-    slope_ideas = []
-    effort_ideas = []
-    score_ideas = []
+    slope_ideas, effort_ideas, score_ideas = [], [], []
+    p_slope, p_effort, z_slope, z_effort, data, slopes, prob_slope, bins = \
+        None, None, None, None, None, None, None, None
 
     # Loops over all the ideas the scientist is allowed to invest in
     # condition checks ideas where scientist.avail_ideas is TRUE
@@ -123,51 +122,54 @@ def probabilistic_returns(scientist, *lock):
         # scientist invested one unit of effort into perceived returns matrix for idea
         slope = get_returns(idea, scientist.perceived_returns_matrix, effort, effort+1)
         slope_ideas.append(slope)
-        del effort, slope, idea
+        del effort, slope
 
-    z_slope = stats.zscore(slope_ideas)
-    # catches divide by 0 error in beginning step TP 2 where all effort will be 0 --> std Dev is 0
-    z_effort = [0 for i in range(len(effort_ideas))] if scientist.model.schedule.time == 2 \
-        else stats.zscore(effort_ideas)
+    if config.switch == 0:  # percentiles
+        p_slope = [stats.percentileofscore(slope_ideas, slope_ideas[i])/100 for i in range(len(slope_ideas))]
+        p_effort = [stats.percentileofscore(effort_ideas, effort_ideas[i])/100 for i in range(len(effort_ideas))]
 
-    p_slope = [stats.percentileofscore(slope_ideas, slope_ideas[i])/100 for i in range(len(slope_ideas))]
-    p_effort = [stats.percentileofscore(effort_ideas, effort_ideas[i])/100 for i in range(len(effort_ideas))]
+    elif config.switch == 1:  # z score
+        z_slope = stats.zscore(slope_ideas)
+        # catches divide by 0 error in beginning step TP 2 where all effort will be 0 --> std Dev is 0
+        z_effort = [0] * len(effort_ideas) if scientist.model.schedule.time == 2 else stats.zscore(effort_ideas)
 
-    unpack_model_lists(scientist.model, lock[1])
-    slopes = [scientist.model.final_slope[i][scientist.unique_id - 1] for i in range(0, 2)]
-    store_model_lists(scientist.model, False, lock[1])
-    # 0 = 'm > M', 1 = 'm <= M'
-    data = np.asarray([np.asarray([None, None]) for i in range(len(slope_ideas))])
+    elif config.switch == 2:  # bayesian
+        unpack_model_lists(scientist.model, lock[0])
+        slopes = [scientist.model.final_slope[i][scientist.unique_id - 1] for i in range(0, 2)]
+        store_model_lists(scientist.model, False, lock[0])
+        # 0 = 'm > M', 1 = 'm <= M'
+        data = np.asarray([np.asarray([None, None])] * len(slope_ideas))
+        prob_slope = [np.asarray([]), np.asarray([])]
+        bins = [np.asarray([]), np.asarray([])]
+        for i in range(0, 2):
+            # scientist has never invested, so he has no data for bayesian update
+            if len(slopes[i]) == 0:
+                for idea in range(len(slope_ideas)):
+                    data[idea][i] = 0.5
+                    del idea
+            else:
+                # prob_slope is probability of such a slope, bins are interval
+                prob_slope[i], bins[i] = np.histogram(slopes[i], bins=len(slopes[i]), density=True)
+                prob_slope[i] /= sum(prob_slope[i])  # ensures max probability is 1
+                # for all zero elements take average of adjacent elements
+                for idx, val in enumerate(prob_slope[i]):
+                    if val == 0:  # idx should never be 0 or last value since those intervals cover min/max
+                        prob_slope[i][idx] = (prob_slope[i][idx-1] + prob_slope[i][idx+1])/2
+                bins[i][0] = -100000  # so least value is included in last bin
+                bins[i][-1] = 100000  # so greatest value is included in last bin
+                data[np.arange(len(slope_ideas)), i] = prob_slope[i][np.digitize(slope_ideas, bins[i]) - 1]
 
-    prob_slope = [np.asarray([]), np.asarray([])]
-    bins = [np.asarray([]), np.asarray([])]
-    for i in range(0, 2):
-        # scientist has never invested, so he has no data for bayesian update
-        if len(slopes[i]) == 0:
-            for idea in range(len(slope_ideas)):
-                data[idea][i] = 0.5
-                del idea
-        else:
-            # n is probability, bins is interval, don't worry about patches
-            prob_slope[i], bins[i], patches = plt.hist(slopes[i], len(slopes[i]), density=1)
-            prob_slope[i] /= sum(prob_slope[i])  # ensures max probability is 1
-            # for all zero elements take average of adjacent elements
-            for idx, val in enumerate(prob_slope[i]):
-                if val==0:  # idx should never be 0 or last value since those intervals cover min/max
-                    prob_slope[i][idx] = (prob_slope[i][idx-1] + prob_slope[i][idx+1])/2
-            bins[i][0] = -100000  # so least value is included in last bin
-            bins[i][-1] = 100000  # so greatest value is included in last bin
-            data[np.arange(len(slope_ideas)), i] = prob_slope[i][np.digitize(slope_ideas, bins[i]) - 1]
-            del patches
-        del i
-
+    p_score, z_score, bayes_score = 0, 0, 0
     for idea in range(len(slope_ideas)):
         # penalize low slope, high effort (high score is better idea to invest)
-        p_score = p_slope[idea] * (1-p_effort[idea])
-        z_score = z_slope[idea] - z_effort[idea]
-        bayes_score = get_bayesian_stats(data[idea])
+        if config.switch == 0:
+            p_score = p_slope[idea] * (1-p_effort[idea])
+        elif config.switch == 1:
+            z_score = z_slope[idea] - z_effort[idea]
+        elif config.switch == 2:
+            bayes_score = get_bayesian_formula(data[idea])
         score_ideas.append([p_score, z_score, bayes_score][config.switch])
-        del p_score, z_score, bayes_score, idea
+    del p_score, z_score, bayes_score
 
     # Scalar: finds the maximum return over all the available ideas
     max_return = max(score_ideas)
@@ -246,7 +248,7 @@ def greedy_returns(scientist, *lock):
         stop_index = int(start_index + scientist.marginal_effort[idea])
 
         # at this point scientists have maxed out idea, no point of going further
-        if stop_index > 2* config.true_means_lam:
+        if stop_index > 2 * config.true_means_lam:
             final_perceived_returns_avail_ideas.append(0)
             final_actual_returns_avail_ideas.append(0)
             continue
