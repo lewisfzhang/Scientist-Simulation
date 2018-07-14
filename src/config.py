@@ -27,13 +27,17 @@ time_periods_alive = init.time_periods_alive
 true_means_lam = init.true_means_lam
 true_sds_lam = int(0.4 * true_means_lam)
 
+# adjustables
+true_M = 100
+true_idea_shift = true_means_lam + 3*true_sds_lam
+
 # agent constants (Use 0.03 for Windows due to GPU limit)
 # possibly try 0.05*N/100?
-start_effort_lam = int(0.5*true_means_lam)  # make sure this is >= 9 to ensure start_effort isn't too small
+start_effort_lam = int(init.prop_means*true_means_lam)
 
 # keep k and start effort ratio fixed (see next line)
 # keep learning cost relatively low to promote new ideas (but model could still be flawed)
-k_lam = int(0.5*start_effort_lam)  # make sure this is still > 0
+k_lam = int(init.prop_start*start_effort_lam)  # make sure this is still > 0
 # </editor-fold>
 
 # <editor-fold desc="Logistics of running the program">
@@ -76,13 +80,10 @@ switch = 2
 # total number of scientists in model
 num_scientists = N*(time_periods + 1)
 
-# protects against noise that produces negative sds/means
-end_limit = int((true_sds_lam - 3 * math.sqrt(true_sds_lam)) / 3)
-
 # seed for constant randomization
 np.random.seed(seed)
-seed_array = np.random.randint(100000, 999999, (num_scientists + 1)*(time_periods + 6))\
-    .reshape(num_scientists + 1, time_periods + 6)
+seed_array = np.random.randint(100000, 999999, (num_scientists + 1)*(time_periods + 12))\
+    .reshape(num_scientists + 1, time_periods + 12)
 # </editor-fold>
 
 # <editor-fold desc="Potential variables for future use">
@@ -98,7 +99,7 @@ count = 0
 start = 0
 
 # for x,y scale
-x_width = 130
-y_width = 122
-sq_width = 200
+x_width = 1300
+y_width = 1220
+sq_width = 2000
 # </editor-fold>

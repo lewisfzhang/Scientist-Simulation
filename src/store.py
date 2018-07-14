@@ -44,6 +44,12 @@ def store_model_arrays_data(model, is_first, lock):
         np.save(model.directory + 'total_scientists_invested_helper.npy', model.total_scientists_invested_helper)
         model.total_scientists_invested_helper = None
 
+        np.save(model.directory + 'total_idea_phase.npy', model.total_idea_phase)
+        model.total_idea_phase = None
+
+        np.save(model.directory + 'idea_phase_label.npy', model.idea_phase_label)
+        model.idea_phase_label = None
+
     if not is_first and config.use_multiprocessing and lock is not None:
         lock.release()
 
@@ -114,6 +120,11 @@ def unpack_model_arrays_data(model, lock):
         model.total_scientists_invested = np.load(model.directory + 'total_scientists_invested.npy')
 
         model.total_scientists_invested_helper = np.load(model.directory + 'total_scientists_invested_helper.npy')
+
+        model.total_idea_phase = np.load(model.directory + 'idea_phase.npy')
+
+        model.idea_phase_label = np.load(model.directory + 'idea_phase.npy')
+
 
 
 def unpack_model_lists(model, lock):
@@ -288,10 +299,7 @@ def get_total_start_effort(model):
 def copy_total_start_effort(scientist, lock):
     if config.use_multiprocessing and lock is not None:  # corresponding checks if we are using multiprocessing
         lock.acquire()
-    if config.use_store:
-        scientist.total_effort_start = np.load(scientist.model.directory + 'total_effort.npy')
-    else:
-        scientist.total_effort_start = np.copy(scientist.model.total_effort)
+    scientist.total_effort_start = np.copy(scientist.model.total_effort_start)
     if config.use_multiprocessing and lock is not None:
         lock.release()
 

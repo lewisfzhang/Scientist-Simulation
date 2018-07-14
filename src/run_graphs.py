@@ -13,16 +13,11 @@ import timeit
 import config
 import pickle
 
-# settings for images
-def settings_small():
-    mpl.rcParams['xtick.labelsize'] = 5
-    mpl.rcParams['ytick.labelsize'] = 5
 
-
-# settings for images
-def settings_big():
-    mpl.rcParams['xtick.labelsize'] = 10
-    mpl.rcParams['ytick.labelsize'] = 10
+# font settings for images
+def font_settings(x):
+    mpl.rcParams['xtick.labelsize'] = x
+    mpl.rcParams['ytick.labelsize'] = x
 
 
 # labeling x, y, and title
@@ -36,7 +31,7 @@ def labels(x_label, y_label, title):
 # CONDITION: actual and perceived should have the same structure (arrangement of elements)
 # CONDITION: k array should be equal to length of perceived returns
 def im_graph(agent1, agent2, x_label, y_label, title, with_zero, file_name, linear):
-    settings_big()
+    font_settings(10)
     if linear:
         file_name += '_linear'
     else:
@@ -67,8 +62,8 @@ def im_graph(agent1, agent2, x_label, y_label, title, with_zero, file_name, line
     dpi = fig.get_dpi()
     fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/imgraph_' + file_name)
-    # with open(config.parent_dir + 'data/images/imgraph_' + file_name, 'wb') as f:
-    #     pickle.dump(fig, f)
+    with open(config.parent_dir + 'data/saved/imgraph_' + file_name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
     del agent1, agent2, fig, ax, im_graph_data
 
@@ -78,7 +73,7 @@ def im_graph(agent1, agent2, x_label, y_label, title, with_zero, file_name, line
 # CONDITION: actual array is still in numpy form, hasn't been flattened yet
 # CONDITION: k array should be equal to length of perceived returns
 def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
-    settings_small()
+    font_settings(5)
     resid = np.asarray(actual)-np.asarray(perceived)
     agent_id = []
     for array_idx in range(len(perceived_2d)):
@@ -96,13 +91,15 @@ def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
     dpi = fig.get_dpi()
     fig.set_size_inches((config.sq_width + 3 * len(actual)) / float(dpi), config.sq_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/scatterplot_resid')
+    with open(config.parent_dir + 'data/saved/scatterplot_resid' + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
     del actual, perceived, perceived_2d, resid, agent_id, fig
 
 
 # plots the returns vs cost on a scatterplot
 def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline, vline):
-    settings_small()
+    font_settings(5)
     if linear:
         name = "linear"
         step_y = 10
@@ -114,20 +111,22 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
         step_y = 1
     max_y = max(vary)
     plt.scatter(varx, vary)
-    labels(x_label, y_label, title)
     plt.yticks(np.arange(0, max_y+1, step_y))
     plt.xticks(np.arange(0, max(varx)+1, 1))
+    labels(x_label, y_label, title)
     fig = plt.gcf()
     dpi = fig.get_dpi()
     fig.set_size_inches(config.sq_width / float(dpi), (config.sq_width + max_y * 0.1) / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/two_var_scatterplot_'+name)
+    with open(config.parent_dir + 'data/saved/two_var_scatterplot_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
     del varx, vary, fig
 
 
 # plots the young vs old scientist as a 2-var bar graph
 def two_var_bar_graph(data, x_label, y_label, title, linear):
-    settings_small()
+    font_settings(5)
     if linear:
         name = "linear"
     else:
@@ -139,11 +138,13 @@ def two_var_bar_graph(data, x_label, y_label, title, linear):
     df = pd.DataFrame.from_dict(dict_data)
     df.plot(kind='bar', stacked=True, width=1)
     df.plot.bar(x="Idea", y=["Young", "Old"])
+    labels(x_label, y_label, title)
     fig = plt.gcf()
     dpi = fig.get_dpi()
     fig.set_size_inches((config.sq_width + len(data[0])) / float(dpi), config.sq_width / float(dpi))
-    labels(x_label, y_label, title)
     plt.savefig(config.parent_dir + 'data/images/2-var_bar_graph_young_old_'+name)
+    with open(config.parent_dir + 'data/saved/2-var_bar_graph_young_old_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
     del data, fig, dict_data, df
 
@@ -151,7 +152,7 @@ def two_var_bar_graph(data, x_label, y_label, title, linear):
 # plots like a scatterplot but also has a line
 # condition: y_var is a numpy array, not a list!
 def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
-    settings_big()
+    font_settings(10)
     if average:
         name = "average_"
         y_var = divide_0(y_var, x_var)
@@ -170,21 +171,34 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
     plt.plot(x_smooth, y_smooth)
     plt.scatter(x_var, y_var[1:])
     labels(x_label, y_label, title)
+    fig = plt.gcf()
+    dpi = fig.get_dpi()
+    fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/line_graph_'+name)
+    with open(config.parent_dir + 'data/saved/line_graph_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
 
 
-def one_var_bar_graph(data, x_label, y_label, title, name):
-    settings_big()
+def one_var_bar_graph(data, legend, x_label, y_label, title, name):
+    font_settings(10)
     x_var = np.arange(len(data))
-    plt.bar(x_var, data, align='center', alpha=0.5)
+    plt.bar(x_var, data, align='center', alpha=0.5, color='g')
+    if legend is not None:
+        plt.xticks(x_var, legend)
     labels(x_label, y_label, title)
+    fig = plt.gcf()
+    dpi = fig.get_dpi()
+    fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/1-var_bar_graph_prop_'+name)
+    with open(config.parent_dir + 'data/saved/var_bar_graph_prop_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()
     del data, x_var
 
 
 def two_var_line_graph(data, x_label, y_label, title, linear):
+    font_settings(5)
     if linear:
         name = 'linear'
     else:
@@ -201,7 +215,12 @@ def two_var_line_graph(data, x_label, y_label, title, linear):
     plt.plot(x_smooth, y_smooth_2, color='blue', label='Old')
     plt.scatter(x_var, data[0], color='red')
     plt.scatter(x_var, data[1], color='blue')
-    labels(x_label, y_label, title)
     plt.legend()
+    labels(x_label, y_label, title)
+    fig = plt.gcf()
+    dpi = fig.get_dpi()
+    fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/line_graph_'+name)
+    with open(config.parent_dir + 'data/saved/line_graph_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
     plt.close()

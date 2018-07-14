@@ -6,11 +6,14 @@ import init
 
 def main():
     # if user wants to pass in arguments
-    if len(sys.argv) == 5:
+    if len(sys.argv) == 7:
         init.time_periods = int(sys.argv[1])
         init.ideas_per_time = int(sys.argv[2])
         init.N = int(sys.argv[3])
         init.time_periods_alive = int(sys.argv[4])
+        init.prop_sds = int(sys.argv[5])
+        init.prop_means = int(sys.argv[6])
+        init.prop_start = int(sys.argv[7])
 
     # so that config file loads after init.py is set
     import config
@@ -43,7 +46,7 @@ def main():
     func.stop_run("time to create model object")
 
     # printing parameters into console screen
-    print("\nVariables:\n", all_params)
+    func.f_print("\nVariables:\n", all_params)
 
     # write parameters to text file
     f = open('../data/parameters.txt', 'w')
@@ -57,7 +60,7 @@ def main():
         model.step()
         func.stop_run("step: "+str(i))
 
-    print("\nTOTAL TIME TO FINISH RUNNING SIMULATION:", timeit.default_timer() - start_prog, "seconds")
+    func.f_print("\nTOTAL TIME TO FINISH RUNNING SIMULATION:", timeit.default_timer() - start_prog, "seconds")
 
 
 if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function

@@ -54,14 +54,9 @@ def investing_helper(scientist, lock):
             scientist.avail_effort = 0
             continue
 
-        scientist.marginal_invested_by_scientist[idea_choice] += scientist.marginal_effort[idea_choice]
-        scientist.k_invested_by_scientist[idea_choice] += scientist.curr_k[idea_choice]
-        scientist.eff_inv_in_period_marginal[idea_choice] += scientist.marginal_effort[idea_choice]
-        scientist.eff_inv_in_period_k[idea_choice] += scientist.curr_k[idea_choice]
-        scientist.avail_effort -= scientist.increment
-        scientist.total_effort_start[idea_choice] += scientist.marginal_effort[idea_choice]
-
         unpack_model_arrays_data(scientist.model, lock[0])
+        idx_idea_phase = (scientist.model.idea_phase_label[idea_choice] < scientist.total_effort_start[idea_choice]).sum()
+        scientist.model.total_idea_phase[idx_idea_phase] += 1
         scientist.model.total_effort[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.model.total_perceived_returns[idea_choice] += max_return
         scientist.model.total_times_invested[idea_choice] += 1
@@ -72,6 +67,13 @@ def investing_helper(scientist, lock):
             scientist.model.total_scientists_invested[idea_choice] += 1
             scientist.model.total_scientists_invested_helper[idea_choice].add(scientist.unique_id)
         store_model_arrays_data(scientist.model, False, lock[0])
+
+        scientist.marginal_invested_by_scientist[idea_choice] += scientist.marginal_effort[idea_choice]
+        scientist.k_invested_by_scientist[idea_choice] += scientist.curr_k[idea_choice]
+        scientist.eff_inv_in_period_marginal[idea_choice] += scientist.marginal_effort[idea_choice]
+        scientist.eff_inv_in_period_k[idea_choice] += scientist.curr_k[idea_choice]
+        scientist.avail_effort -= scientist.increment
+        scientist.total_effort_start[idea_choice] += scientist.marginal_effort[idea_choice]
 
         # checks if idea_choice is already in the df
         if idea_choice in temp_df['Idea Choice'].values:
@@ -86,7 +88,7 @@ def investing_helper(scientist, lock):
             row_data = {"Idea Choice": idea_choice, "Max Return": max_return, "ID": scientist.unique_id}
             temp_df = temp_df.append(row_data, ignore_index=True)
 
-        del idea_choice, max_return, no_effort_inv, scientist.curr_k, scientist.increment, row_data
+        del idea_choice, max_return, no_effort_inv, scientist.curr_k, scientist.increment, row_data, idx_idea_phase
         scientist.increment = None
         scientist.curr_k = None
 
@@ -175,8 +177,8 @@ def probabilistic_returns(scientist, *lock):
     max_return = max(score_ideas)
     # Array: finds the index of the maximum return over all the available ideas
     idx_max_return = np.where(np.asarray(score_ideas) == max_return)[0]
-    # choosing random value out of all possible values
-    random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 4])
+    # choosing random value out of all possible values (starts at index 2+10 = 12)
+    random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 10])
     idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
 
     # a scientist who can't invest fully in an idea gets 0 return
@@ -265,8 +267,8 @@ def greedy_returns(scientist, *lock):
     max_return = max(final_perceived_returns_avail_ideas)
     # Array: finds the index of the maximum return over all the available ideas
     idx_max_return = np.where(np.asarray(final_perceived_returns_avail_ideas) == max_return)[0]
-    # choosing random value out of all possible values
-    random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 4])
+    # choosing random value out of all possible values (starts at index 2+10 = 12)
+    random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 10])
     idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
 
     # convert back from above

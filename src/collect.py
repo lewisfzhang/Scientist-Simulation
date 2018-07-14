@@ -33,6 +33,7 @@ def main():
     prop_age = np.load(model_directory + 'prop_age.npy')
     prop_idea = np.load(model_directory + 'prop_idea.npy')
     marginal_effort_by_age = np.load(model_directory + 'marginal_effort_by_age.npy')
+    idea_phase = np.load(model_directory + 'idea_phase.npy')
     with open(model_directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         final_perceived_returns_invested_ideas = pickle.load(fp)
 
@@ -96,14 +97,24 @@ def main():
                 ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
                  "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True),
 
-                ("one_var_bar_graph", prop_age, "scientist age", "fraction paying k",
+                ("two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
+                 "Effort Invested By Ages of Ideas and Scientists", False),
+
+                ("one_var_bar_graph", prop_age, None, "scientist age", "fraction paying k",
                  "Proportion of Scientists Paying to Learn By Age", "age"),
 
-                ("one_var_bar_graph", prop_idea, "age of idea", "proportion of scientists working on the idea",
+                ("one_var_bar_graph", prop_idea, None, "age of idea", "proportion of scientists working on the idea",
                  "Proportion of Scientists Working Based on Age of Idea", "idea"),
 
-                ("two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
-                 "Effort Invested By Ages of Ideas and Scientists", False)]
+                ("one_var_bar_graph", get_pdf(ideas_entered), None, "# of ideas entered in lifetime",
+                 "fraction working on 'x' ideas", "Proportion of Scientists Working on An Idea (PDF)", "ideas_pdf"),
+
+                ("one_var_bar_graph", get_cdf(ideas_entered), None, "# of ideas entered in lifetime",
+                 "fraction working on more than 'x' ideas", "Proportion of Scientists Working on An Idea (CDF)",
+                 "ideas_cdf"),
+
+                ("one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Old Age"], "idea phases",
+                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase")]
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
     p.close()
@@ -114,7 +125,7 @@ def main():
 
     stop_run("Total time to process data")
 
-    print("\nEND OF PROGRAM\ntotal runtime:", time.time() - start_prog, "seconds\n\n")
+    f_print("\nEND OF PROGRAM\ntotal runtime:", time.time() - start_prog, "seconds\n\n")
 
 
 # assigning which function to call in the run_graphs.py file
@@ -170,7 +181,7 @@ def func_distr(graph_type, *other):
 
     gc_collect()
     stop = timeit.default_timer()
-    print("\nfinished", graph_type, stop-start, "seconds")
+    f_print("\nfinished", graph_type, stop-start, "seconds")
 
 
 if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function

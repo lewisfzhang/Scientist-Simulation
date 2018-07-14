@@ -1,12 +1,20 @@
 <component name="ProjectDictionaryState">
   <dictionary name="stanford">
     <words>
+      <w>adjustables</w>
+      <w>asarray</w>
       <w>dereferencing</w>
+      <w>devs</w>
       <w>forkserver</w>
+      <w>imgraph</w>
       <w>matplotlib</w>
+      <w>mkdir</w>
       <w>multithreading</w>
+      <w>ntasks</w>
       <w>prog</w>
+      <w>resid</w>
       <w>scatterplot</w>
+      <w>srun</w>
     </words>
   </dictionary>
 </component>

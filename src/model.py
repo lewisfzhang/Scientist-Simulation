@@ -30,8 +30,9 @@ class Scientist(Agent):
 
         # Scalar: amount of effort a scientist starts with in each time period
         # he or she is alive (not accounting for start effort decay)
+        # can set to constant if needed rather than poisson distribution
         np.random.seed(config.seed_array[unique_id][0])
-        self.start_effort = 150  # poisson(lam=config.start_effort_lam)  # utility
+        self.start_effort = poisson(lam=config.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
@@ -49,10 +50,10 @@ class Scientist(Agent):
         create_directory(self.directory)
 
         random.seed(config.seed_array[unique_id][1])
-        self.sds = random.choice([i for i in range(5, 15)])  # follows N
+        self.sds = random.choice(np.arange(5, 15))  # follows N
 
         random.seed(config.seed_array[unique_id][2])
-        self.means = random.choice([i for i in range(50, 150)])  # follows num_TP
+        self.means = random.choice(np.arange(50, 150))  # follows num_TP
 
         # Array: investment cost for each idea for a given scientist; a scientist
         # must first pay an idea's investment cost before receiving returns from
@@ -62,22 +63,19 @@ class Scientist(Agent):
         np.random.seed(config.seed_array[unique_id][3])
         self.k = np.rint(self.model.k * (np.random.normal(self.means, self.sds, self.model.total_ideas)/100))  # utility
 
-        # ARRAY: error each scientist has for perceived compared to the true actual returns
-        random.seed(config.seed_array[unique_id][4])
-        self.sds = random.choice([i for i in range(1, config.end_limit)])
-
-        # ARRAY: the 'noise' or error based on each specific scientist
-        np.random.seed(config.seed_array[unique_id][5])
-        self.noise = np.random.normal(0, self.sds, model.total_ideas)  # void
-
         # Arrays: parameters determining perceived returns for ideas, which are
         # distinct from true returns. Ideas are modeled as logistic CDFs ("S" curve)
-        self.sds = self.model.true_sds + self.noise  # void
-        self.means = self.model.true_means + self.noise  # void
+        self.M = self.model.M + random_noise(4, 5, self.unique_id, self.model.total_ideas, config.true_M)  # void
+        self.sds = self.model.true_sds + random_noise(6, 7, self.unique_id, self.model.total_ideas,
+                                                      config.true_sds_lam)  # void
+        self.means = self.model.true_means + random_noise(8, 9, self.unique_id, self.model.total_ideas,
+                                                          config.true_means_lam)  # void
+        self.idea_shift = self.model.true_means + random_noise(10, 11, self.unique_id, self.model.total_ideas,
+                                                               config.true_idea_shift)  # void
 
         # ARRAY: Create the ideas/returns matrix
         # NOTE: logistic_cdf is not ranodm, always generates same curve based on means and sds
-        self.perceived_returns_matrix = np.asarray([self.model.M, self.sds, self.means])  # utility
+        self.perceived_returns_matrix = np.asarray([self.M, self.sds, self.means, self.idea_shift])  # utility
 
         # dereferencing 'void' variables
         self.noise = None
@@ -196,17 +194,19 @@ class ScientistModel(Model):
         self.true_sds = poisson(lam=config.true_sds_lam, size=self.total_ideas)  # void
         np.random.seed(config.seed_array[0][2])
         self.true_means = poisson(lam=config.true_means_lam, size=self.total_ideas)  # void
-
+        np.random.seed(config.seed_array[0][3])
+        self.true_idea_shift = np.random.choice(np.arange(config.true_idea_shift), size=self.total_ideas)
         # Ensures that none of the standard devs are equal to 0, this is OKAY
         self.true_sds += 1  # void
 
         # M is a scalar that multiples based on each idea
         # not sure if this is redundant since we already have random poisson values for true_means and true_sds
-        np.random.seed(config.seed_array[0][3])
-        self.M = 100 * poisson(lam=100, size=self.total_ideas)  # void
+        np.random.seed(config.seed_array[0][4])
+        self.M = 100 * poisson(lam=config.true_M, size=self.total_ideas)  # void
 
-        # creates actual returns matrix
-        self.actual_returns_matrix = np.asarray([self.M, self.true_sds, self.true_means])  # utility
+        # creates actual returns matrix  # utility
+        self.actual_returns_matrix = np.asarray([self.M, self.true_sds, self.true_means, self.true_idea_shift])
+        self.idea_phase_label = logistic_cdf_inv_deriv(0.001, self.true_means, self.true_sds)
 
         # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
@@ -222,6 +222,7 @@ class ScientistModel(Model):
         self.total_times_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested_helper = [set() for i in range(self.total_ideas)]
+        self.total_idea_phase = np.zeros(3)
 
         # Array: keeping track of all the returns of investing in each available and invested ideas
         # NOTE: the K is based on initial learning cost, not current cost
@@ -254,7 +255,7 @@ class ScientistModel(Model):
                 self.agent_dict[i] = i-1  # shift index one to the left
 
         # dereferencing variables
-        del self.k, self.true_sds, self.true_means, self.M
+        del self.k, self.true_sds, self.true_means, self.M, self.true_idea_shift
 
         create_datacollectors(self)
         create_list_dict(self)
@@ -382,7 +383,7 @@ class ScientistModel(Model):
 
     # for data collecting after model has finished running
     def collect_vars(self):
-        print("\n\n\ndone with step 9")
+        f_print("\n\ndone with step 9")
         start = timeit.default_timer()
 
         if config.use_store is True:
@@ -400,6 +401,7 @@ class ScientistModel(Model):
         avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
         total_perceived_returns = np.round(self.total_perceived_returns, 2)
         total_actual_returns = np.round(self.total_actual_returns, 2)
+        idea_phase = divide_0(self.total_idea_phase, sum(self.total_idea_phase))
         ideas_dict = {"idea": idea,
                       "TP": tp,
                       "scientists_invested": self.total_scientists_invested,
@@ -410,8 +412,9 @@ class ScientistModel(Model):
                       "total_pr": total_perceived_returns,
                       "total_ar": total_actual_returns}
         pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(self.directory+'ideas.pkl')
+        np.save(self.directory + 'idea_phase.npy', idea_phase)
         store_model_arrays_data(self, False, None)
-        del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns
+        del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns, idea_phase
         # </editor-fold>
 
         # <editor-fold desc="Part 2: ind_ideas">
@@ -533,7 +536,7 @@ class ScientistModel(Model):
         del agent_vars, agent_marg, marginal_effort, prop_idea, total_ideas
         # </editor-fold>
 
-        print("time elapsed:", timeit.default_timer()-start)
+        f_print("time elapsed:", timeit.default_timer()-start)
 
 
 def mp_helper_spawn(lock, model, agent_list):

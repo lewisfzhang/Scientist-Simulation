@@ -7,13 +7,35 @@ import glob
 import os
 import gc
 import ast
-from thinkbayes2 import Pmf
+import random
+import math
 
 
 # Input: Parameters for the logistic cumulative distribution function
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
 def logistic_cdf(x, loc, scale):
     return 1/(1+np.exp((loc-x)/scale))
+
+
+# take the first derivative of logistic cdf
+def logistic_cdf_derivative(x, loc, scale):
+    return np.exp((loc - x)/scale)/(scale*(np.exp((loc - x)/scale) + 1)**2)
+
+
+# remember anything from your calculus class?
+def logistic_cdf_inv_deriv(slope_val, loc, scale):
+    output = []
+    for i in range(len(loc)):
+        # np.roots takes coefficients of the polynomial
+        r = np.roots([slope_val * scale[i], slope_val * scale[i] * 2 - 1, slope_val * scale[i]])
+        r = r[np.isreal(r)]
+        if len(r) == 0:  # no real roots
+            raise Exception('No real roots when solving logistic cdf slope!')
+        elif len(r) == 1:  # only one real root? check the program again
+            raise Exception('Only one real root when solving logistic cdf slope!')
+        else:
+            output.append(loc[i] - np.log(r) * scale[i])
+    return np.asarray(output)
 
 
 # round to 2 decimal places and returns the immutable tuple object for datacollector
@@ -25,13 +47,14 @@ def get_returns(idea, returns_info, start_idx, end_idx):
     m = returns_info[0][idea]
     sds = returns_info[1][idea]
     means = returns_info[2][idea]
-    start = m * logistic_cdf(start_idx, loc=means, scale=sds)
-    end = m * logistic_cdf(end_idx, loc=means, scale=sds)
+    shift = returns_info[3][idea]
+    start = m * logistic_cdf(start_idx - shift, loc=means, scale=sds)
+    end = m * logistic_cdf(end_idx - shift, loc=means, scale=sds)
     return end-start
 
 
 # for counting number of html pages generated
-def page_counter():
+def counter():
     config.count += 1
     return config.count
 
@@ -50,11 +73,11 @@ def flatten_list(list_name):
 
 # helper method for calculating runtime
 def stop_run(string):
-    print("")
-    print(string)
+    f_print("")
+    f_print(string)
     # end runtime
     stop = timeit.default_timer()
-    print("Elapsed runtime: ", stop - config.start, "seconds")
+    f_print("Elapsed runtime: ", stop - config.start, "seconds")
     config.start = stop
 
 
@@ -128,30 +151,57 @@ def str_to_dict(s):
 
 # PMF implementation that models Bayes' method/theorem P(A | B) = P(B | A) * P(A) / P(B)
 # data is the ratio of over/underestimating in the past for the scientist
-def get_bayesian_stats(data):
-    pmf = Pmf()
-
-    # scientists initially hypothesize that they have an equal chance of over/underestimating returns
-    # P(m > M)
-    # m is scientist believed impact, M is the actual max impact of the idea
-    pmf.Set('m > M', 0.5)
-    pmf.Set('m <= M', 0.5)
-
-    # scientists adjust their chances based on past investing data (across all ideas)
-    # P(I | m > M) where I is slope
-    pmf.Mult('m > M', data[0])
-    pmf.Mult('m <= M', data[1])
-
-    # same as dividing by P(I)
-    pmf.Normalize()
-
-    out = pmf.GetDict()['m > M']
-    del pmf
-    return out
-
-
-# same as above method but possibly faster
+#
+# # scientists initially hypothesize that they have an equal chance of over/underestimating returns
+# # P(m > M)
+# # m is scientist believed impact, M is the actual max impact of the idea
+# pmf.Set('m > M', 0.5)
+# pmf.Set('m <= M', 0.5)
+#
+# # scientists adjust their chances based on past investing data (across all ideas)
+# # P(I | m > M) where I is slope
+# pmf.Mult('m > M', data[0])
+# pmf.Mult('m <= M', data[1])
+#
+# # same as dividing by P(I)
+# pmf.Normalize()
 def get_bayesian_formula(data):
     p0 = 0.5 * data[0]
     p1 = 0.5 * data[1]
     return p0 / (p0 + p1)
+
+
+# helper function that generates noise for each agent in init
+def random_noise(seed1, seed2, unique_id, total_ideas, x):
+    random.seed(config.seed_array[unique_id][seed1])
+    sds = random.choice(np.arange(1, end_limit(x)))
+
+    # ARRAY: the 'noise' or error based on each specific scientist
+    np.random.seed(config.seed_array[unique_id][seed2])
+    noise = np.random.normal(0, sds, total_ideas)  # void
+
+    return noise
+
+
+# protects against noise that produces negative sds/means
+def end_limit(x):
+    return int((x - 3 * math.sqrt(x)) / 3)
+
+
+# returns proportion based on array of numbers
+def get_pdf(arr):
+    return arr / sum(arr)
+
+
+# returns cdf based on pdf array
+def get_cdf(arr):
+    return np.cumsum(get_pdf(arr))
+
+
+def f_print(*s):
+    out = ''
+    for i in s:
+        out += str(i) + ' '
+    print(out)
+    with open(config.parent_dir + 'data/output.txt', 'a') as f:
+        f.write(out+'\n')
