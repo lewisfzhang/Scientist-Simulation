@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1                            # Run on a single CPU
 #SBATCH --mem=1gb                             # Job memory request
 #SBATCH --time=00:05:00                       # Time limit hrs:min:sec
-#SBATCH --output=~/batch/batch_%j.log         # Standard output and error log
+#SBATCH --output=$HOME/batch/batch_%j.log     # Standard output and error log
 
 pwd; hostname; date
 
