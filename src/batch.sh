@@ -4,9 +4,9 @@
 #SBATCH --mail-type=END,FAIL                  # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=lewis.zhang19@bcp.org     # Where to send mail
 #SBATCH --ntasks=1                            # Run on a single CPU
-#SBATCH --mem=1gb                             # Job memory request
+#SBATCH --mem=100mb                           # Job memory request
 #SBATCH --time=00:05:00                       # Time limit hrs:min:sec
-#SBATCH --output=$HOME/batch/batch_%j.log     # Standard output and error log
+#SBATCH --output=debug/batch_%j.log     # Standard output and error log
 
 pwd; hostname; date
 
@@ -15,7 +15,7 @@ ml load python/3.6.1
 
 echo "Running run.sh script"
 
-storage_dir=$PI_HOME/lewisz/run/$(SLURM_JOBID)_$(date +%d-%b-%H_%M)
+storage_dir=$PI_HOME/lewisz/batch_$(date +%d-%b-%H_%M)
 mkdir $storage_dir
 
 time_periods=50
@@ -24,9 +24,9 @@ N=40
 time_periods_alive=10
 count=1
 
-for prop_sds in {0.2..0.8..0.2}
+for prop_sds in 0.2 0.4 0.6 0.8
 do
-    for prop_means in {0.25..0.75..0.25}
+    for prop_means in 0.25 0.5 0.75
     do
         for prop_start in 0.1 0.25 0.4 0.5 0.6 0.75
         do
