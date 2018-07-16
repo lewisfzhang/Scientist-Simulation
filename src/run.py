@@ -6,14 +6,14 @@ import init
 
 def main():
     # if user wants to pass in arguments
-    if len(sys.argv) == 7:
+    if len(sys.argv) == 8:
         init.time_periods = int(sys.argv[1])
         init.ideas_per_time = int(sys.argv[2])
         init.N = int(sys.argv[3])
         init.time_periods_alive = int(sys.argv[4])
-        init.prop_sds = int(sys.argv[5])
-        init.prop_means = int(sys.argv[6])
-        init.prop_start = int(sys.argv[7])
+        init.prop_sds = float(sys.argv[5])
+        init.prop_means = float(sys.argv[6])
+        init.prop_start = float(sys.argv[7])
 
     # so that config file loads after init.py is set
     import config

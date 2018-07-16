@@ -7,13 +7,17 @@
       <w>devs</w>
       <w>forkserver</w>
       <w>imgraph</w>
+      <w>lewisz</w>
       <w>matplotlib</w>
       <w>mkdir</w>
       <w>multithreading</w>
       <w>ntasks</w>
       <w>prog</w>
       <w>resid</w>
+      <w>sbatch</w>
       <w>scatterplot</w>
+      <w>slurm</w>
+      <w>squeue</w>
       <w>srun</w>
     </words>
   </dictionary>

@@ -3,7 +3,7 @@
 # if succeed, open result web page
 
 # create new output.txt file
-echo > data/output.txt
+echo > ../data/output.txt
 
 # check params
 [ $# -gt 0 -a $# -lt 7 ] && echo $0 need 7 parameter values | tee -a ../data/output.txt && exit 1

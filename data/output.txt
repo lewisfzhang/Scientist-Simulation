@@ -1,203 +1,27 @@
 
-!!! Error !!!
  
 time to create model object 
-Elapsed runtime:  1.721195104997605 seconds 
+Elapsed runtime:  0.052336630993522704 seconds 
 
 Variables:
- {'seed': 654321, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 50, 'ideas_per_time': 20, 'N': 40, 'time_periods_alive': 10, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False} 
+ {'seed': 654321, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 10, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 36, 'use_multithreading': False} 
  
 entering main function 
-Elapsed runtime:  0.001656437001656741 seconds 
+Elapsed runtime:  0.0018436459940858185 seconds 
  
 step: 0 
-Elapsed runtime:  0.08176424796693027 seconds 
+Elapsed runtime:  0.06014500500168651 seconds 
  
 step: 1 
-Elapsed runtime:  0.05089700303506106 seconds 
+Elapsed runtime:  0.09321680996799842 seconds 
  
 step: 2 
-Elapsed runtime:  1.981536609993782 seconds 
+Elapsed runtime:  0.4733114340342581 seconds 
  
 step: 3 
-Elapsed runtime:  2.8254602900124155 seconds 
+Elapsed runtime:  0.6421642649802379 seconds 
  
 step: 4 
-Elapsed runtime:  4.018653045000974 seconds 
- 
-step: 5 
-Elapsed runtime:  5.023644383007195 seconds 
- 
-step: 6 
-Elapsed runtime:  6.32687316898955 seconds 
- 
-step: 7 
-Elapsed runtime:  8.096349435974844 seconds 
- 
-step: 8 
-Elapsed runtime:  10.049520950997248 seconds 
- 
-step: 9 
-Elapsed runtime:  10.52408663299866 seconds 
- 
-step: 10 
-Elapsed runtime:  13.151118597015738 seconds 
- 
-step: 11 
-Elapsed runtime:  12.861223947023973 seconds 
- 
-step: 12 
-Elapsed runtime:  12.24759957700735 seconds 
- 
-step: 13 
-Elapsed runtime:  12.372915279993322 seconds 
- 
-step: 14 
-Elapsed runtime:  12.795150240999646 seconds 
- 
-step: 15 
-Elapsed runtime:  13.03044466697611 seconds 
- 
-step: 16 
-Elapsed runtime:  12.672221340995748 seconds 
- 
-step: 17 
-Elapsed runtime:  15.367477571009658 seconds 
- 
-step: 18 
-Elapsed runtime:  15.96869239298394 seconds 
- 
-step: 19 
-Elapsed runtime:  15.8102643120219 seconds 
- 
-step: 20 
-Elapsed runtime:  17.56996092898771 seconds 
- 
-step: 21 
-Elapsed runtime:  20.974735495983623 seconds 
- 
-step: 22 
-Elapsed runtime:  19.94014329800848 seconds 
- 
-step: 23 
-Elapsed runtime:  17.629526571021415 seconds 
- 
-step: 24 
-Elapsed runtime:  17.88348311401205 seconds 
- 
-step: 25 
-Elapsed runtime:  15.849243097996805 seconds 
- 
-step: 26 
-Elapsed runtime:  14.527943331981078 seconds 
- 
-step: 27 
-Elapsed runtime:  15.87785647099372 seconds 
- 
-step: 28 
-Elapsed runtime:  16.59380032500485 seconds 
- 
-step: 29 
-Elapsed runtime:  17.047235012985766 seconds 
- 
-step: 30 
-Elapsed runtime:  15.577050474006683 seconds 
- 
-step: 31 
-Elapsed runtime:  17.24724216503091 seconds 
- 
-step: 32 
-Elapsed runtime:  18.957466334977653 seconds 
- 
-step: 33 
-Elapsed runtime:  15.884270804992411 seconds 
- 
-step: 34 
-Elapsed runtime:  21.377526041993406 seconds 
- 
-step: 35 
-Elapsed runtime:  17.63984821998747 seconds 
- 
-step: 36 
-Elapsed runtime:  17.104229673044756 seconds 
- 
-step: 37 
-Elapsed runtime:  16.73004996497184 seconds 
- 
-step: 38 
-Elapsed runtime:  16.472333816986065 seconds 
- 
-step: 39 
-Elapsed runtime:  18.17150524101453 seconds 
- 
-step: 40 
-Elapsed runtime:  18.035508153028786 seconds 
- 
-step: 41 
-Elapsed runtime:  16.756662067957222 seconds 
- 
-step: 42 
-Elapsed runtime:  21.51895857002819 seconds 
- 
-step: 43 
-Elapsed runtime:  19.850668200000655 seconds 
- 
-step: 44 
-Elapsed runtime:  22.81971996097127 seconds 
- 
-step: 45 
-Elapsed runtime:  20.94628689700039 seconds 
- 
-step: 46 
-Elapsed runtime:  20.70247607101919 seconds 
- 
-step: 47 
-Elapsed runtime:  19.536868577008136 seconds 
- 
-step: 48 
-Elapsed runtime:  23.59345459501492 seconds 
- 
-step: 49 
-Elapsed runtime:  26.643085882999003 seconds 
- 
-step: 50 
-Elapsed runtime:  20.296703427971806 seconds 
-
-
-done with step 9 
-time elapsed: 23.743074199999683 
- 
-step: 51 
-Elapsed runtime:  44.37141442298889 seconds 
-
-TOTAL TIME TO FINISH RUNNING SIMULATION: 811.1067520910292 seconds 
-
-finished model 0.20586576400091872 seconds 
-
-finished ideas 1.198309653031174 seconds 
-
-finished line_graph 0.8899510090122931 seconds 
-
-finished two_var_line_graph 1.011631336004939 seconds 
-
-finished one_var_bar_graph 0.9647134569822811 seconds 
-
-finished one_var_bar_graph 1.1743878279812634 seconds 
-
-finished one_var_bar_graph 1.1976883279858157 seconds 
-
-finished one_var_bar_graph 1.2674853679491207 seconds 
-
-finished one_var_bar_graph 0.6920396190253086 seconds 
-
-finished agent 24.57900021102978 seconds 
-
-finished ind_ideas 42.60182175098453 seconds 
- 
-Total time to process data 
-Elapsed runtime:  47.189437113993336 seconds 
-
-END OF PROGRAM
-total runtime: 910.8941640853882 seconds
-
- 
+Elapsed runtime:  0.7866998540121131 seconds 
+!!! Error !!!
+!!! Error !!!
