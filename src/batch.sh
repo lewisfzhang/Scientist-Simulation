@@ -26,8 +26,6 @@ N=40
 time_periods_alive=10
 count=1
 
-echo done1
-
 for prop_sds in 0.2 0.4 0.6 0.8
 do
     for prop_means in 0.25 0.5 0.75
@@ -38,7 +36,7 @@ do
             echo $count > $HOME/batch/job_count.txt
             count=$((count + 1))
             echo $d to $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
-            for d in $PI_HOME/lewisz/storage_batch/*/; do mv $d $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_'); echo done2; break; done
+            for d in $PI_HOME/lewisz/storage_batch/*/; do mv $d $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_'); break; done
             # cp -r $HOME/Scientist-Simulation/ $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
             sbatch $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/run_batch.sh
         done
@@ -57,4 +55,3 @@ done
 # rm queue.txt
 echo "all tasks completed"
 date
-

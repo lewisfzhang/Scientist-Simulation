@@ -1,0 +1,1 @@
+{'seed': 654321, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 10, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False}
