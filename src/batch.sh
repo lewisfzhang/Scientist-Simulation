@@ -5,7 +5,7 @@
 #SBATCH --mail-user=lewis.zhang19@bcp.org     # Where to send mail
 #SBATCH --ntasks=1                            # Run on a single CPU
 #SBATCH --mem=100mb                           # Job memory request
-#SBATCH --time=00:05:00                       # Time limit hrs:min:sec
+#SBATCH --time=00:10:00                       # Time limit hrs:min:sec
 #SBATCH --output=debug/batch_%j.log     # Standard output and error log
 
 pwd; hostname; date
@@ -16,6 +16,8 @@ ml load python/3.6.1
 echo "Running run.sh script"
 
 storage_dir=$PI_HOME/lewisz/batch_$(date +%d-%b-%H_%M)
+echo $storage_dir > $HOME/batch/storage_dir.txt
+storage_dir=$(cat $HOME/batch/storage_dir.txt)
 mkdir $storage_dir
 
 time_periods=50
@@ -24,6 +26,8 @@ N=40
 time_periods_alive=10
 count=1
 
+echo done1
+
 for prop_sds in 0.2 0.4 0.6 0.8
 do
     for prop_means in 0.25 0.5 0.75
@@ -31,10 +35,14 @@ do
         for prop_start in 0.1 0.25 0.4 0.5 0.6 0.75
         do
             echo $time_periods $ideas_per_time $N $time_periods_alive $prop_sds $prop_means $prop_start > $HOME/batch/init.txt
-            echo $count > $HOME/batch/job_count.txt
-            count=$((count + 1))
-            cp -r $HOME/Scientist-Simulation/ $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
-            sbatch $storage_dir/src/run_batch.sh
+	    echo $count > $HOME/batch/job_count.txt
+            echo count $count
+	    count=$((count + 1))
+            echo $d
+            for d in $PI_HOME/lewisz/storage_batch/*/; do mv $d $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_'); echo done2; break; done
+	    # cp -r $HOME/Scientist-Simulation/ $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
+            echo done3
+            sbatch $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/run_batch.sh
         done
     done
 done
@@ -51,3 +59,4 @@ done
 # rm queue.txt
 echo "all tasks completed"
 date
+
