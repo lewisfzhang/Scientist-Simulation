@@ -206,7 +206,10 @@ class ScientistModel(Model):
 
         # creates actual returns matrix  # utility
         self.actual_returns_matrix = np.asarray([self.M, self.true_sds, self.true_means, self.true_idea_shift])
-        self.idea_phase_label = logistic_cdf_inv_deriv(0.001, self.true_means, self.true_sds)
+
+        # 0.001 * config.true_sds_lam / self.true_sds --> relative slope indicators
+        # NOTE: not sure if this works properly since logistics are exponential, but derived based on intuition!
+        self.idea_phase_label = logistic_cdf_inv_deriv(0.001 * config.true_sds_lam / self.true_sds, self.true_means, self.true_sds)
 
         # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
@@ -392,6 +395,7 @@ class ScientistModel(Model):
             agent_vars = self.agent_df
             self.agent_df.to_pickle(self.directory + 'agent_vars_df.pkl')
             self.model_df.to_pickle(self.directory + 'model_vars_df.pkl')
+            np.save(self.directory + 'effort_invested_by_age.npy', self.effort_invested_by_age)
 
         # <editor-fold desc="Part 1: ideas">
         unpack_model_arrays_data(self, None)

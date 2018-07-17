@@ -3,8 +3,10 @@
     <words>
       <w>adjustables</w>
       <w>asarray</w>
+      <w>curdir</w>
       <w>dereferencing</w>
       <w>devs</w>
+      <w>dirname</w>
       <w>forkserver</w>
       <w>imgraph</w>
       <w>lewisz</w>
@@ -19,6 +21,8 @@
       <w>slurm</w>
       <w>squeue</w>
       <w>srun</w>
+      <w>venvact</w>
+      <w>venvdir</w>
     </words>
   </dictionary>
 </component>

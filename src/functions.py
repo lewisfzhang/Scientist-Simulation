@@ -27,7 +27,7 @@ def logistic_cdf_inv_deriv(slope_val, loc, scale):
     output = []
     for i in range(len(loc)):
         # np.roots takes coefficients of the polynomial
-        r = np.roots([slope_val * scale[i], slope_val * scale[i] * 2 - 1, slope_val * scale[i]])
+        r = np.roots([slope_val[i] * scale[i], slope_val[i] * scale[i] * 2 - 1, slope_val[i] * scale[i]])
         r = r[np.isreal(r)]
         if len(r) == 0:  # no real roots
             raise Exception('No real roots when solving logistic cdf slope!')

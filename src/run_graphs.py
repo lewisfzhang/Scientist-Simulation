@@ -73,6 +73,7 @@ def im_graph(agent1, agent2, x_label, y_label, title, with_zero, file_name, line
 # CONDITION: actual array is still in numpy form, hasn't been flattened yet
 # CONDITION: k array should be equal to length of perceived returns
 def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
+    plt.figure(5)
     font_settings(5)
     resid = np.asarray(actual)-np.asarray(perceived)
     agent_id = []
@@ -99,6 +100,7 @@ def resid_scatterplot(actual, perceived, perceived_2d, x_label, y_label, title):
 
 # plots the returns vs cost on a scatterplot
 def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline, vline):
+    plt.figure(6)
     font_settings(5)
     if linear:
         name = "linear"
@@ -126,6 +128,7 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear):  # , hline
 
 # plots the young vs old scientist as a 2-var bar graph
 def two_var_bar_graph(data, x_label, y_label, title, linear):
+    plt.figure(4)
     font_settings(5)
     if linear:
         name = "linear"
@@ -152,6 +155,7 @@ def two_var_bar_graph(data, x_label, y_label, title, linear):
 # plots like a scatterplot but also has a line
 # condition: y_var is a numpy array, not a list!
 def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
+    plt.figure(1)
     font_settings(10)
     if average:
         name = "average_"
@@ -181,6 +185,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
 
 
 def one_var_bar_graph(data, legend, x_label, y_label, title, name):
+    plt.figure(3)
     font_settings(10)
     x_var = np.arange(len(data))
     plt.bar(x_var, data, align='center', alpha=0.5, color='g')
@@ -191,13 +196,14 @@ def one_var_bar_graph(data, legend, x_label, y_label, title, name):
     dpi = fig.get_dpi()
     fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/1-var_bar_graph_prop_'+name)
-    with open(config.parent_dir + 'data/saved/var_bar_graph_prop_' + name + '.pkl', 'wb') as f:
+    with open(config.parent_dir + 'data/saved/1-var_bar_graph_prop_' + name + '.pkl', 'wb') as f:
         pickle.dump(fig, f)
     plt.close()
     del data, x_var
 
 
 def two_var_line_graph(data, x_label, y_label, title, linear):
+    plt.figure(2)
     font_settings(5)
     if linear:
         name = 'linear'
@@ -221,6 +227,6 @@ def two_var_line_graph(data, x_label, y_label, title, linear):
     dpi = fig.get_dpi()
     fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/line_graph_'+name)
-    with open(config.parent_dir + 'data/saved/line_graph_' + name + '.pkl', 'wb') as f:
+    with open(config.parent_dir + 'data/saved/2-var_line_graph_' + name + '.pkl', 'wb') as f:
         pickle.dump(fig, f)
     plt.close()
