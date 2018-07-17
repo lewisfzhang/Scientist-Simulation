@@ -26,4 +26,5 @@ Goal of Simulation:
   3. To illustrate the power of connecting various discrete fields such as computer science, biomedicine, economics, and health policy
 
 Any questions? Email lewis.zhang19@bcp.org
+
 Special credits to Zach Templeton and Michelle Zhao as major contributors to the early stages of this project
