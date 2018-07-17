@@ -37,7 +37,7 @@ do
             echo $time_periods $ideas_per_time $N $time_periods_alive $prop_sds $prop_means $prop_start > $HOME/batch/init.txt
             echo $count > $HOME/batch/job_count.txt
             count=$((count + 1))
-            echo $d to $storage_dir/run_$(cat $HOME/batch/init.txt
+            echo $d to $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
             for d in $PI_HOME/lewisz/storage_batch/*/; do mv $d $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_'); echo done2; break; done
             # cp -r $HOME/Scientist-Simulation/ $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
             sbatch $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/run_batch.sh
