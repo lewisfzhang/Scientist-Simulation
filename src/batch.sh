@@ -13,7 +13,7 @@ pwd; hostname; date
 ml reset
 ml load python/3.6.1
 
-echo "Running run.sh script"
+echo "Running batch.sh script"
 
 storage_dir=$PI_HOME/lewisz/batch_$(date +%d-%b-%H_%M)
 echo $storage_dir > $HOME/batch/storage_dir.txt
@@ -38,7 +38,8 @@ do
             echo $d to $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
             for d in $PI_HOME/lewisz/storage_batch/*/; do mv $d $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_'); break; done
             # cp -r $HOME/Scientist-Simulation/ $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')
-            sbatch $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/run_batch.sh
+            echo $(cat $HOME/batch/init.txt) > $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/tmp/init.txt
+            sh $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src/run_batch.sh
         done
     done
 done

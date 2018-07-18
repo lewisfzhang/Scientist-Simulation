@@ -14,7 +14,7 @@ ml load python/3.6.1
 
 cd $storage_dir/run_$(cat $HOME/batch/init.txt | tr ' ' '_')/src
 
-./run.sh $(cat $HOME/batch/init.txt)
+./run.sh $(cat tmp/init.txt)
 
 date
 
