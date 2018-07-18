@@ -1,1 +1,85 @@
 
+ 
+time to create model object 
+Elapsed runtime:  0.07327027397695929 seconds 
+
+Variables:
+ {'seed': 838807, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': True, 'use_idea_shift': False} 
+ 
+entering main function 
+Elapsed runtime:  0.0025522030191496015 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.08658200496574864 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.054359761998057365 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.3449464430450462 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.5193767989985645 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.7361552760121413 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.6096162579488009 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.6270516579970717 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.6584903910406865 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.6807973780087195 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.6261112719657831 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.6163638680009171 seconds 
+
+
+done with step 9 
+time elapsed: 0.35742453596321866 
+ 
+step: 11 
+Elapsed runtime:  0.9801142090000212 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 6.616646604961716 seconds 
+
+finished model 0.07474415097385645 seconds 
+
+finished ideas 0.13931023998884484 seconds 
+
+finished agent 0.29861853300826624 seconds 
+
+finished ind_ideas 0.69338388601318 seconds 
+
+finished line_graph 0.8238382099661976 seconds 
+
+finished two_var_line_graph 0.833716651017312 seconds 
+
+finished one_var_bar_graph 0.7536415299982764 seconds 
+
+finished one_var_bar_graph 0.7612767730024643 seconds 
+
+finished one_var_bar_graph 0.7216175540233962 seconds 
+
+finished one_var_bar_graph 0.6508061019703746 seconds 
+
+finished one_var_bar_graph 0.5527436190168373 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  5.580051274970174 seconds 
+
+END OF PROGRAM
+total runtime: 14.964874029159546 seconds
+
+ 
+Scientist Simulation.ipynb __pycache__ batch.sh collect.py config.py final.py functions.py init.py install.log install.sh model.py optimize.py process.py run.py run.sh run_graphs.py store.py tmp zip.sh Succeed Scientist Simulation.ipynb __pycache__ batch.sh collect.py config.py final.py functions.py init.py install.log install.sh model.py optimize.py process.py run.py run.sh run_graphs.py store.py tmp zip.sh
+
+tar -C ../data -czf ../data/zipped/run_10_5_5_4_0.4_0.5_0.25.tar.gz images pages parameters.txt output.txt saved tmp_model

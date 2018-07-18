@@ -51,7 +51,7 @@ use_multiprocessing = False
 num_processors = 3
 
 # handles the locations for model and agent temp objects
-tmp_loc = 'tmp/'
+tmp_loc = init.tmp_loc
 
 # store parent directory location
 parent_dir = os.path.abspath('..') + '/'
@@ -63,10 +63,16 @@ use_multithreading = False
 use_store = False
 
 # GUARD: user cannot do mp without using store as a protection
-use_store = (use_store, True)[use_multiprocessing is True]
+use_store_model = (use_store, True)[use_multiprocessing is True]
 
 # whether to report all scientists in agent_df
 all_scientists = False
+
+# whether to split returns evenly or by age
+use_equal = True
+
+# whether to shift all CDFs to the right
+use_idea_shift = False
 
 # what optimization to use
 # 0 = percentiles

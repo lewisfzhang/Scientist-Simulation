@@ -174,6 +174,15 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
     y_smooth = spline(x_var, y_var[1:], x_smooth)
     plt.plot(x_smooth, y_smooth)
     plt.scatter(x_var, y_var[1:])
+
+    # calc the trendline
+    z = np.polyfit(x_var, y_var[1:], 3)  # rightmost number is the order of the polynomial
+    p = np.poly1d(z)
+    plt.plot(x_var, p(x_var), "r--")
+    # the line equation:
+    eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
+    plt.text(10, 0.9, eq, fontsize=12)
+
     labels(x_label, y_label, title)
     fig = plt.gcf()
     dpi = fig.get_dpi()

@@ -17,6 +17,7 @@ fi
 echo "running batch.sh script"
 
 cd $(git rev-parse --show-toplevel)/src
+mkdir tmp_batch
 
 if [ $# -gt 0 -a $# -lt 4 ]; then
     echo $0 need 4 parameter values
@@ -44,11 +45,15 @@ do
         for prop_start in 0.1 0.25 0.4 0.5 0.6 0.75
         do
             echo $time_periods $ideas_per_time $N $time_periods_alive $prop_sds $prop_means $prop_start > tmp/init.txt
-            echo -e "\n\n\n"trial $count with configurations $(cat tmp/init.txt)"\n\n"
+            echo -e "\n\n\n"TRIAL $count with configurations $(cat tmp/init.txt)"\n\n"
             ./run.sh $(cat tmp/init.txt)
             count=$((count+1))
         done
     done
 done
+
+echo "removing stuff"
+rm tmp/init.txt
+rm -r tmp_batch
 
 echo "finished running batch.sh script"

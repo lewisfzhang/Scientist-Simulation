@@ -12,6 +12,8 @@ from functools import partial
 from multiprocessing.pool import ThreadPool
 import random
 from functions import *
+from final import *
+from process import *
 
 
 # utility = important, don't run GC on it
@@ -189,13 +191,20 @@ class ScientistModel(Model):
         np.random.seed(config.seed_array[0][0])
         self.k = poisson(lam=config.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
 
-        # Array: store parameters for true idea return distribution
+        # ARRAY: store parameters for true idea return distribution
         np.random.seed(config.seed_array[0][1])
         self.true_sds = poisson(lam=config.true_sds_lam, size=self.total_ideas)  # void
         np.random.seed(config.seed_array[0][2])
         self.true_means = poisson(lam=config.true_means_lam, size=self.total_ideas)  # void
-        np.random.seed(config.seed_array[0][3])
-        self.true_idea_shift = np.random.choice(np.arange(config.true_idea_shift), size=self.total_ideas)
+
+        # ARRAY: shifts the logistic cdf to the right
+        # NOTE: not sure if this is necessary given updated logistic cdf formula
+        if config.use_idea_shift:
+            np.random.seed(config.seed_array[0][3])
+            self.true_idea_shift = np.random.choice(np.arange(config.true_idea_shift), size=self.total_ideas)
+        else:
+            self.true_idea_shift = np.zeros(self.total_ideas)
+
         # Ensures that none of the standard devs are equal to 0, this is OKAY
         self.true_sds += 1  # void
 
@@ -302,12 +311,15 @@ class ScientistModel(Model):
         # run data collecting variables if the last step of the simulation has completed
         # should be +1 but since we pass the step function it's actually +2
         if self.schedule.time == config.time_periods + 2:
-            self.collect_vars()
+            collect_vars(self)
 
     # does something when the last scientist in the TP is done investing in ideas
     def call_back(self):
         unpack_model_arrays_data(self, None)
-        self.process_winners()
+        if config.use_equal:
+            process_winners_equal(self)
+        else:
+            process_winners_old(self)
 
         # updating model dataframe
         data_list = [df_formatter(self.total_effort, "effort"),
@@ -317,230 +329,6 @@ class ScientistModel(Model):
 
         store_model_arrays_data(self, False, None)
         del data_list
-
-    # assigned agent returns and updating agent df
-    def process_winners(self):
-        self.investing_queue = get_investing_queue(self)
-        self.actual_returns_matrix = unlock_actual_returns(self, None)
-
-        # initializing list of dictionaries with returns and investments for each idea in the TP
-        list_dict = new_list_dict(self)
-
-        # iterating through all investments by each scientists
-        # young scientists get 0 returns, old scientists get all of the returns
-        for index, row in self.investing_queue.iterrows():
-            idx_idea = int(row['Idea Choice'])
-            # NOTE: OLDER SCIENTIST HAS THE YOUNGER UNIQUE ID!!!
-            if list_dict[idx_idea]['Oldest ID'] > row['ID']:
-                list_dict[idx_idea]['Oldest ID'] = row['ID']
-
-            # update current stats for list_dict
-            if list_dict[idx_idea]["Updated"] is False:
-                stop_index = int(self.total_effort[idx_idea])
-                start_index = int(self.total_effort_start[idx_idea])
-
-                actual_return = get_returns(idx_idea, self.actual_returns_matrix, start_index, stop_index)
-
-                list_dict[idx_idea]['Actual Return'] += actual_return
-                self.total_actual_returns[idx_idea] += actual_return
-
-                list_dict[idx_idea]["Updated"] = True  # so it never runs again
-                del stop_index, start_index
-
-            # max (perceived) return is not as accurate since scientists don't know
-            # what others are investing --> only can account for in actual return
-            list_dict[idx_idea]['Max Return'] += row['Max Return']
-
-            del index, row, idx_idea
-
-        # set that stores scientists who get returns (optional, see below)
-        happy_scientist = set()
-
-        # update model data collecting variables, and back for the old scientist who won all the returns for the idea
-        for idx, idea_choice in enumerate(list_dict):
-            idx_id = int(idea_choice["Oldest ID"])
-            if idx_id != self.num_scientists + 1:  # only active ideas needed
-                happy_scientist.add(idx_id)
-                self.schedule.agents[self.agent_dict[idx_id]].update(idea_choice)
-            del idx, idea_choice, idx_id
-
-        # updating data for remaining scientists who did not get any returns / inactive scientists
-        # NOTE: OPTIONAL, only for agent_df. can speed up model simulation greatly if we don't care about
-        # agent df with NaN for active scientists (happy_scientists would also be optional in this case)
-        # but then you wouldn't be able to see how much all scientists invested in this period
-        if self.schedule.time >= 2:
-            if config.all_scientists:
-                range_list = range(1, self.num_scientists+1)
-            else:
-                interval = self.schedule.time - config.time_periods_alive
-                if interval < 0:
-                    interval = 0
-                range_list = range(1 + interval * config.N, self.schedule.time * config.N + 1)
-                del interval
-            for i in list(set(range_list)-happy_scientist):  # difference between two sets
-                self.schedule.agents[self.agent_dict[i]].update(None)
-            del range_list
-
-        store_actual_returns(self, None)
-        del self.investing_queue, list_dict, happy_scientist
-
-    # for data collecting after model has finished running
-    def collect_vars(self):
-        f_print("\n\ndone with step 9")
-        start = timeit.default_timer()
-
-        if config.use_store is True:
-            agent_vars = pd.read_pickle(self.directory + 'agent_vars_df.pkl')
-        else:
-            agent_vars = self.agent_df
-            self.agent_df.to_pickle(self.directory + 'agent_vars_df.pkl')
-            self.model_df.to_pickle(self.directory + 'model_vars_df.pkl')
-            np.save(self.directory + 'effort_invested_by_age.npy', self.effort_invested_by_age)
-
-        # <editor-fold desc="Part 1: ideas">
-        unpack_model_arrays_data(self, None)
-        idea = range(0, self.total_ideas, 1)
-        tp = np.arange(self.total_ideas) // config.ideas_per_time
-        prop_invested = rounded_tuple(self.total_effort / (config.true_means_lam + 3 * config.true_sds_lam))
-        avg_k = np.round(divide_0(self.total_k, self.total_scientists_invested), 2)
-        total_perceived_returns = np.round(self.total_perceived_returns, 2)
-        total_actual_returns = np.round(self.total_actual_returns, 2)
-        idea_phase = divide_0(self.total_idea_phase, sum(self.total_idea_phase))
-        ideas_dict = {"idea": idea,
-                      "TP": tp,
-                      "scientists_invested": self.total_scientists_invested,
-                      "times_invested": self.total_times_invested,
-                      "avg_k": avg_k,
-                      "total_effort (marginal)": rounded_tuple(self.total_effort),
-                      "prop_invested": prop_invested,
-                      "total_pr": total_perceived_returns,
-                      "total_ar": total_actual_returns}
-        pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(self.directory+'ideas.pkl')
-        np.save(self.directory + 'idea_phase.npy', idea_phase)
-        store_model_arrays_data(self, False, None)
-        del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns, idea_phase
-        # </editor-fold>
-
-        # <editor-fold desc="Part 2: ind_ideas">
-        unpack_model_lists(self, None)
-        ind_ideas_dict = {"idea_idx": rounded_tuple(flatten_list(self.final_idea_idx)),
-                          "scientist_id": rounded_tuple(flatten_list(self.final_scientist_id)),
-                          "agent_k_invested_ideas": rounded_tuple(flatten_list(self.final_k_invested_ideas)),
-                          "agent_marginal_invested_ideas": rounded_tuple(flatten_list(self.final_marginal_invested_ideas)),
-                          "agent_perceived_return_invested_ideas": rounded_tuple(flatten_list(self.final_perceived_returns_invested_ideas)),
-                          "agent_actual_return_invested_ideas": rounded_tuple(flatten_list(self.final_actual_returns_invested_ideas))}
-        pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(self.directory+'ind_ideas.pkl')
-        if config.use_store is False:
-            with open(self.directory + "final_perceived_returns_invested_ideas.txt", "wb") as fp:
-                pickle.dump(self.final_perceived_returns_invested_ideas, fp)
-        store_model_lists(self, False, None)
-        del ind_ideas_dict
-        # </editor-fold>
-
-        # <editor-fold desc="Part 3: social_output, ideas_entered">
-        ind_vars = pd.read_pickle(self.directory + 'ind_ideas.pkl')
-        actual_returns = agent_vars[agent_vars['Actual Returns'].str.startswith("{", na=False)]['Actual Returns']
-
-        # format of scientist_tracker: [agent_id][num_ideas_invested][total_returns]
-        returns_tracker = np.zeros(self.num_scientists)
-        # getting total returns from each scientists in their entire lifetime
-        # idx format: (step, agent id), val is a dictionary is in string format
-        for idx, val in actual_returns.items():
-            agent_id = idx[1]
-            last_bracket = 0
-            for i in range(val.count('idea')):
-                left_bracket = val[last_bracket:].index('{')
-                right_bracket = val[last_bracket:].index('}') + 1
-                returns = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['returns']
-                last_bracket += right_bracket
-                returns_tracker[agent_id - 1] += returns
-                del returns, left_bracket, right_bracket, i
-            del agent_id, last_bracket, idx, val
-
-        curr_id = 1
-        counter_x = 0
-        x_var = [0]
-        y_var = [0]
-        for idx, val in enumerate(ind_vars['scientist_id']):
-            if curr_id != val:
-                curr_id = val
-                while len(x_var) <= counter_x:
-                    x_var.append(0)
-                    y_var.append(0)
-                x_var[counter_x] += 1
-                y_var[counter_x] += returns_tracker[curr_id - 1]
-                counter_x = 0
-            if ind_vars['agent_k_invested_ideas'][idx] != 0:
-                counter_x += 1
-            del idx, val
-        np.save(self.directory+'social_output.npy', np.asarray(y_var))
-        np.save(self.directory+'ideas_entered.npy', np.asarray(x_var))
-        del ind_vars, actual_returns, returns_tracker, curr_id, counter_x, x_var, y_var
-        # </editor-fold>
-
-        # <editor-fold desc="Part 4: prop_age">
-        agent_vars = agent_vars.replace(np.nan, '', regex=True)
-        # format: [prop paying k][total num of scientists] || two rows, TP_alive columns
-        age_tracker = np.zeros(2 * config.time_periods_alive).reshape(2, config.time_periods_alive)
-        for idx, val in agent_vars['Effort Invested In Period (K)'].items():
-            curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
-
-            # if statements should only pass if curr_age is within range in the array
-            if val != '':
-                # total number of ideas / occurrences
-                num_ideas = agent_vars.loc[idx[0]].loc[idx[1]]['Effort Invested In Period (Marginal)'].count('idea')
-                age_tracker[1][curr_age] += num_ideas  # DEPENDS ON WHAT JAY WANTS --> (could use 1)
-                del num_ideas
-                # checks those that paid k
-                if val[0] == '{':
-                    age_tracker[0][curr_age] += val.count('idea')
-            del idx, val, curr_age
-        prop_age = divide_0(age_tracker[0], age_tracker[1])
-        np.save(self.directory+'prop_age.npy', prop_age)
-        del prop_age, age_tracker
-        # </editor-fold>
-
-        # <editor-fold desc="Part 5: marginal_effort_by_age, prop_idea">
-        unpack_model_arrays(self, None)
-        agent_marg = agent_vars[agent_vars['Effort Invested In Period (Marginal)'].
-                                str.startswith("{", na=False)]['Effort Invested In Period (Marginal)']
-
-        marginal_effort = [[0, 0]]  # format: [young, old]
-        prop_idea = [0]
-        total_ideas = 0
-        for idx, val in agent_marg.items():
-            last_bracket = 0
-            for i in range(val.count('idea')):
-                left_bracket = val[last_bracket:].index('{')
-                right_bracket = val[last_bracket:].index('}') + 1
-                effort = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['effort']
-                idea = str_to_dict(val[last_bracket:][left_bracket:right_bracket])['idea']
-                last_bracket += right_bracket
-
-                idea_age = idx[0] - self.idea_periods[idea]  # current tp - tp born
-                curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as model TP - scientist birth order
-                rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
-
-                while len(marginal_effort) <= idea_age:
-                    marginal_effort.append([0, 0])
-                    prop_idea.append(0)
-
-                marginal_effort[idea_age][rel_age] += effort
-                prop_idea[idea_age] += 1
-                total_ideas += 1
-                del left_bracket, right_bracket, effort, idea, idea_age, curr_age, rel_age
-            del idx, val, last_bracket
-
-        prop_idea = np.asarray(prop_idea) / total_ideas
-        marginal_effort = flatten_list(marginal_effort)
-        marginal_effort = np.asarray([marginal_effort[::2], marginal_effort[1::2]])
-        np.save(self.directory + "marginal_effort_by_age.npy", marginal_effort)
-        np.save(self.directory + "prop_idea.npy", prop_idea)
-        store_model_arrays(self, False, None)
-        del agent_vars, agent_marg, marginal_effort, prop_idea, total_ideas
-        # </editor-fold>
-
-        f_print("time elapsed:", timeit.default_timer()-start)
 
 
 def mp_helper_spawn(lock, model, agent_list):

@@ -11,7 +11,7 @@ cd $curdir
 # create new output.txt file
 echo > ../data/output.txt
 
-parentdir=$HOME
+parentdir=$HOME  # $HOME is user home directory
 venvdir=$(cd $parentdir && pwd)/venv
 venvact=$venvdir/bin/activate
 [ ! -e $venvact ] && [ -x ./install.sh ] && ./install.sh $venvdir 
@@ -32,8 +32,10 @@ if [ $? -eq 0 ]; then
         echo tar -C ../data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt output.txt saved tmp_model | tee -a ../data/output.txt
         /usr/bin/tar -C ../data -czf ../data/zipped/run_$(echo $* | tr ' ' '_').tar.gz images pages parameters.txt output.txt saved tmp_model
     fi
-    rm -r ../data/tmp_model
 
+    echo "removing agent related objects"
+    rm -r ../data/tmp_model
+    [ -e tmp/agent_1 ] && rm -r tmp/agent_*
 else
 	echo !!! Error !!! | tee -a ../data/output.txt
 fi

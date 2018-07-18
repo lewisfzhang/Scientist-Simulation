@@ -13,17 +13,46 @@ import math
 
 # Input: Parameters for the logistic cumulative distribution function
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
-def logistic_cdf(x, loc, scale):
+def old_logistic_cdf(x, loc, scale):
     return 1/(1+np.exp((loc-x)/scale))
 
 
 # take the first derivative of logistic cdf
-def logistic_cdf_derivative(x, loc, scale):
+def old_logistic_cdf_derivative(x, loc, scale):
     return np.exp((loc - x)/scale)/(scale*(np.exp((loc - x)/scale) + 1)**2)
 
 
 # remember anything from your calculus class?
+def old_logistic_cdf_inv_deriv(slope_val, loc, scale):
+    output = []
+    for i in range(len(loc)):
+        # np.roots takes coefficients of the polynomial
+        r = np.roots([slope_val[i] * scale[i], slope_val[i] * scale[i] * 2 - 1, slope_val[i] * scale[i]])
+        r = r[np.isreal(r)]
+        if len(r) == 0:  # no real roots
+            raise Exception('No real roots when solving logistic cdf slope!')
+        elif len(r) == 1:  # only one real root? check the program again
+            raise Exception('Only one real root when solving logistic cdf slope!')
+        else:
+            output.append(loc[i] - np.log(r) * scale[i])
+    return np.asarray(output)
+
+
+# Input: Parameters for the logistic cumulative distribution function
+# Output: Value at x of the logistic cdf defined by the location and scale parameter
+def logistic_cdf(x, loc, scale):
+    return (old_logistic_cdf(x, loc, scale) - old_logistic_cdf(0, loc, scale)) / (1 - old_logistic_cdf(0, loc, scale))
+
+
+# take the first derivative of logistic cdf
+def logistic_cdf_derivative(x, loc, scale):
+    return old_logistic_cdf_derivative(x, loc, scale) / (1 - old_logistic_cdf(0, loc, scale))
+
+
+# remember anything from your calculus class?
 def logistic_cdf_inv_deriv(slope_val, loc, scale):
+    # strictly because too lazy to correctly update this formula, but it works based on new formula
+    slope_val *= (1 - old_logistic_cdf(0, loc, scale))
     output = []
     for i in range(len(loc)):
         # np.roots takes coefficients of the polynomial

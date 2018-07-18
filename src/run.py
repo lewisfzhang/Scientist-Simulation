@@ -2,6 +2,7 @@
 
 import sys
 import init
+import os
 
 
 def main():
@@ -14,6 +15,10 @@ def main():
         init.prop_sds = float(sys.argv[5])
         init.prop_means = float(sys.argv[6])
         init.prop_start = float(sys.argv[7])
+
+    # check if we are using batch runs
+    if os.path.isdir('tmp_batch'):
+        init.tmp_loc = 'tmp_batch/tmp_' + '_'.join([str(v) for v in sys.argv[1:]]) + '/'
 
     # so that config file loads after init.py is set
     import config
@@ -35,10 +40,11 @@ def main():
     # default parameters for model as a dictionary
     all_params = {"seed": config.seed, "use_multiprocessing": config.use_multiprocessing,
                   "use_store": config.use_store, "optimization": config.switch, "time_periods": config.time_periods,
-                  "ideas_per_time": config.ideas_per_time, "N": config.N,
+                  "ideas_per_time": config.ideas_per_time, "N": config.N, "use_store_model": config.use_store_model,
                   "time_periods_alive": config.time_periods_alive, "true_means_lam": config.true_means_lam,
                   "true_sds_lam": config.true_sds_lam, "start_effort_lam": config.start_effort_lam,
-                  "k_lam": config.k_lam, "use_multithreading": config.use_multithreading}
+                  "k_lam": config.k_lam, "use_multithreading": config.use_multithreading, "use_equal": config.use_equal,
+                  "use_idea_shift": config.use_idea_shift}
 
     # initialize model object
     model = m.ScientistModel(config.seed)
