@@ -11,7 +11,7 @@ cd $curdir
 # create new output.txt file
 echo > ../data/output.txt
 
-venvdir=$(cd .. && pwd)/venv
+venvdir=$(cd ../../ && pwd)/venv
 venvact=$venvdir/bin/activate
 [ ! -e $venvact ] && [ -x ./install.sh ] && ./install.sh $venvdir 
 [ -d src/tmp ] && rm -r src/tmp
