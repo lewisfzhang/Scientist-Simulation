@@ -65,6 +65,9 @@ use_store = False
 # GUARD: user cannot do mp without using store as a protection
 use_store_model = (use_store, True)[use_multiprocessing is True]
 
+# GUARD FIX: apparently agent arrays also need a guard due to separate allocated CPU resources?
+use_store = (use_store, True)[use_multiprocessing is True]
+
 # whether to report all scientists in agent_df
 all_scientists = False
 

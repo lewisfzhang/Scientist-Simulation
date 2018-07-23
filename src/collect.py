@@ -33,6 +33,8 @@ def main():
     prop_idea = np.load(model_directory + 'prop_idea.npy')
     marginal_effort_by_age = np.load(model_directory + 'marginal_effort_by_age.npy')
     idea_phase = np.load(model_directory + 'idea_phase.npy')
+    prop_remaining = np.load(model_directory + 'prop_remaining.npy')
+    prop_invested = np.load(model_directory + 'prop_invested.npy')
     with open(model_directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         final_perceived_returns_invested_ideas = pickle.load(fp)
 
@@ -43,27 +45,27 @@ def main():
                 #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "perceived", True),
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
-                #  "k", "perceived returns",
-                #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                #  "perceived", False),
+                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
+                 "k", "perceived returns",
+                 "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                 "perceived", False),
                 #
                 # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
                 #  "k", "actual returns",
                 #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
                 #  "actual", True),
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
-                #  "k", "actual returns",
-                #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                #  "actual", False),
+                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
+                 "k", "actual returns",
+                 "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
+                 "actual", False),
                 #
                 # # COMMENTED OUT PARAMS ARE GRAPHS THAT PLOT FOR EACH INDIVIDUAL SCIENTIST THAT AREN"T WORTH GRAPHING
                 # # (they take a lot of time to graph since there's so many scientists but they don't tell use anything)
                 #
-                # ("resid_scatterplot", ind_ideas['agent_actual_return_invested_ideas'],
-                #  ind_ideas['agent_perceived_return_invested_ideas'], final_perceived_returns_invested_ideas,
-                #  "Scientist ID", "Residual", "Residuals for all INVESTED ideas (actual-perceived)"),
+                ("resid_scatterplot", ind_ideas['agent_actual_return_invested_ideas'],
+                 ind_ideas['agent_perceived_return_invested_ideas'], final_perceived_returns_invested_ideas,
+                 "Scientist ID", "Residual", "Residuals for all INVESTED ideas (actual-perceived)"),
                 #
                 # ("two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
                 #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", True),
@@ -113,7 +115,13 @@ def main():
                  "ideas_cdf"),
 
                 ("one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Old Age"], "idea phases",
-                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase")]
+                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase"),
+
+                ("discrete_line_graph", prop_invested, "ideas", "prop invested",
+                 "Distribution of Social Returns Invested Across Ideas", "prop_invested"),
+
+                ("discrete_line_graph", prop_remaining, "ideas", "prop remaining",
+                 "Distribution of Social Returns Left Across Ideas", "prop_remaining")]
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
     p.close()
@@ -177,6 +185,8 @@ def func_distr(graph_type, *other):
         one_var_bar_graph(*other)
     elif graph_type == "two_var_line_graph":
         two_var_line_graph(*other)
+    elif graph_type == "discrete_line_graph":
+        discrete_line_graph(*other)
 
     gc_collect()
     stop = timeit.default_timer()

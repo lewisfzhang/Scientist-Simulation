@@ -72,12 +72,22 @@ class Scientist(Agent):
                                                       config.true_sds_lam)  # void
         self.means = self.model.true_means + random_noise(8, 9, self.unique_id, self.model.total_ideas,
                                                           config.true_means_lam)  # void
-        self.idea_shift = self.model.true_means + random_noise(10, 11, self.unique_id, self.model.total_ideas,
-                                                               config.true_idea_shift)  # void
+        if config.use_idea_shift:
+            self.idea_shift = self.model.true_means + random_noise(10, 11, self.unique_id, self.model.total_ideas,
+                                                                   config.true_idea_shift)  # void
+        else:
+            self.idea_shift = np.zeros(self.model.total_ideas)
 
         # ARRAY: Create the ideas/returns matrix
         # NOTE: logistic_cdf is not ranodm, always generates same curve based on means and sds
         self.perceived_returns_matrix = np.asarray([self.M, self.sds, self.means, self.idea_shift])  # utility
+
+        # check if anything is < 0 (that is a concern!)
+        r, c = np.where(self.perceived_returns_matrix < 0)
+        for i in range(len(r)):
+            print("agent_id", self.unique_id, 'r', r[i], 'c', c[i])
+            print(self.perceived_returns_matrix[r[i]][c[i]])
+        del r, c
 
         # dereferencing 'void' variables
         self.noise = None
@@ -274,6 +284,7 @@ class ScientistModel(Model):
         store_model_arrays(self, True, None)
         store_model_arrays_data(self, True, None)
         store_model_lists(self, True, None)
+        store_actual_returns(self, None)
 
     def step(self):
         new_investing_queue(self)
@@ -311,6 +322,7 @@ class ScientistModel(Model):
         # run data collecting variables if the last step of the simulation has completed
         # should be +1 but since we pass the step function it's actually +2
         if self.schedule.time == config.time_periods + 2:
+            save_model(self)
             collect_vars(self)
 
     # does something when the last scientist in the TP is done investing in ideas

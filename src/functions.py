@@ -9,6 +9,7 @@ import gc
 import ast
 import random
 import math
+from scipy.stats import cauchy
 
 
 # Input: Parameters for the logistic cumulative distribution function
@@ -42,6 +43,11 @@ def old_logistic_cdf_inv_deriv(slope_val, loc, scale):
 # Output: Value at x of the logistic cdf defined by the location and scale parameter
 def logistic_cdf(x, loc, scale):
     return (old_logistic_cdf(x, loc, scale) - old_logistic_cdf(0, loc, scale)) / (1 - old_logistic_cdf(0, loc, scale))
+
+
+# given slope find location
+def inv_logistic_cdf(y, loc, scale):
+    return loc - scale * np.log(((1 - old_logistic_cdf(0, loc, scale)) * y + old_logistic_cdf(0, loc, scale)) ** -1 - 1)
 
 
 # take the first derivative of logistic cdf
@@ -206,8 +212,16 @@ def random_noise(seed1, seed2, unique_id, total_ideas, x):
     sds = random.choice(np.arange(1, end_limit(x)))
 
     # ARRAY: the 'noise' or error based on each specific scientist
+    # np.random.seed(config.seed_array[unique_id][seed2])
+    # noise = np.random.normal(0, sds, total_ideas)  # void
+
+    # trying cauchy distribution with wider tails compared to normal distribution
+    # np.random.seed(config.seed_array[unique_id][seed2])
+    # noise = cauchy.rvs(loc=0, scale=sds, size=total_ideas)
+
+    # uniform is better?
     np.random.seed(config.seed_array[unique_id][seed2])
-    noise = np.random.normal(0, sds, total_ideas)  # void
+    noise = np.random.uniform(-3 * end_limit(x), 3 * end_limit(x), size=total_ideas)
 
     return noise
 

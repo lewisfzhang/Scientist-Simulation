@@ -181,7 +181,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear):
     plt.plot(x_var, p(x_var), "r--")
     # the line equation:
     eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
-    plt.text(10, 0.9, eq, fontsize=12)
+    plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
 
     labels(x_label, y_label, title)
     fig = plt.gcf()
@@ -237,5 +237,24 @@ def two_var_line_graph(data, x_label, y_label, title, linear):
     fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     plt.savefig(config.parent_dir + 'data/images/line_graph_'+name)
     with open(config.parent_dir + 'data/saved/2-var_line_graph_' + name + '.pkl', 'wb') as f:
+        pickle.dump(fig, f)
+    plt.close()
+
+
+# plots like a scatterplot but also has a line
+# condition: y_var is a numpy array, not a list!
+def discrete_line_graph(y_var, x_label, y_label, title, name):
+    plt.figure(5)
+    font_settings(5)
+    x_var = np.arange(len(y_var))
+    plt.scatter(x_var, y_var)
+    plt.plot(x_var, y_var, "r--", linewidth=1)
+    plt.text(0.1 * max(x_var), 0.9, "proportion formula:\ntotal effort / inv_logistic_cdf(0.99)", fontsize=12)
+    labels(x_label, y_label, title)
+    fig = plt.gcf()
+    dpi = fig.get_dpi()
+    fig.set_size_inches((config.x_width + len(y_var)*10) / float(dpi), config.y_width / float(dpi))
+    plt.savefig(config.parent_dir + 'data/images/line_graph_'+name)
+    with open(config.parent_dir + 'data/saved/line_graph_' + name + '.pkl', 'wb') as f:
         pickle.dump(fig, f)
     plt.close()

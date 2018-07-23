@@ -4,7 +4,7 @@
 import numpy as np
 
 # keeping seed constant ensure identical results
-seed = np.random.randint(100000, 999999)
+seed = 311016  # np.random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)

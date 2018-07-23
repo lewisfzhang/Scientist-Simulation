@@ -4,9 +4,14 @@ from functions import *
 from store import *
 
 
+def main():
+    model = load_model()
+    collect_vars(model)
+
+
 # for data collecting after model has finished running
 def collect_vars(model):
-    f_print("\n\ndone with step 9")
+    f_print("\n\ndone with step", model.schedule.time, '... now running collect_vars')
     start = timeit.default_timer()
 
     if config.use_store_model is True:
@@ -19,9 +24,10 @@ def collect_vars(model):
 
     # <editor-fold desc="Part 1: ideas">
     unpack_model_arrays_data(model, None)
+    unlock_actual_returns(model, None)
     idea = range(0, model.total_ideas, 1)
     tp = np.arange(model.total_ideas) // config.ideas_per_time
-    prop_invested = rounded_tuple(model.total_effort / (config.true_means_lam + 3 * config.true_sds_lam))
+    prop_invested = rounded_tuple(model.total_effort / inv_logistic_cdf(0.99, model.actual_returns_matrix[2], model.actual_returns_matrix[1]))
     avg_k = np.round(divide_0(model.total_k, model.total_scientists_invested), 2)
     total_perceived_returns = np.round(model.total_perceived_returns, 2)
     total_actual_returns = np.round(model.total_actual_returns, 2)
@@ -36,8 +42,11 @@ def collect_vars(model):
                   "total_pr": total_perceived_returns,
                   "total_ar": total_actual_returns}
     pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(model.directory + 'ideas.pkl')
+    np.save(model.directory + 'prop_invested.npy', np.asarray(prop_invested))
+    np.save(model.directory + 'prop_remaining.npy', 1-np.asarray(prop_invested))
     np.save(model.directory + 'idea_phase.npy', idea_phase)
     store_model_arrays_data(model, False, None)
+    store_actual_returns(model, None)
     del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns, idea_phase
     # </editor-fold>
 
@@ -163,3 +172,7 @@ def collect_vars(model):
     # </editor-fold>
 
     f_print("time elapsed:", timeit.default_timer() - start)
+
+
+if __name__ == '__main__':
+    main()

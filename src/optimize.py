@@ -67,7 +67,6 @@ def investing_helper(scientist, lock):
             scientist.model.total_scientists_invested[idea_choice] += 1
             scientist.model.total_scientists_invested_helper[idea_choice].add(scientist.unique_id)
         store_model_arrays_data(scientist.model, False, lock[0])
-
         scientist.marginal_invested_by_scientist[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.k_invested_by_scientist[idea_choice] += scientist.curr_k[idea_choice]
         scientist.eff_inv_in_period_marginal[idea_choice] += scientist.marginal_effort[idea_choice]

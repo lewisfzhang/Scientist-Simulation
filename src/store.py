@@ -123,7 +123,7 @@ def unpack_model_arrays_data(model, lock):
 
         model.total_idea_phase = np.load(model.directory + 'idea_phase.npy')
 
-        model.idea_phase_label = np.load(model.directory + 'idea_phase.npy')
+        model.idea_phase_label = np.load(model.directory + 'idea_phase_label.npy')
 
 
 def unpack_model_lists(model, lock):
@@ -322,3 +322,14 @@ def update_model_df(model, data_list):
         del df_model
     else:
         model.model_df.loc[model.schedule.time] = data_list
+
+
+def save_model(model):
+    with open(model.directory + "model.pkl", "wb") as fp:
+        pickle.dump(model, fp)
+
+
+def load_model():
+    model_directory = config.tmp_loc + 'model/'
+    with open(model_directory + "model.pkl", "rb") as fp:
+        return pickle.load(fp)
