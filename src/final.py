@@ -11,7 +11,7 @@ def main():
 
 # for data collecting after model has finished running
 def collect_vars(model):
-    f_print("\n\ndone with step", model.schedule.time, '... now running collect_vars')
+    f_print("\n\ndone with step", model.schedule.time - 1, '... now running collect_vars')
     start = timeit.default_timer()
 
     if config.use_store_model is True:
@@ -42,8 +42,9 @@ def collect_vars(model):
                   "total_pr": total_perceived_returns,
                   "total_ar": total_actual_returns}
     pd.DataFrame.from_dict(ideas_dict).replace(np.nan, '', regex=True).to_pickle(model.directory + 'ideas.pkl')
-    np.save(model.directory + 'prop_invested.npy', np.asarray(prop_invested))
-    np.save(model.directory + 'prop_remaining.npy', 1-np.asarray(prop_invested))
+    prop_invested = np.asarray(list(filter(lambda a: a != 0, prop_invested)))
+    np.save(model.directory + 'prop_invested.npy', prop_invested)
+    np.save(model.directory + 'prop_remaining.npy', 1 - prop_invested)
     np.save(model.directory + 'idea_phase.npy', idea_phase)
     store_model_arrays_data(model, False, None)
     store_actual_returns(model, None)

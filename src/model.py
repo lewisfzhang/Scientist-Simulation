@@ -14,6 +14,7 @@ import random
 from functions import *
 from final import *
 from process import *
+import subprocess as s
 
 
 # utility = important, don't run GC on it
@@ -48,7 +49,7 @@ class Scientist(Agent):
         self.birth_order = math.ceil(unique_id / config.N)  # utility
 
         # create specific tmp directory for agent
-        self.directory = config.tmp_loc + 'agent_' + str(self.unique_id) + '/'
+        self.directory = config.tmp_loc + 'agent/agent_' + str(self.unique_id) + '/'
         create_directory(self.directory)
 
         random.seed(config.seed_array[unique_id][1])
@@ -185,6 +186,7 @@ class ScientistModel(Model):
         # create specific tmp directory for model
         self.directory = config.tmp_loc + 'model/'
         create_directory(self.directory)
+        create_directory(config.tmp_loc + 'agent/')
 
         # Scalar: indicates the total number of scientists in the model
         self.num_scientists = config.num_scientists  # utility
@@ -255,6 +257,14 @@ class ScientistModel(Model):
         self.final_scientist_id = [[] for i in range(self.num_scientists)]
         self.final_marginal_invested_ideas = [[] for i in range(self.num_scientists)]
         self.final_slope = [[[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)]]
+        # exp_bayes is shared between older/number scientists depending on switch
+        if config.use_equal:  # confident, optimistic scientist believes he is the first to invest in idea
+            # 1.1 also benefits where in the future +1 enforces confidence (decrease avg)
+            # scientists share this array since they can all see FACTS
+            self.exp_bayes = [[1.1] for i in range(self.total_ideas)]  # 0.1 to handle np.log(1) = 0 and divide by 0
+        else:  # binary 0s and 1s based on whether scientist was the oldest dude
+            # 0.5 since scientist doesn't have data to be sure
+            self.exp_bayes = [[[0.5] for i in range(self.total_ideas)] for j in range(self.num_scientists)]
 
         # Make scientists choose ideas and allocate effort in a random order
         # for each step of the model (i.e. within a time period, the order
@@ -318,6 +328,10 @@ class ScientistModel(Model):
 
         del self.total_effort_start
         gc_collect()
+
+        if config.show_step and 2 < self.schedule.time < config.time_periods + 2:
+            collect_vars(self)
+            s.call('python3 collect.py ' + str(self.schedule.time-1), shell=True)
 
         # run data collecting variables if the last step of the simulation has completed
         # should be +1 but since we pass the step function it's actually +2

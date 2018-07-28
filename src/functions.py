@@ -128,13 +128,24 @@ def divide_0(num, denom):
     return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
 
 
-def png_to_html():
-    image_list = glob.glob(config.parent_dir + 'data/images/*.png')
-    html = ''
-    for path in image_list:
-        html += '<img src="../' + str(path)[str(path).find('images'):] + '" />'
-    with open(config.parent_dir + "data/pages/all_images.html", "w") as file:
-        file.write(html)
+def png_to_html(tmp_path):
+    if tmp_path is None:
+        image_list = glob.glob(config.parent_dir + 'data/images/*.png')
+        html = ''
+        for path in image_list:
+            html += '<img src="../' + str(path)[str(path).find('images'):] + '" />'
+        with open(config.parent_dir + "data/pages/all_images.html", "w") as file:
+            file.write(html)
+    else:
+        image_list = glob.glob(tmp_path + '*.png')
+        html = ''
+        for path in image_list:
+            path = str(path)
+            path = path[path.find('step/') + len('step/'):]
+            path = path[path.find('/') + len('/'):]
+            html += '<img src="' + path + '" />'
+        with open(tmp_path + "all_images.html", "w") as file:
+            file.write(html)
 
 # returns current resources used
 # def mem():
@@ -201,8 +212,9 @@ def str_to_dict(s):
 # # same as dividing by P(I)
 # pmf.Normalize()
 def get_bayesian_formula(data):
-    p0 = 0.5 * data[0]
-    p1 = 0.5 * data[1]
+    # flipped p0 and p1? not sure and check with jay
+    p0 = 0.5 * data[1]
+    p1 = 0.5 * data[0]
     return p0 / (p0 + p1)
 
 

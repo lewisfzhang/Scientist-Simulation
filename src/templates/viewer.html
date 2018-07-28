@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            .slidecontainer {
+                width: 100%;
+            }
+            .slider {
+                -webkit-appearance: none; width: 90%;
+                height: 25px;
+                background: #d3d3d3; outline: none;
+                opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s;
+            }
+            .slider:hover {
+                opacity: 1;
+            }
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none; appearance: none;
+                width: 25px;
+                height: 25px;
+                background: #4CAF50;
+                cursor: pointer;
+            }
+            .slider::-moz-range-thumb {
+                width: 25px;
+                height: 25px; background: #4CAF50; cursor: pointer;
+            }
+            .container {
+                width: 100%;
+                margin: auto;
+                height: 50%;
+            }
+            .container_inner {
+                width: 100%;
+                margin: auto;
+                height: 50px;
+            }
+            .container_button {
+                width: 100%;
+                margin: auto;
+                height: 450px;
+                overflow: scroll;
+            }
+            #container_image {
+                width: 100%;
+                margin: auto;
+                height: 50%;
+                padding: 0;
+                overflow: hidden;
+            }
+            .cell {
+                width: 50%;
+                float: left;
+            }
+            #image_frame {
+                width: 800vh;
+                height: 500vh;
+
+                -ms-transform: scale(0.25);
+                -moz-transform: scale(0.25);
+                -webkit-transform: scale(0.25);
+                transform: scale(0.25);
+
+                -moz-transform-origin: 0 0;
+                -ms-transform-origin: 0 0;
+                -webkit-transform-origin: 0 0;
+                transform-origin: 0 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Scientist Simulation</h1>
+        <div class="container">
+            <div class="cell">
+                <h2>Controls</h2>
+                <p>Drag the slider to display the current value.</p>
+                <div id="input" class="container_button"></div>
+            </div>
+            <div class="cell">
+                <h2>output.txt</h2>
+                <iframe id="out" src="#" style="float:middle" width="80%" height="500vh"></iframe>
+            </div>
+        </div>
+        <div id="container_image">
+            <div class="cell">
+                <h2>all_images.html</h2>
+            </div>
+            <div class="cell">
+                <h2> </h2>
+                <button onclick="reload_images()">refresh output!</button>
+                <button id="run">run program!</button>
+            </div>
+            <iframe id="image_frame" src="#"></iframe>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script>
+            window.onload = function() {
+                add_buttons();
+                // setup the button click
+                document.getElementById("run").onclick = function() {
+                    run_program();
+                };
+            }
+
+            function get_started() {
+                data_path();
+                console.log(getCookie("path"));
+                document.getElementById("image_frame").src = getCookie("path") + "/pages/all_images.html";
+                document.getElementById("out").src = getCookie("path") + "/output.txt";
+            }
+            get_started()
+
+            function reload_output() {
+                document.getElementById('out').src = document.getElementById('out').src;
+            }
+            setInterval(reload_output, 1000)
+
+            function reload_images() {
+                document.getElementById('image_frame').src = document.getElementById('image_frame').src;
+            }
+
+            function add_buttons() {
+                template1 = '<div class="slidecontainer container_inner"><div class="cell"><p></p><input type="range" min="1" max="100" value="50" class="slider" id="range';
+                template2 = '"></div><div class="cell"><p align="left">Value: <span id="demo';
+                template3 = '"></span></p></div><br><hr></div>';
+                for(i = 0; i<10; i++)
+                {
+                    add_buttons_helper(i, template1, template2, template3);
+                }
+            }
+
+            function add_buttons_helper(i, template1, template2, template3) {
+                document.getElementById("input").innerHTML += template1 + i + template2 + i + template3;
+
+                var slider = document.getElementById("range"+i);
+                var output = document.getElementById("demo"+i);
+                output.innerHTML = slider.value;
+                slider.oninput = function() { output.innerHTML = this.value; }
+            }
+
+            function run_program() {
+                // ajax the JSON to the server
+                $.post("receiver", "run", function(){
+
+                });
+                // stop link reloading the page
+                event.preventDefault();
+            }
+
+            function data_path() {
+                // ajax the JSON to the server
+                $.post("helper", "", function(data, status){
+                    setCookie("path", data + "/data", 1);  // cookie stored for one day
+                    console.log(getCookie("path"));
+                });
+                // stop link reloading the page
+                if (!(event === undefined)) {
+                    event.preventDefault();
+                }
+            }
+
+            function setCookie(cname, cvalue, exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                var expires = "expires="+d.toUTCString();
+                document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            }
+
+            function getCookie(cname) {
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
+                for(var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
+        </script>
+
+    </body>
+</html>

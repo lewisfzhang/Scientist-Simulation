@@ -3,11 +3,12 @@
 import sys
 import init
 import os
+import subprocess as s
 
 
 def main():
     # if user wants to pass in arguments
-    if len(sys.argv) == 8:
+    if len(sys.argv) >= 8:
         init.time_periods = int(sys.argv[1])
         init.ideas_per_time = int(sys.argv[2])
         init.N = int(sys.argv[3])
@@ -15,6 +16,8 @@ def main():
         init.prop_sds = float(sys.argv[5])
         init.prop_means = float(sys.argv[6])
         init.prop_start = float(sys.argv[7])
+    if len(sys.argv) > 8:
+        init.show_step = int(sys.argv[8]) == True  # True=1, False=0
 
     # check if we are using batch runs
     if os.path.isdir('tmp_batch'):
@@ -68,6 +71,8 @@ def main():
 
     func.f_print("\nTOTAL TIME TO FINISH RUNNING SIMULATION:", timeit.default_timer() - start_prog, "seconds")
 
+    s.call('python3 collect.py', shell=True)
 
-if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function
+
+if __name__ == '__main__':
     main()

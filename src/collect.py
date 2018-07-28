@@ -3,12 +3,20 @@
 
 import multiprocessing as mp
 from run_graphs import *
-import time
+import time, sys
 from IPython.core.display import HTML
 
 
 def main():
     config.start = timeit.default_timer()
+
+    in_tmp = False
+    step = None
+    path = None
+    if len(sys.argv) == 2:
+        in_tmp = True
+        step = int(sys.argv[1])
+        path = config.tmp_loc+'step/step_'+str(step)+'/'
 
     # initiate multiprocessing with 'num_processors' threads
     # NOTE: increasing the number of processors does not always increase speed of program. in fact, it may actually
@@ -38,101 +46,105 @@ def main():
     with open(model_directory + "final_perceived_returns_invested_ideas.txt", "rb") as fp:
         final_perceived_returns_invested_ideas = pickle.load(fp)
 
-    arg_list = [("agent", agent_vars), ("model", model_vars), ("ideas", ideas), ("ind_ideas", ind_ideas),
+    arg_list = [["agent", agent_vars], ["model", model_vars], ["ideas", ideas], ["ind_ideas", ind_ideas],
 
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
+                # ["im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
                 #  "k", "perceived returns",
                 #  "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                #  "perceived", True),
+                #  "perceived", True],
                 #
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
+                ["im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_perceived_return_invested_ideas'],
                  "k", "perceived returns",
-                 "perceived return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "perceived", False),
+                 "perceived return vs cost for all INVESTED ideas across all scientists,time periods [biased)", False,
+                 "perceived", False],
                 #
-                # ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
+                # ["im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
                 #  "k", "actual returns",
-                #  "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                #  "actual", True),
+                #  "actual return vs cost for all INVESTED ideas across all scientists,time periods [biased)", False,
+                #  "actual", True],
                 #
-                ("im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
+                ["im_graph", ind_ideas['agent_k_invested_ideas'], ind_ideas['agent_actual_return_invested_ideas'],
                  "k", "actual returns",
-                 "actual return vs cost for all INVESTED ideas across all scientists,time periods (biased)", False,
-                 "actual", False),
+                 "actual return vs cost for all INVESTED ideas across all scientists,time periods [biased)", False,
+                 "actual", False],
                 #
                 # # COMMENTED OUT PARAMS ARE GRAPHS THAT PLOT FOR EACH INDIVIDUAL SCIENTIST THAT AREN"T WORTH GRAPHING
                 # # (they take a lot of time to graph since there's so many scientists but they don't tell use anything)
                 #
-                ("resid_scatterplot", ind_ideas['agent_actual_return_invested_ideas'],
+                ["resid_scatterplot", ind_ideas['agent_actual_return_invested_ideas'],
                  ind_ideas['agent_perceived_return_invested_ideas'], final_perceived_returns_invested_ideas,
-                 "Scientist ID", "Residual", "Residuals for all INVESTED ideas (actual-perceived)"),
+                 "Scientist ID", "Residual", "Residuals for all INVESTED ideas [actual-perceived)"],
                 #
-                # ("two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
-                #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", True),
+                # ["two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
+                #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", True],
                 #
-                # ("two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
-                #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", False),
+                # ["two_var_bar_graph", effort_invested_by_age, "Idea", "Marginal Effort Invested",
+                #  "Marginal Effort Invested By Young and Old Scientists For All Ideas", False],
                 #
                 # # runtime is WAY too long for linear y
-                # ("two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
-                #  "perceived return vs cost for INVESTED ideas (plot to check for bias)", True),
+                # ["two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
+                #  "perceived return vs cost for INVESTED ideas [plot to check for bias]", True],
                 #
-                # ("two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
-                #  "perceived return vs cost for INVESTED ideas (plot to check for bias)", False),
+                # ["two_var_scatterplot", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
+                #  "perceived return vs cost for INVESTED ideas [plot to check for bias)", False],
                 #
                 # # puts the above scatterplot in perspective with other imgraphs
                 # # this is for invested ideas across all scientists/tp while the other ones are just all the ideas that
                 # # scientists invested in
-                # ("im_graph", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
-                #  "(IM) perceived return vs cost for INVESTED ideas (plot to check for bias)", False, "IM", False),
+                # ["im_graph", ideas['avg_k'], ideas['total_pr'], "k", "perceived returns",
+                #  "(IM) perceived return vs cost for INVESTED ideas (plot to check for bias)", False, "IM", False],
                 #
-                # ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
-                #  "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                # ["line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
+                #  "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", False],
                 #
-                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
-                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", False),
+                # ["line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
+                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", False],
                 #
-                # ("line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
-                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True),
+                # ["line_graph", ideas_entered, social_output, False, "# of ideas entered in lifetime",
+                #  "total research output", "Cum Total Research Output Vs # Of Ideas Entered in Lifetime", True],
 
-                ("line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
-                 "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True),
+                ["line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
+                 "total research output", "Average Total Research Output Vs # Of Ideas Entered in Lifetime", True],
 
-                ("two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
-                 "Effort Invested By Ages of Ideas and Scientists", False),
+                ["two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
+                 "Effort Invested By Ages of Ideas and Scientists", False],
 
-                ("one_var_bar_graph", prop_age, None, "scientist age", "fraction paying k",
-                 "Proportion of Scientists Paying to Learn By Age", "age"),
+                ["one_var_bar_graph", prop_age, None, "scientist age", "fraction paying k",
+                 "Proportion of Scientists Paying to Learn By Age", "age", True],
 
-                ("one_var_bar_graph", prop_idea, None, "age of idea", "proportion of scientists working on the idea",
-                 "Proportion of Scientists Working Based on Age of Idea", "idea"),
+                ["one_var_bar_graph", prop_idea, None, "age of idea", "proportion of scientists working on the idea",
+                 "Proportion of Scientists Working Based on Age of Idea", "idea", False],
 
-                ("one_var_bar_graph", get_pdf(ideas_entered), None, "# of ideas entered in lifetime",
-                 "fraction working on 'x' ideas", "Proportion of Scientists Working on An Idea (PDF)", "ideas_pdf"),
+                ["one_var_bar_graph", get_pdf(ideas_entered), None, "# of ideas entered in lifetime",
+                 "fraction working on 'x' ideas", "Proportion of Scientists Working on An Idea (PDF)", "ideas_pdf", False],
 
-                ("one_var_bar_graph", get_cdf(ideas_entered), None, "# of ideas entered in lifetime",
+                ["one_var_bar_graph", get_cdf(ideas_entered), None, "# of ideas entered in lifetime",
                  "fraction working on more than 'x' ideas", "Proportion of Scientists Working on An Idea (CDF)",
-                 "ideas_cdf"),
+                 "ideas_cdf", False],
 
-                ("one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Old Age"], "idea phases",
-                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase"),
+                ["one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Old Age"], "idea phases",
+                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase", True],
 
-                ("discrete_line_graph", prop_invested, "ideas", "prop invested",
-                 "Distribution of Social Returns Invested Across Ideas", "prop_invested"),
+                ["discrete_line_graph", prop_invested, "ideas", "prop invested",
+                 "Distribution of Social Returns Invested Across Ideas", "prop_invested"],
 
-                ("discrete_line_graph", prop_remaining, "ideas", "prop remaining",
-                 "Distribution of Social Returns Left Across Ideas", "prop_remaining")]
+                ["discrete_line_graph", prop_remaining, "ideas", "prop remaining",
+                 "Distribution of Social Returns Left Across Ideas", "prop_remaining"]]
+
+    for i in arg_list:
+        i.append(in_tmp)
+        i.append(step)
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
     p.close()
     p.join()
 
     # saves all of the images to an html file
-    png_to_html()
+    png_to_html(path)
 
-    stop_run("Total time to process data")
-
-    f_print("\nEND OF PROGRAM\ntotal runtime:", time.time() - start_prog, "seconds\n\n")
+    if not in_tmp:
+        stop_run("Total time to process data")
+        f_print("\nEND OF PROGRAM\ntotal runtime:", time.time() - start_prog, "seconds\n\n")
 
 
 # assigning which function to call in the run_graphs.py file
@@ -145,19 +157,19 @@ def func_distr(graph_type, *other):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', None)
 
-    if graph_type == "agent":
+    if graph_type == "agent" and other[len(other)-2] is None:  # in_tmp is None
         # agent dataframe (other[0] contains agent_vars)
         agent_vars = other[0]
         agent_vars = agent_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)
         HTML(agent_vars.to_html('../data/pages/page_agent_vars.html', escape=False))
         del agent_vars
-    elif graph_type == "model":
+    elif graph_type == "model" and other[len(other)-2] is None:
         # model dataframe (other[0] contains model_vars)
         model_vars = other[0]
         model_vars = model_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)  # .transpose()
         HTML(model_vars.to_html('../data/pages/page_model_vars.html', escape=False))
         del model_vars
-    elif graph_type == "ideas":
+    elif graph_type == "ideas" and other[len(other)-2] is None:
         # dataframe specifying info per idea
         data1 = other[0].astype(str)
         columns = ['scientists_invested', "times_invested", "avg_k", "total_effort (marginal)", "prop_invested",
@@ -166,7 +178,7 @@ def func_distr(graph_type, *other):
             data1.ix[pd.to_numeric(data1[col], errors='coerce') == 0, [col]] = ''
         data1.to_html('../data/pages/page_ideas.html')
         del data1
-    elif graph_type == "ind_ideas":
+    elif graph_type == "ind_ideas" and other[len(other)-2] is None:
         ind_vars = other[0]
         ind_vars = ind_vars.transpose()
         ind_vars.to_html('../data/pages/page_ind_ideas.html')

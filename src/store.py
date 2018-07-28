@@ -84,6 +84,10 @@ def store_model_lists(model, is_first, lock):
             pickle.dump(model.final_slope, fp)
         model.final_slope = None
 
+        with open(model.directory + "exp_bayes.txt", "wb") as fp:
+            pickle.dump(model.exp_bayes, fp)
+        model.exp_bayes = None
+
         if is_first:
             np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
         model.actual_returns_matrix = None
@@ -150,6 +154,9 @@ def unpack_model_lists(model, lock):
 
         with open(model.directory + "final_slope.txt", "rb") as fp:
             model.final_slope = pickle.load(fp)
+
+        with open(model.directory + "exp_bayes.txt", "rb") as fp:
+            model.exp_bayes = pickle.load(fp)
 
 
 def unlock_actual_returns(model, lock):
@@ -285,9 +292,9 @@ def new_investing_queue(model):
     if config.use_store_model:
         # queue format: idea_choice, scientist.marginal_effort[idea_choice], increment, max_return,
         #               actual_return, scientist.unique_id
-        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID']).to_pickle(model.directory + 'investing_queue.pkl')
+        pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID', "Marginal"]).to_pickle(model.directory + 'investing_queue.pkl')
     else:
-        model.investing_queue = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID'])
+        model.investing_queue = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID', "Marginal"])
 
 
 def get_total_start_effort(model):

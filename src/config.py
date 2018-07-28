@@ -25,7 +25,7 @@ time_periods_alive = init.time_periods_alive
 
 # SCALAR: store means of the mean and sds for returns
 true_means_lam = init.true_means_lam
-true_sds_lam = int(0.4 * true_means_lam)
+true_sds_lam = int(init.prop_sds * true_means_lam)
 
 # adjustables
 true_M = 100
@@ -72,7 +72,7 @@ use_store = (use_store, True)[use_multiprocessing is True]
 all_scientists = False
 
 # whether to split returns evenly or by age
-use_equal = True
+use_equal = False
 
 # whether to shift all CDFs to the right
 use_idea_shift = False
@@ -83,6 +83,10 @@ use_idea_shift = False
 # 2 = bayesian stats
 # 3 = greedy heuristic
 switch = 2
+
+# whether we want interactive steps
+show_step = init.show_step
+
 # </editor-fold>
 
 # <editor-fold desc="Seed manager">

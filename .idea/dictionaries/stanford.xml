@@ -5,6 +5,7 @@
       <w>asarray</w>
       <w>curdir</w>
       <w>dereferencing</w>
+      <w>deriv</w>
       <w>devs</w>
       <w>dirname</w>
       <w>forkserver</w>
@@ -12,7 +13,9 @@
       <w>lewisz</w>
       <w>matplotlib</w>
       <w>mkdir</w>
+      <w>mult</w>
       <w>multithreading</w>
+      <w>nohup</w>
       <w>ntasks</w>
       <w>prog</w>
       <w>resid</w>

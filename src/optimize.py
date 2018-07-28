@@ -79,12 +79,12 @@ def investing_helper(scientist, lock):
             row_data = temp_df.loc[temp_df['Idea Choice'] == idea_choice]
             temp_df = temp_df.drop(temp_df.index[temp_df['Idea Choice'] == idea_choice][0])
             # idea choice and ID should stay the same
-            add_row = {"Idea Choice": 0, "Max Return": max_return, "ID": 0}
+            add_row = {"Idea Choice": 0, "Max Return": max_return, "ID": 0, "Marginal": scientist.marginal_effort[idea_choice]}
             row_data += add_row
             temp_df = temp_df.append(row_data, ignore_index=True)
         # if idea_choice is not in df
         else:
-            row_data = {"Idea Choice": idea_choice, "Max Return": max_return, "ID": scientist.unique_id}
+            row_data = {"Idea Choice": idea_choice, "Max Return": max_return, "ID": scientist.unique_id, "Marginal": scientist.marginal_effort[idea_choice]}
             temp_df = temp_df.append(row_data, ignore_index=True)
 
         del idea_choice, max_return, no_effort_inv, scientist.curr_k, scientist.increment, row_data, idx_idea_phase
@@ -111,7 +111,7 @@ def investing_helper(scientist, lock):
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
 def probabilistic_returns(scientist, *lock):
     # Array: keeping track of all the returns of investing in each available ideas
-    slope_ideas, effort_ideas, score_ideas = [], [], []
+    slope_ideas, effort_ideas, score_ideas, exp_val = [], [], [], []
     p_slope, p_effort, z_slope, z_effort, data, slopes, prob_slope, bins = \
         None, None, None, None, None, None, None, None
 
@@ -137,6 +137,16 @@ def probabilistic_returns(scientist, *lock):
     elif config.switch == 2:  # bayesian
         unpack_model_lists(scientist.model, lock[0])
         slopes = [scientist.model.final_slope[i][scientist.unique_id - 1] for i in range(0, 2)]
+        if config.use_equal:
+            exp_val = [sum(scientist.model.exp_bayes[idea]) / len(scientist.model.exp_bayes[idea]) for idea in
+                       range(len(scientist.model.exp_bayes))]
+            exp_val = np.log(exp_val)
+        else:
+            exp_val = [sum(scientist.model.exp_bayes[scientist.unique_id - 1][idea]) / len(
+                scientist.model.exp_bayes[scientist.unique_id - 1][idea]) for idea in
+                       range(len(scientist.model.exp_bayes[scientist.unique_id - 1]))]
+            # 0.5 shifts range from 0-1 to 0.5-1.5 so even if scientist is not oldest he does not despair
+            exp_val = [0.5 + get_bayesian_formula([a, 1-a]) for a in exp_val]
         store_model_lists(scientist.model, False, lock[0])
         # 0 = 'm > M', 1 = 'm <= M'
         data = np.asarray([np.asarray([None, None])] * len(slope_ideas))
@@ -154,7 +164,7 @@ def probabilistic_returns(scientist, *lock):
                 prob_slope[i] /= sum(prob_slope[i])  # ensures max probability is 1
                 # for all zero elements take average of adjacent elements
                 for idx, val in enumerate(prob_slope[i]):
-                    if val == 0:  # idx should never be 0 or last value since those intervals cover min/max
+                    if val == 0:  # idx here should never be 0 or last value since those intervals cover min/max
                         prob_slope[i][idx] = (prob_slope[i][idx-1] + prob_slope[i][idx+1])/2
                 bins[i][0] = -100000  # so least value is included in last bin
                 bins[i][-1] = 100000  # so greatest value is included in last bin
@@ -168,7 +178,12 @@ def probabilistic_returns(scientist, *lock):
         elif config.switch == 1:
             z_score = z_slope[idea] - z_effort[idea]
         elif config.switch == 2:
-            bayes_score = get_bayesian_formula(data[idea])
+            power_scale = 15
+            # flawed because only calculates probability you will get greater returns given current slope, not the
+            # best returns? --> implemented additional multipliers to account for it
+            # NOTE: still need to balance out factors so that not one is dominant
+            # NOTE: add possible slides?
+            bayes_score = (get_bayesian_formula(data[idea]) ** power_scale) * (slope_ideas[idea] / (exp_val[idea] ** power_scale))
         score_ideas.append([p_score, z_score, bayes_score][config.switch])
     del p_score, z_score, bayes_score
 
@@ -211,7 +226,7 @@ def probabilistic_returns(scientist, *lock):
     store_model_lists(scientist.model, False, lock[0])
 
     del idx_max_return, slope_ideas, effort_ideas, z_slope, z_effort, score_ideas, actual_return, p_slope, \
-        p_effort, slopes, prob_slope, bins
+        p_effort, slopes, prob_slope, bins, exp_val
 
     # returns index of the invested idea, as well as its perceived and actual returns
     return idea_choice, max_return

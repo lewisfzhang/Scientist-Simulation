@@ -4,7 +4,7 @@
 import numpy as np
 
 # keeping seed constant ensure identical results
-seed = 311016  # np.random.randint(100000, 999999)
+seed = np.random.randint(100000, 999999)
 
 # number of stable time_periods in the model
 # NOTE: total time periods is time_periods + 2 (first two are unstable)
@@ -34,3 +34,6 @@ prop_start = 0.25
 
 # temp location of this specific run (for batch runs)
 tmp_loc = 'tmp/'
+
+# whether we want interactive steps
+show_step = True
