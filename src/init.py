@@ -1,5 +1,6 @@
 # init.py
-# default config is 50 20 40 10 0.4 0.5 0.25
+# default batch config is 50 20 40 10 0.4 0.5 0.25
+# default small config is 10 5 5 4 0.4 0.5 0.25
 
 import numpy as np
 
@@ -32,8 +33,24 @@ prop_means = 0.5
 # SCALAR: proportion of k to start effort
 prop_start = 0.25
 
-# temp location of this specific run (for batch runs)
-tmp_loc = 'tmp/'
+# what optimization to use
+# 0 = percentiles
+# 1 = z-scores
+# 2 = bayesian stats
+# 3 = greedy heuristic
+switch = 2
+
+# whether to report all scientists in agent_df
+all_scientists = False
+
+# whether to split returns evenly or by age
+use_equal = False
+
+# whether to shift all CDFs to the right
+use_idea_shift = False
 
 # whether we want interactive steps
 show_step = True
+
+# temp location of this specific run (for batch runs)
+tmp_loc = 'tmp/'

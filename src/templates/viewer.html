@@ -1,187 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
     <head>
+        <meta charset="UTF-8">
+        <title>Test</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            .slidecontainer {
-                width: 100%;
-            }
-            .slider {
-                -webkit-appearance: none; width: 90%;
-                height: 25px;
-                background: #d3d3d3; outline: none;
-                opacity: 0.7; -webkit-transition: .2s; transition: opacity .2s;
-            }
-            .slider:hover {
-                opacity: 1;
-            }
-            .slider::-webkit-slider-thumb {
-                -webkit-appearance: none; appearance: none;
-                width: 25px;
-                height: 25px;
-                background: #4CAF50;
-                cursor: pointer;
-            }
-            .slider::-moz-range-thumb {
-                width: 25px;
-                height: 25px; background: #4CAF50; cursor: pointer;
-            }
-            .container {
-                width: 100%;
-                margin: auto;
-                height: 50%;
-            }
-            .container_inner {
-                width: 100%;
-                margin: auto;
-                height: 50px;
-            }
-            .container_button {
-                width: 100%;
-                margin: auto;
-                height: 450px;
-                overflow: scroll;
-            }
-            #container_image {
-                width: 100%;
-                margin: auto;
-                height: 50%;
-                padding: 0;
-                overflow: hidden;
-            }
-            .cell {
-                width: 50%;
-                float: left;
-            }
-            #image_frame {
-                width: 800vh;
-                height: 500vh;
-
-                -ms-transform: scale(0.25);
-                -moz-transform: scale(0.25);
-                -webkit-transform: scale(0.25);
-                transform: scale(0.25);
-
-                -moz-transform-origin: 0 0;
-                -ms-transform-origin: 0 0;
-                -webkit-transform-origin: 0 0;
-                transform-origin: 0 0;
-            }
-        </style>
     </head>
     <body>
-        <h1>Scientist Simulation</h1>
-        <div class="container">
-            <div class="cell">
-                <h2>Controls</h2>
-                <p>Drag the slider to display the current value.</p>
-                <div id="input" class="container_button"></div>
-            </div>
-            <div class="cell">
-                <h2>output.txt</h2>
-                <iframe id="out" src="#" style="float:middle" width="80%" height="500vh"></iframe>
-            </div>
-        </div>
-        <div id="container_image">
-            <div class="cell">
-                <h2>all_images.html</h2>
-            </div>
-            <div class="cell">
-                <h2> </h2>
-                <button onclick="reload_images()">refresh output!</button>
-                <button id="run">run program!</button>
-            </div>
-            <iframe id="image_frame" src="#"></iframe>
-        </div>
+        <h2 style="text-align:center">Multiple Slideshowz</h2>
+
+        <input type="range" min="2" max="20" step="1" value="2" list="steplist" id="stepper">
+        <datalist id="steplist">
+            <option selected="selected">2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+        </datalist>&emsp;step: <span id="step_info"></span>
+
+        <div id="slides"></div>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
         <script>
-            window.onload = function() {
-                add_buttons();
-                // setup the button click
-                document.getElementById("run").onclick = function() {
-                    run_program();
-                };
-            }
+          var slideIndex = [];
+          var slideId = [];
+          var last_step = 2;
 
-            function get_started() {
-                data_path();
+          function load_slides(num) {
+            for (i=1; i<=num; i++) {
+              slideIndex.push(1)
+              slideId.push("mySlides"+i)
+            }
+            for (i=0; i<num; i++) {
+              showSlides(1,i)
+            }
+          }
+
+          function plusSlides(n, no) {
+            showSlides(slideIndex[no] += n, no);
+          }
+
+          function showSlides(n, no) {
+            var i;
+            var x = document.getElementsByClassName(slideId[no]);
+            if (n > x.length) {slideIndex[no] = 1}
+            if (n < 1) {slideIndex[no] = x.length}
+            for (i = 0; i < x.length; i++) {
+               x[i].style.display = "none";
+            }
+            x[slideIndex[no]-1].style.display = "block";
+          }
+
+          function get_started() {
+              data_path();
+              add_css()
+
+              $.post('html_slideshow', "", function(data, status) {
+                document.getElementById("slides").innerHTML += data[1] // also loads the selector (see functions in html_helper.py file for more details)
+                setCookie("num_images", data[0], 1)
+                console.log(getCookie("num_images"))
+              });
+              setTimeout(function() {load_slides(getCookie("num_images"));}, 1000); // ensures the innerHTML content has loaded before continuing
+              setTimeout(function() {reload()}, 2000); // refreshes for image loading
+              setTimeout(function() {displayOne()}, 1000); // refreshes for image loading
+              add_stepper()
+          }
+          get_started()
+
+          function add_stepper() {
+              var stepper = document.getElementById("stepper");
+              var step_info = document.getElementById("step_info");
+              step_info.innerHTML = stepper.value;
+              stepper.oninput = function() {
+                  step_info.innerHTML = stepper.value;
+              }
+          }
+
+          function displayOne() {
+            var e = document.getElementById("chooser");
+            var graph_name = e.options[e.selectedIndex].text;
+            var x = document.getElementsByClassName("slideshow-container")
+            console.log(e)
+            console.log(graph_name)
+            console.log(x)
+
+            for (i=0; i<getCookie("num_images"); i++) {
+              if (x[i].id != graph_name) {
+                x[i].style.display = "none"
+              } else {
+                x[i].style.display = "block"
+              }
+            }
+          }
+
+          function reload() {
+            if (!window.location.hash) {
+              window.location = window.location + '#loaded';
+              window.location.reload();
+            }
+          }
+
+          function data_path() {
+            // ajax the JSON to the server
+            $.post("helper", "", function(data, status){
+                setCookie("path", data, 1);  // cookie stored for one day  
+                setCookie("data_path", data + '/data', 1);  // cookie stored for one day
+                setCookie("tmp_image_path", data + '/src/tmp/step')
                 console.log(getCookie("path"));
-                document.getElementById("image_frame").src = getCookie("path") + "/pages/all_images.html";
-                document.getElementById("out").src = getCookie("path") + "/output.txt";
-            }
-            get_started()
-
-            function reload_output() {
-                document.getElementById('out').src = document.getElementById('out').src;
-            }
-            setInterval(reload_output, 1000)
-
-            function reload_images() {
-                document.getElementById('image_frame').src = document.getElementById('image_frame').src;
-            }
-
-            function add_buttons() {
-                template1 = '<div class="slidecontainer container_inner"><div class="cell"><p></p><input type="range" min="1" max="100" value="50" class="slider" id="range';
-                template2 = '"></div><div class="cell"><p align="left">Value: <span id="demo';
-                template3 = '"></span></p></div><br><hr></div>';
-                for(i = 0; i<10; i++)
-                {
-                    add_buttons_helper(i, template1, template2, template3);
-                }
-            }
-
-            function add_buttons_helper(i, template1, template2, template3) {
-                document.getElementById("input").innerHTML += template1 + i + template2 + i + template3;
-
-                var slider = document.getElementById("range"+i);
-                var output = document.getElementById("demo"+i);
-                output.innerHTML = slider.value;
-                slider.oninput = function() { output.innerHTML = this.value; }
-            }
-
-            function run_program() {
-                // ajax the JSON to the server
-                $.post("receiver", "run", function(){
-
-                });
-                // stop link reloading the page
+                console.log(getCookie("data_path"));
+                console.log(getCookie("tmp_image_path"));
+            });
+            // stop link reloading the page
+            if (!(event === undefined)) {
                 event.preventDefault();
             }
+          }
 
-            function data_path() {
-                // ajax the JSON to the server
-                $.post("helper", "", function(data, status){
-                    setCookie("path", data + "/data", 1);  // cookie stored for one day
-                    console.log(getCookie("path"));
-                });
-                // stop link reloading the page
-                if (!(event === undefined)) {
-                    event.preventDefault();
-                }
-            }
+          function setCookie(cname, cvalue, exdays) {
+              var d = new Date();
+              d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+              var expires = "expires="+d.toUTCString();
+              document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+              console.log(document.cookie)
+          }
 
-            function setCookie(cname, cvalue, exdays) {
-                var d = new Date();
-                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-                var expires = "expires="+d.toUTCString();
-                document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-            }
+          function getCookie(cname) {
+              var name = cname + "=";
+              var ca = document.cookie.split(';');
+              for(var i = 0; i < ca.length; i++) {
+                  var c = ca[i];
+                  while (c.charAt(0) == ' ') {
+                      c = c.substring(1);
+                  }
+                  if (c.indexOf(name) == 0) {
+                      return c.substring(name.length, c.length);
+                  }
+              }
+              return "";
+          }
 
-            function getCookie(cname) {
-                var name = cname + "=";
-                var ca = document.cookie.split(';');
-                for(var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                    }
-                }
-                return "";
+          function add_css() {
+            var cssId = 'myCss';  // you could encode the css path itself to generate id..
+            if (!document.getElementById(cssId))
+            {
+                var head  = document.getElementsByTagName('head')[0];
+                var link  = document.createElement('link');
+                link.id   = cssId;
+                link.rel  = 'stylesheet';
+                link.type = 'text/css';
+                link.href = getCookie("path") + "/src/static/format.css";
+                link.media = 'all';
+                head.appendChild(link);
             }
+          }
+
         </script>
-
     </body>
 </html>

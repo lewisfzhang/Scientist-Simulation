@@ -9,6 +9,7 @@
       <w>devs</w>
       <w>dirname</w>
       <w>forkserver</w>
+      <w>halfcell</w>
       <w>imgraph</w>
       <w>lewisz</w>
       <w>matplotlib</w>
@@ -21,6 +22,7 @@
       <w>resid</w>
       <w>sbatch</w>
       <w>scatterplot</w>
+      <w>slideshow</w>
       <w>slurm</w>
       <w>squeue</w>
       <w>srun</w>

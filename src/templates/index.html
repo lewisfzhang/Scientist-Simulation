@@ -1,44 +1,51 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript">
-window.onload = function() {
-    window.path = ""
-	// setup the button click
-	document.getElementById("theButton").onclick = function() {
-		doWork()
-	};
-	document.getElementById("theButton2").onclick = function() {
-		data_path()
-	};
-	document.getElementById("theButton3").onclick = function() {
-		return_path()
-	};
-}
-
-function doWork() {
-	// ajax the JSON to the server
-	$.post("receiver", "run", function(){
-
-	});
-	// stop link reloading the page
-    event.preventDefault();
-}
-
-function data_path() {
-    // ajax the JSON to the server
-    $.post("helper", "", function(data, status){
-        console.log(data);
-        window.path = data;
-    });
-    // stop link reloading the page
-    event.preventDefault();
-}
-
-function return_path() {
-    console.log(window.path);
-    event.preventDefault();
-}
-</script>
-This will send data using AJAX to Python:<br /><br />
-<a href="" id="theButton">Click Me1</a>
-<a href="" id="theButton2">Click Me2</a>
-<a href="" id="theButton3">Click Me3</a>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Scientist Simulation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='format.css') }}">
+    </head>
+    <body>
+        <h1>Scientist Simulation</h1>
+        <div class="container">
+            <div class="cell">
+                <h2>Controls</h2>
+                <p>Adjust the sliders and switches as you wish!</p>
+                <div id="input" class="container_button"></div>
+            </div>
+            <div class="cell">
+                <h2>output.txt</h2>
+                <iframe id="out" src="#" style="float:middle" width="80%" height="500vh"></iframe>
+            </div>
+        </div>
+        <div class="container">
+            <div class="wrapper">
+                <div class="cell">
+                    <div class="cell"><h2>Step Explorer</h2></div>
+                    <div class="cell" id="step_controller1"><h2></h2></div>
+                </div>
+                <div class="cell">
+                    <div class="cell" id="step_controller2">
+                        <h2></h2>
+                    </div>
+                    <div class="cell">
+                        <h2> </h2>
+                    <button onclick="reload_output()">refresh output!</button>
+                    <button id="run">run program!</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wrapper"><div id="slides"></div></div>
+        </div>
+        <div id="container_image">
+            <div class="cell">
+                <h2>all_images.html</h2>
+            </div>
+            <div class="cell"></div>
+            <iframe id="image_frame" src="#"></iframe>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="{{ url_for('static',filename='script.js') }}"></script>
+    </body>
+</html>

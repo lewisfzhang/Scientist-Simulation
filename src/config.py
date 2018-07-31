@@ -1,7 +1,6 @@
 # config.py
 
 import numpy as np
-import math
 import init
 import os
 

@@ -1,23 +1,41 @@
 # run.py
 
-import sys
-import init
-import os
+import sys, init, os, timeit, time
 import subprocess as s
 
 
 def main():
+    # start runtime
+    start_prog = timeit.default_timer()
+
+    # ensure current working directory is in src folder
+    if os.getcwd()[-3:] != 'src':
+        # assuming we are somewhere inside the git directory
+        path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        os.chdir(path + '/src')
+
+    print('Args:',sys.argv[:])
     # if user wants to pass in arguments
-    if len(sys.argv) >= 8:
+    if len(sys.argv) >= 5:  # config 1
         init.time_periods = int(sys.argv[1])
         init.ideas_per_time = int(sys.argv[2])
         init.N = int(sys.argv[3])
         init.time_periods_alive = int(sys.argv[4])
+    if len(sys.argv) >= 8:  # config 2
         init.prop_sds = float(sys.argv[5])
         init.prop_means = float(sys.argv[6])
         init.prop_start = float(sys.argv[7])
-    if len(sys.argv) > 8:
-        init.show_step = int(sys.argv[8]) == True  # True=1, False=0
+    if len(sys.argv) == 15:  # server config
+        init.true_means_lam = float(sys.argv[5])
+        init.prop_sds = float(sys.argv[6])
+        init.prop_means = float(sys.argv[7])
+        init.prop_start = float(sys.argv[8])
+        init.switch = float(sys.argv[9])
+        # sys.argv[10] is empty for now
+        init.all_scientists = sys.argv[11] == 'True'
+        init.use_equal = sys.argv[12] == 'True'
+        init.use_idea_shift = sys.argv[13] == 'True'
+        init.show_step = sys.argv[14] == 'True'
 
     # check if we are using batch runs
     if os.path.isdir('tmp_batch'):
@@ -27,11 +45,6 @@ def main():
     import config
     import model as m
     import functions as func
-    import timeit
-    import time
-
-    # start runtime
-    start_prog = timeit.default_timer()
 
     func.create_directory(config.parent_dir + 'data/')
     func.create_directory(config.tmp_loc)
@@ -49,11 +62,6 @@ def main():
                   "k_lam": config.k_lam, "use_multithreading": config.use_multithreading, "use_equal": config.use_equal,
                   "use_idea_shift": config.use_idea_shift}
 
-    # initialize model object
-    model = m.ScientistModel(config.seed)
-
-    func.stop_run("time to create model object")
-
     # printing parameters into console screen
     func.f_print("\nVariables:\n", all_params)
 
@@ -62,7 +70,10 @@ def main():
     f.write(str(all_params))
     f.close()
 
-    func.stop_run("entering main function")
+    # initialize model object
+    model = m.ScientistModel(config.seed)
+
+    func.stop_run("time to create model object... now entering main function")
     func.gc_collect()
 
     for i in range(config.time_periods + 2):

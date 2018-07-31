@@ -2,8 +2,8 @@
 # run simulation and data collection
 # if succeed, open result web page
 
-# check params
-[ $# -gt 0 -a $# -lt 7 ] && echo $0 need 7 parameter values | tee -a ../data/output.txt && exit 1
+# check params (probably using python if statements to check this is more ideal
+# [ $# -gt 0 -a $# -lt 7 ] && echo $0 need 7 parameter values | tee -a ../data/output.txt && exit 1
 
 curdir=$(dirname $0)
 cd $curdir

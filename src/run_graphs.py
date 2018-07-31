@@ -5,13 +5,10 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 import matplotlib.pyplot as plt
-import math
+import math, config, pickle
 import pandas as pd
 from functions import *
 from scipy.interpolate import spline
-import timeit
-import config
-import pickle
 import functions as func
 
 
@@ -173,20 +170,19 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
         title = "Log of " + title
         y_var = log_0(y_var)
     x_var = np.arange(1, len(y_var))
-    if len(y_var) > 2:
+    plt.scatter(x_var, y_var[1:])
+    if len(y_var) > 3:
         x_smooth = np.linspace(x_var.min(), x_var.max(), 200)
         y_smooth = spline(x_var, y_var[1:], x_smooth)
         plt.plot(x_smooth, y_smooth)
-    plt.scatter(x_var, y_var[1:])
 
-    # calc the trendline
-    z = np.polyfit(x_var, y_var[1:], 3)  # rightmost number is the order of the polynomial
-    p = np.poly1d(z)
-    plt.plot(x_var, p(x_var), "r--")
-    # the line equation:
-    eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
-    plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
-
+        # calc the trendline
+        z = np.polyfit(x_var, y_var[1:], 3)  # rightmost number is the order of the polynomial
+        p = np.poly1d(z)
+        plt.plot(x_var, p(x_var), "r--")
+        # the line equation:
+        eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
+        plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
     labels(x_label, y_label, title)
     fig = plt.gcf()
     dpi = fig.get_dpi()

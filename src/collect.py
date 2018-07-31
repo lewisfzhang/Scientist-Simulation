@@ -4,11 +4,18 @@
 import multiprocessing as mp
 from run_graphs import *
 import time, sys
+import subprocess as s
 from IPython.core.display import HTML
 
 
 def main():
     config.start = timeit.default_timer()
+
+    # ensure current working directory is in src folder
+    if os.getcwd()[-3:] != 'src':
+        # assuming we are somewhere inside the git directory
+        path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        os.chdir(path + '/src')
 
     in_tmp = False
     step = None
