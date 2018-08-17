@@ -55,6 +55,14 @@ def logistic_cdf_derivative(x, loc, scale):
     return old_logistic_cdf_derivative(x, loc, scale) / (1 - old_logistic_cdf(0, loc, scale))
 
 
+# too much work to calculate second derivative
+def logistic_cdf_2d(x, idea, returns_info):
+    sds = returns_info[1][idea]
+    means = returns_info[2][idea]
+    shift = returns_info[3][idea]
+    return (logistic_cdf_derivative(x-shift+0.000001, loc=means, scale=sds) - logistic_cdf_derivative(x-shift-0.000001, loc=means, scale=sds)) / 0.000002
+
+
 # remember anything from your calculus class?
 def logistic_cdf_inv_deriv(slope_val, loc, scale):
     # strictly because too lazy to correctly update this formula, but it works based on new formula
@@ -260,3 +268,43 @@ def f_print(*s):
     print(out)
     with open(config.parent_dir + 'data/output.txt', 'a') as f:
         f.write(out+'\n')
+
+
+# note: written for big_data only
+def process_dict(s):
+    # guard
+    if s != '-':
+        new_list = []
+        last_bracket = 0
+        for i in range(s.count('idea')):
+            left_bracket = s[last_bracket:].index('{')
+            right_bracket = s[last_bracket:].index('}') + 1
+            new_list.append(str_to_dict(s[last_bracket:][left_bracket:right_bracket]))
+            last_bracket += right_bracket
+        return new_list
+    else:
+        return []  # empty list exists out of the for loop
+
+
+# helper function for final_slopes list format flattening
+def flat_2d(l, num):  # l = slope
+    order_idx = flatten_list(l[len(l) - 1])  # same as l[2]?
+    new_list = [[] for i in range(num)]  # num = num scientists
+    for i in range(len(order_idx)):
+        new_list[order_idx[i][1] - 1].append(l[order_idx[i][0]][order_idx[i][1] - 1])  # 0 based index
+    return new_list
+
+
+def expand_2d(l1, l2, l3):  # l2 = idea_idx, l3 = scientist_id
+    l2 = rounded_tuple(flatten_list(l2))
+    l3 = rounded_tuple(flatten_list(l3))
+    new_list = []
+    if config.use_equal:
+        a = [sum(l1[idea]) / len(l1[idea]) for idea in range(len(l1))]
+        for i in range(len(l2)):
+            new_list.append(a[l2[i]])
+    else:
+        a = [[sum(l1[idx][idea]) / len(l1[idx][idea]) for idea in range(len(l1[idx]))] for idx in range(len(l1))]
+        for i in range(len(l2)):  # l2 and l3 should be same length
+            new_list.append(a[l3[i]-1][l2[i]])  # -1 for 0 based index
+    return new_list

@@ -68,20 +68,20 @@ use_store_model = (use_store, True)[use_multiprocessing is True]
 use_store = (use_store, True)[use_multiprocessing is True]
 
 # whether to report all scientists in agent_df
-all_scientists = False
+all_scientists = init.all_scientists
 
 # whether to split returns evenly or by age
-use_equal = False
+use_equal = init.use_equal
 
 # whether to shift all CDFs to the right
-use_idea_shift = False
+use_idea_shift = init.use_idea_shift
 
 # what optimization to use
 # 0 = percentiles
 # 1 = z-scores
 # 2 = bayesian stats
 # 3 = greedy heuristic
-switch = 2
+switch = init.switch
 
 # whether we want interactive steps
 show_step = init.show_step

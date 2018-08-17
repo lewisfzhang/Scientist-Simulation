@@ -4,15 +4,14 @@ from mesa import Agent, Model
 from mesa.time import BaseScheduler
 from numpy.random import poisson
 from optimize import *
-import math
+import math, collect, random
 import multiprocessing as mp
 from collections import defaultdict
 from store import *
 from functools import partial
 from multiprocessing.pool import ThreadPool
-import random
 from functions import *
-from final import *
+from pack_data import *
 from process import *
 import subprocess as s
 
@@ -99,6 +98,7 @@ class Scientist(Agent):
         # NOTE: does NOT include effort paid for ideas' investment costs
         self.marginal_invested_by_scientist = np.zeros(self.model.total_ideas)  # utility
         self.k_invested_by_scientist = np.zeros(self.model.total_ideas)  # utility
+        self.funding_invested_by_scientist = np.zeros(self.model.total_ideas) + 1  # utility
 
         # two new data collecting variables for the TP used in update() function
         self.perceived_returns_tp = np.zeros(self.model.total_ideas)
@@ -108,6 +108,8 @@ class Scientist(Agent):
         # NOTE: resets to 0 after each time period and DOES include investment costs
         self.eff_inv_in_period_k = np.zeros(self.model.total_ideas)  # utility
         self.eff_inv_in_period_marginal = np.zeros(self.model.total_ideas)  # utility
+        self.eff_inv_in_period_funding = np.zeros(self.model.total_ideas)  # utility
+        self.eff_inv_in_period_f_mult = np.zeros(self.model.total_ideas)  # utility
 
         store_agent_arrays(self)
         store_agent_arrays_tp(self)
@@ -126,6 +128,8 @@ class Scientist(Agent):
             # reset effort and returns in new time period
             self.eff_inv_in_period_k[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
+            self.eff_inv_in_period_funding[:] = 0
+            self.eff_inv_in_period_f_mult[:] = 0
             self.perceived_returns_tp[:] = 0
             self.actual_returns_tp[:] = 0
 
@@ -151,6 +155,8 @@ class Scientist(Agent):
             # reset effort in new time period
             self.eff_inv_in_period_k[:] = 0
             self.eff_inv_in_period_marginal[:] = 0
+            self.eff_inv_in_period_funding[:] = 0
+            self.eff_inv_in_period_f_mult[:] = 0
 
             store_agent_arrays_tp(self)
 
@@ -166,17 +172,18 @@ class Scientist(Agent):
             idea = int(df_row['Idea Choice'])
             self.perceived_returns_tp[idea] += df_row['Max Return']
             self.actual_returns_tp[idea] += df_row['Actual Return']
-            del idea, df_row
         # format: TP Born, Total effort invested, Effort invested in period (increment),
         #         Effort invested in period (marginal), Perceived returns, Actual returns
         new_data = {'TP Born': self.birth_order,
                     'Effort Invested In Period (K)': df_formatter(self.eff_inv_in_period_k, "effort"),
                     'Effort Invested In Period (Marginal)': df_formatter(self.eff_inv_in_period_marginal, "effort"),
+                    'Effort Invested In Period (Funding)': df_formatter(self.eff_inv_in_period_funding, "effort"),
+                    'Funding Multiplier': df_formatter(self.eff_inv_in_period_f_mult, "f_mult"),
                     'Perceived Returns': df_formatter(self.perceived_returns_tp, "returns"),
                     'Actual Returns': df_formatter(self.actual_returns_tp, "returns")}
         update_agent_df(self, new_data)
         store_agent_arrays_tp(self)
-        del new_data
+        del new_data, df_row
 
 
 class ScientistModel(Model):
@@ -202,17 +209,23 @@ class ScientistModel(Model):
         # k is the learning cost for each idea
         np.random.seed(config.seed_array[0][0])
         self.k = poisson(lam=config.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
+        np.random.seed(config.seed_array[0][1])
+        self.funding = poisson(lam=int(config.k_lam/2), size=self.total_ideas)
+        np.random.seed(config.seed_array[0][2])
+        # NOTE: only actual funding multiplier needs to be calculate since we assume scientists are smart and know
+        # how funding will help them, confirm this with jay
+        self.f_mult = 5 * np.random.rand(self.total_ideas)
 
         # ARRAY: store parameters for true idea return distribution
-        np.random.seed(config.seed_array[0][1])
+        np.random.seed(config.seed_array[0][3])
         self.true_sds = poisson(lam=config.true_sds_lam, size=self.total_ideas)  # void
-        np.random.seed(config.seed_array[0][2])
+        np.random.seed(config.seed_array[0][4])
         self.true_means = poisson(lam=config.true_means_lam, size=self.total_ideas)  # void
 
         # ARRAY: shifts the logistic cdf to the right
         # NOTE: not sure if this is necessary given updated logistic cdf formula
         if config.use_idea_shift:
-            np.random.seed(config.seed_array[0][3])
+            np.random.seed(config.seed_array[0][5])
             self.true_idea_shift = np.random.choice(np.arange(config.true_idea_shift), size=self.total_ideas)
         else:
             self.true_idea_shift = np.zeros(self.total_ideas)
@@ -222,7 +235,7 @@ class ScientistModel(Model):
 
         # M is a scalar that multiples based on each idea
         # not sure if this is redundant since we already have random poisson values for true_means and true_sds
-        np.random.seed(config.seed_array[0][4])
+        np.random.seed(config.seed_array[0][6])
         self.M = 100 * poisson(lam=config.true_M, size=self.total_ideas)  # void
 
         # creates actual returns matrix  # utility
@@ -256,7 +269,8 @@ class ScientistModel(Model):
         self.final_idea_idx = [[] for i in range(self.num_scientists)]
         self.final_scientist_id = [[] for i in range(self.num_scientists)]
         self.final_marginal_invested_ideas = [[] for i in range(self.num_scientists)]
-        self.final_slope = [[[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)]]
+        self.final_slope = [[[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)]]  # third one is for order keeping
+        self.final_concavity = [[] for i in range(self.num_scientists)]
         # exp_bayes is shared between older/number scientists depending on switch
         if config.use_equal:  # confident, optimistic scientist believes he is the first to invest in idea
             # 1.1 also benefits where in the future +1 enforces confidence (decrease avg)
@@ -329,15 +343,16 @@ class ScientistModel(Model):
         del self.total_effort_start
         gc_collect()
 
-        if config.show_step and 2 < self.schedule.time < config.time_periods + 2:
-            collect_vars(self)
+        if config.show_step and 2 < self.schedule.time <= config.time_periods + 2:
+            collect_vars(self, False)
+            # collect.init(step=self.schedule.time-1)
             s.call('python3 collect.py ' + str(self.schedule.time-1), shell=True)
 
         # run data collecting variables if the last step of the simulation has completed
         # should be +1 but since we pass the step function it's actually +2
         if self.schedule.time == config.time_periods + 2:
             save_model(self)
-            collect_vars(self)
+            collect_vars(self, True)
 
     # does something when the last scientist in the TP is done investing in ideas
     def call_back(self):

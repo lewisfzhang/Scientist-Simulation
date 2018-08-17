@@ -88,6 +88,10 @@ def store_model_lists(model, is_first, lock):
             pickle.dump(model.exp_bayes, fp)
         model.exp_bayes = None
 
+        with open(model.directory + "final_concavity.txt", "wb") as fp:
+            pickle.dump(model.final_concavity, fp)
+        model.final_concavity = None
+
         if is_first:
             np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
         model.actual_returns_matrix = None
@@ -158,6 +162,9 @@ def unpack_model_lists(model, lock):
         with open(model.directory + "exp_bayes.txt", "rb") as fp:
             model.exp_bayes = pickle.load(fp)
 
+        with open(model.directory + "final_concavity.txt", "rb") as fp:
+            model.final_concavity = pickle.load(fp)
+
 
 def unlock_actual_returns(model, lock):
     if config.use_multiprocessing and lock is not None:
@@ -179,7 +186,7 @@ def create_datacollectors(model):
     index = pd.MultiIndex.from_product([range(0, config.time_periods + 2), range(1, model.num_scientists + 1)],
                                        names=['Step', 'AgentID'])
     columns = ['TP Born', 'Effort Invested In Period (K)', 'Effort Invested In Period (Marginal)',
-               'Perceived Returns', 'Actual Returns']
+               'Effort Invested In Period (Funding)', 'Funding Multiplier', 'Perceived Returns', 'Actual Returns']
     if config.use_store_model:
         pd.DataFrame(index=index, columns=columns).to_pickle(model.directory+'agent_vars_df.pkl')
     else:
@@ -213,11 +220,20 @@ def store_agent_arrays_tp(agent):
         np.save(agent.directory + 'k_invested_by_scientist.npy', agent.k_invested_by_scientist)
         agent.k_invested_by_scientist = None
 
+        np.save(agent.directory + 'funding_invested_by_scientists.npy', agent.funding_invested_by_scientists)
+        agent.funding_invested_by_scientists = None
+
         np.save(agent.directory + 'eff_inv_in_period_k.npy', agent.eff_inv_in_period_k)
         agent.eff_inv_in_period_k = None
 
         np.save(agent.directory + 'eff_inv_in_period_marginal.npy', agent.eff_inv_in_period_marginal)
         agent.eff_inv_in_period_marginal = None
+
+        np.save(agent.directory + 'eff_inv_in_period_funding.npy', agent.eff_inv_in_period_funding)
+        agent.eff_inv_in_period_funding = None
+
+        np.save(agent.directory + 'eff_inv_in_period_f_mult.npy', agent.eff_inv_in_period_f_mult)
+        agent.eff_inv_in_period_f_mult = None
 
         np.save(agent.directory + 'perceived_returns_tp.npy', agent.perceived_returns_tp)
         agent.perceived_returns_tp = None
@@ -239,9 +255,15 @@ def unpack_agent_arrays_tp(agent):
 
         agent.eff_inv_in_period_marginal = np.load(agent.directory + 'eff_inv_in_period_marginal.npy')
 
+        agent.eff_inv_in_period_funding = np.load(agent.directory + 'eff_inv_in_period_funding.npy')
+
+        agent.eff_inv_in_period_f_mult = np.load(agent.directory + 'eff_inv_in_period_f_mult.npy')
+
         agent.marginal_invested_by_scientist = np.load(agent.directory + 'marginal_invested_by_scientist.npy')
 
         agent.k_invested_by_scientist = np.load(agent.directory + 'k_invested_by_scientist.npy')
+
+        agent.funding_invested_by_scientists = np.load(agent.directory + 'funding_invested_by_scientists.npy')
 
         agent.perceived_returns_tp = np.load(agent.directory + 'perceived_returns_tp.npy')
 

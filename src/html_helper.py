@@ -79,7 +79,7 @@ def html_switch():
 
 def html_slideshow():
     image_list = []
-    source = "http://127.0.0.1:8000/"
+    source = "http://"+init.server_address+":8000/"
     path = init.tmp_loc + 'step/step_'
     # all step folders should have same number of images
     for image in glob.glob(path + '2/' + '*.png'):

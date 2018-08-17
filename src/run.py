@@ -5,6 +5,18 @@ import subprocess as s
 
 
 def main():
+    with_collect = False  # whether or not to run collect after run is finished
+    with_prompt = True
+
+    if with_prompt:
+        print("Are you sure you have checked the following variables?")
+        print(" - with_collect (run.py)")
+        print(" - has_past (pack_data.py)")
+        check = input('(y/n) ')
+        if not check in ['y', 'Y']:
+            raise Exception("please check your variables!")
+        print()
+
     # start runtime
     start_prog = timeit.default_timer()
 
@@ -12,6 +24,7 @@ def main():
     if os.getcwd()[-3:] != 'src':
         # assuming we are somewhere inside the git directory
         path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        print('changing working directory from', os.getcwd(), 'to', path)
         os.chdir(path + '/src')
 
     print('Args:',sys.argv[:])
@@ -42,7 +55,7 @@ def main():
         init.tmp_loc = 'tmp_batch/tmp_' + '_'.join([str(v) for v in sys.argv[1:]]) + '/'
 
     # so that config file loads after init.py is set
-    import config
+    import config, collect
     import model as m
     import functions as func
 
@@ -82,7 +95,9 @@ def main():
 
     func.f_print("\nTOTAL TIME TO FINISH RUNNING SIMULATION:", timeit.default_timer() - start_prog, "seconds")
 
-    s.call('python3 collect.py', shell=True)
+    if with_collect:
+        s.call('python3 collect.py', shell=True)
+    # collect.init()
 
 
 if __name__ == '__main__':

@@ -36,15 +36,16 @@ def investing_helper(scientist, lock):
         # Array: contains equivalent "marginal" efforts across ideas
         # For idea with the max invest cost, marginal_effort will equal 1
         # All others - marginal_effort is equal to increment minus invest cost, if any
-        scientist.marginal_effort = scientist.increment - scientist.curr_k
+        scientist.marginal_effort = scientist.increment - scientist.curr_k  # NOTE: funding is now part of marginal!
 
         # Selects idea that gives the max return given equivalent "marginal" efforts
         # NOTE: See above for comments on calc_cum_returns function,
         # and exceptions on when the idea with the max return isn't chosen
         if config.switch == 3:
-            idea_choice, max_return = greedy_returns(scientist, lock[1], lock[2])
+            # equally split scientists who need to go through funding and don't need to
+            idea_choice, max_return = greedy_returns(scientist, scientist.unique_id % 2 == True, lock[1], lock[2])
         else:
-            idea_choice, max_return = probabilistic_returns(scientist, lock[1], lock[2])
+            idea_choice, max_return = probabilistic_returns(scientist, scientist.unique_id % 2 == True, lock[1], lock[2])
 
         # Accounts for the edge case in which max_return = 0 (implying that a
         # scientist either can't invest in ANY ideas [due to investment
@@ -71,6 +72,8 @@ def investing_helper(scientist, lock):
         scientist.k_invested_by_scientist[idea_choice] += scientist.curr_k[idea_choice]
         scientist.eff_inv_in_period_marginal[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.eff_inv_in_period_k[idea_choice] += scientist.curr_k[idea_choice]
+        scientist.eff_inv_in_period_funding[idea_choice] = scientist.model.funding[idea_choice]
+        scientist.eff_inv_in_period_f_mult[idea_choice] = scientist.funding_invested_by_scientist[idea_choice]
         scientist.avail_effort -= scientist.increment
         scientist.total_effort_start[idea_choice] += scientist.marginal_effort[idea_choice]
 
@@ -84,7 +87,8 @@ def investing_helper(scientist, lock):
             temp_df = temp_df.append(row_data, ignore_index=True)
         # if idea_choice is not in df
         else:
-            row_data = {"Idea Choice": idea_choice, "Max Return": max_return, "ID": scientist.unique_id, "Marginal": scientist.marginal_effort[idea_choice]}
+            row_data = {"Idea Choice": idea_choice, "Max Return": max_return, "ID": scientist.unique_id,
+                        "Marginal": scientist.marginal_effort[idea_choice]}
             temp_df = temp_df.append(row_data, ignore_index=True)
 
         del idea_choice, max_return, no_effort_inv, scientist.curr_k, scientist.increment, row_data, idx_idea_phase
@@ -109,7 +113,7 @@ def investing_helper(scientist, lock):
 # Output:
 # 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
-def probabilistic_returns(scientist, *lock):
+def probabilistic_returns(scientist, with_funding, *lock):  # optimistic disregarding marginal effort available
     # Array: keeping track of all the returns of investing in each available ideas
     slope_ideas, effort_ideas, score_ideas, exp_val = [], [], [], []
     p_slope, p_effort, z_slope, z_effort, data, slopes, prob_slope, bins = \
@@ -122,6 +126,8 @@ def probabilistic_returns(scientist, *lock):
         effort_ideas.append(effort)
         # scientist invested one unit of effort into perceived returns matrix for idea
         slope = get_returns(idea, scientist.perceived_returns_matrix, effort, effort+1)
+
+        # CALCULATE ACTUALLY SLOPE AS WELL!
         slope_ideas.append(slope)
         del effort, slope
 
@@ -174,17 +180,22 @@ def probabilistic_returns(scientist, *lock):
     for idea in range(len(slope_ideas)):
         # penalize low slope, high effort (high score is better idea to invest)
         if config.switch == 0:
-            p_score = p_slope[idea] * (1-p_effort[idea])
+            p_score = p_slope[idea] * (1-p_effort[idea]) * scientist.model.f_mult[idea]  # idea indices are equal?
         elif config.switch == 1:
-            z_score = z_slope[idea] - z_effort[idea]
+            z_score = z_slope[idea] - z_effort[idea] * scientist.model.f_mult[idea]  # idea indices should be the same?
         elif config.switch == 2:
             power_scale = 15
             # flawed because only calculates probability you will get greater returns given current slope, not the
             # best returns? --> implemented additional multipliers to account for it
             # NOTE: still need to balance out factors so that not one is dominant
             # NOTE: add possible slides?
-            bayes_score = (get_bayesian_formula(data[idea]) ** power_scale) * (slope_ideas[idea] / (exp_val[idea] ** power_scale))
-        score_ideas.append([p_score, z_score, bayes_score][config.switch])
+            bayes_score = (get_bayesian_formula(data[idea]) ** power_scale) * \
+                          (slope_ideas[idea] / (exp_val[idea] ** power_scale)) * \
+                          scientist.model.f_mult[idea]  # idea indices should be the same?
+        if scientist.marginal_effort[idea] <= 0:  # accounts for flaw in bayesian
+            score_ideas.append(0)  # should be lowest score if all scores are positive?
+        else:
+            score_ideas.append([p_score, z_score, bayes_score][config.switch])
     del p_score, z_score, bayes_score
 
     # Scalar: finds the maximum return over all the available ideas
@@ -195,15 +206,36 @@ def probabilistic_returns(scientist, *lock):
     random.seed(config.seed_array[scientist.unique_id][scientist.model.schedule.time + 10])
     idea_choice = idx_max_return[random.randint(0, len(idx_max_return)-1)]
 
+    # subtract effort required for funding
+    if with_funding and scientist.funding_invested_by_scientist[idea_choice] < scientist.model.f_mult[idea_choice] + 1:
+        if scientist.model.funding[idea_choice] > scientist.marginal_effort[idea_choice]:
+            # raise Exception("funding should not be greater than marginal effort")
+            # print('Scientist', scientist.unique_id, 'had less marginal effort available than funding', end=" ")
+            # print(scientist.model.funding[idea_choice], scientist.marginal_effort[idea_choice])
+
+            # scientist invests all of there remaining marginal into funding for future use
+            scientist.funding_invested_by_scientist[idea_choice] += \
+                (scientist.marginal_effort[idea_choice] / scientist.model.funding[idea_choice]) * \
+                scientist.model.f_mult[idea_choice] + 1 - scientist.funding_invested_by_scientist[idea_choice]
+            scientist.marginal_effort[idea_choice] = 0
+        else:
+            scientist.marginal_effort[idea_choice] -= scientist.model.funding[idea_choice]
+            # += and = should be same here since we should only be running through this once
+            # NOTE: disregard above, scientist could potentially only invest partially in funding (check above if loop)
+            scientist.funding_invested_by_scientist[idea_choice] += scientist.model.f_mult[idea_choice] + 1 - \
+                                                                    scientist.funding_invested_by_scientist[idea_choice]
+
+    scientist.model.actual_returns_matrix = unlock_actual_returns(scientist.model, lock[1])
+    # indices to calculate total return from an idea, based on marginal effort
+    start_index = int(scientist.total_effort_start[idea_choice])
+    stop_index = int(start_index + scientist.marginal_effort[idea_choice])
+    actual_slope = get_returns(idea_choice, scientist.model.actual_returns_matrix, start_index, start_index + 1)
+    concav = logistic_cdf_2d(start_index, idea_choice, scientist.model.actual_returns_matrix)
+
     # a scientist who can't invest fully in an idea gets 0 return
     if scientist.marginal_effort[idea_choice] > 0:
-        # indices to calculate total return from an idea, based on marginal effort
-        start_index = int(scientist.total_effort_start[idea_choice])
-        stop_index = int(start_index + scientist.marginal_effort[idea_choice])
         max_return = get_returns(idea_choice, scientist.perceived_returns_matrix, start_index, stop_index)
-        scientist.model.actual_returns_matrix = unlock_actual_returns(scientist.model, lock[1])
         actual_return = get_returns(idea_choice, scientist.model.actual_returns_matrix, start_index, stop_index)
-        store_actual_returns(scientist.model, lock[1])
         del start_index, stop_index
 
     # even if scientist can't get returns, at least some of the remaining effort he puts in goes to learning
@@ -214,19 +246,27 @@ def probabilistic_returns(scientist, *lock):
         scientist.marginal_effort[idea_choice] = 0
         scientist.curr_k[idea_choice] = scientist.increment
 
+    store_actual_returns(scientist.model, lock[1])
+    # multiplying by funding (scientist should only reap benefits of funding after fully investing)
+    if with_funding and scientist.funding_invested_by_scientist[idea_choice] >= scientist.model.f_mult[idea_choice] + 1:
+        max_return *= scientist.funding_invested_by_scientist[idea_choice]
+        actual_return *= scientist.funding_invested_by_scientist[idea_choice]
+
     # update back to the variables/attribute of the Agent object / scientist
     unpack_model_lists(scientist.model, lock[0])
     scientist.model.final_perceived_returns_invested_ideas[scientist.unique_id-1].append(max_return)
     scientist.model.final_actual_returns_invested_ideas[scientist.unique_id-1].append(actual_return)
-    scientist.model.final_slope[max_return <= actual_return][scientist.unique_id-1].append(slope_ideas[idea_choice])
+    scientist.model.final_slope[max_return <= actual_return][scientist.unique_id-1].append(actual_slope)
+    scientist.model.final_slope[2][scientist.unique_id-1].append([max_return <= actual_return, scientist.unique_id])
     scientist.model.final_k_invested_ideas[scientist.unique_id-1].append(scientist.curr_k[idea_choice])
     scientist.model.final_marginal_invested_ideas[scientist.unique_id-1].append(scientist.marginal_effort[idea_choice])
     scientist.model.final_scientist_id[scientist.unique_id-1].append(scientist.unique_id)
     scientist.model.final_idea_idx[scientist.unique_id-1].append(idea_choice)
+    scientist.model.final_concavity[scientist.unique_id-1].append(concav)
     store_model_lists(scientist.model, False, lock[0])
 
     del idx_max_return, slope_ideas, effort_ideas, z_slope, z_effort, score_ideas, actual_return, p_slope, \
-        p_effort, slopes, prob_slope, bins, exp_val
+        p_effort, slopes, prob_slope, bins, exp_val, actual_slope, concav
 
     # returns index of the invested idea, as well as its perceived and actual returns
     return idea_choice, max_return
@@ -243,7 +283,7 @@ def probabilistic_returns(scientist, *lock):
 # Output:
 # 1) idx_max_return (scalar): the index of the idea the scientist chose to invest in
 # 2) max_return (scalar): the perceived return of the associated, chosen idea
-def greedy_returns(scientist, *lock):
+def greedy_returns(scientist, with_funding, *lock):  # unrealistic greedy decision process (local optimum)
     scientist.model.actual_returns_matrix = unlock_actual_returns(scientist.model, lock[1])
 
     # Array: keeping track of all the returns of investing in each available ideas
@@ -261,6 +301,13 @@ def greedy_returns(scientist, *lock):
 
         # indices to calculate total return from an idea, based on marginal effort
         start_index = int(scientist.total_effort_start[idea])
+        tmp_funding_mult = 1
+        if with_funding and scientist.funding_invested_by_scientist[idea] < scientist.model.f_mult[idea] + 1:
+            if scientist.model.funding[idea] > scientist.marginal_effort[idea]:
+                scientist.marginal_effort[idea] = 0  # scientist doesn't get effects of his funding
+            else:
+                scientist.marginal_effort[idea] -= scientist.model.funding[idea]
+                tmp_funding_mult += scientist.model.f_mult[idea]
         stop_index = int(start_index + scientist.marginal_effort[idea])
 
         # at this point scientists have maxed out idea, no point of going further
@@ -271,11 +318,10 @@ def greedy_returns(scientist, *lock):
 
         # calculate total return based on start and stop index
         perceived_returns = get_returns(idea, scientist.perceived_returns_matrix, start_index, stop_index)
-        final_perceived_returns_avail_ideas.append(perceived_returns)
+        final_perceived_returns_avail_ideas.append(perceived_returns * tmp_funding_mult)
         actual_returns = get_returns(idea, scientist.model.actual_returns_matrix, start_index, stop_index)
-        final_actual_returns_avail_ideas.append(actual_returns)
-
-    store_actual_returns(scientist.model, lock[1])
+        final_actual_returns_avail_ideas.append(actual_returns * tmp_funding_mult)
+        del start_index, stop_index, perceived_returns, actual_returns, tmp_funding_mult
 
     # Scalar: finds the maximum return over all the available ideas
     max_return = max(final_perceived_returns_avail_ideas)
@@ -288,6 +334,11 @@ def greedy_returns(scientist, *lock):
     # convert back from above
     actual_return = final_actual_returns_avail_ideas[idea_choice]
 
+    start_index = int(scientist.total_effort_start[idea_choice])
+    actual_slope = get_returns(idea_choice, scientist.model.actual_returns_matrix, start_index, start_index + 1)
+    concav = logistic_cdf_2d(start_index, idea_choice, scientist.model.actual_returns_matrix)
+    store_actual_returns(scientist.model, lock[1])
+    
     if max_return == 0:
         # even if scientist can't get returns, at least some of the remaining effort he puts in goes to learning
         if scientist.curr_k[idea_choice] != 0:
@@ -295,14 +346,32 @@ def greedy_returns(scientist, *lock):
             scientist.marginal_effort[idea_choice] = 0
             scientist.curr_k[idea_choice] = scientist.increment
 
+    if with_funding and scientist.funding_invested_by_scientist[idea_choice] < scientist.model.f_mult[idea_choice] + 1:
+        if scientist.model.funding[idea_choice] > scientist.marginal_effort[idea_choice]:
+            # scientist invests all of there remaining marginal into funding for future use
+            scientist.funding_invested_by_scientist[idea_choice] += \
+                (scientist.marginal_effort[idea_choice] / scientist.model.funding[idea_choice]) * \
+                scientist.model.f_mult[idea_choice] + 1 - scientist.funding_invested_by_scientist[idea_choice]
+        else:
+            # += and = should be same here since we should only be running through this once
+            # NOTE: disregard above, scientist could potentially only invest partially in funding (check above if loop)
+            scientist.funding_invested_by_scientist[idea_choice] += scientist.model.f_mult[idea_choice] + 1 - \
+                                                                    scientist.funding_invested_by_scientist[idea_choice]
+
+    if scientist.marginal_effort[idea_choice] < 0:
+        print("NOOOO")
+
     # update back to the variables/attribute of the Agent object / scientist
     unpack_model_lists(scientist.model, lock[0])
     scientist.model.final_perceived_returns_invested_ideas[scientist.unique_id-1].append(max_return)
     scientist.model.final_actual_returns_invested_ideas[scientist.unique_id-1].append(actual_return)
+    scientist.model.final_slope[max_return <= actual_return][scientist.unique_id-1].append(actual_slope)
+    scientist.model.final_slope[2][scientist.unique_id-1].append([max_return <= actual_return, scientist.unique_id])
     scientist.model.final_k_invested_ideas[scientist.unique_id-1].append(scientist.curr_k[idea_choice])
     scientist.model.final_marginal_invested_ideas[scientist.unique_id-1].append(scientist.marginal_effort[idea_choice])
     scientist.model.final_scientist_id[scientist.unique_id-1].append(scientist.unique_id)
     scientist.model.final_idea_idx[scientist.unique_id-1].append(idea_choice)
+    scientist.model.final_concavity[scientist.unique_id-1].append(concav)
     store_model_lists(scientist.model, False, lock[0])
 
     del final_perceived_returns_avail_ideas, final_actual_returns_avail_ideas, idx_max_return

@@ -2,15 +2,16 @@
 
 from functions import *
 from store import *
+import warnings as w
 
 
 def main():
     model = load_model()
-    collect_vars(model)
+    collect_vars(model, True)
 
 
 # for data collecting after model has finished running
-def collect_vars(model):
+def collect_vars(model, store_big_data):
     f_print("\n\ndone with step", model.schedule.time - 1, '... now running collect_vars')
     start = timeit.default_timer()
 
@@ -60,14 +61,27 @@ def collect_vars(model):
                       "agent_perceived_return_invested_ideas": rounded_tuple(
                           flatten_list(model.final_perceived_returns_invested_ideas)),
                       "agent_actual_return_invested_ideas": rounded_tuple(
-                          flatten_list(model.final_actual_returns_invested_ideas))}
+                          flatten_list(model.final_actual_returns_invested_ideas)),
+                      "slopes": rounded_tuple(flatten_list(flat_2d(model.final_slope, model.num_scientists))),
+                      "exp": rounded_tuple(expand_2d(model.exp_bayes, model.final_idea_idx, model.final_scientist_id)),
+                      "concav": rounded_tuple(flatten_list(model.final_concavity))}
     pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(model.directory + 'ind_ideas.pkl')
+    # df = df.reset_index().sort_values(['scientist_id', 'idea_idx']).set_index('index').\
+    #     rename_axis(None).reset_index(drop=True)
     if config.use_store_model is False:
         with open(model.directory + "final_perceived_returns_invested_ideas.txt", "wb") as fp:
             pickle.dump(model.final_perceived_returns_invested_ideas, fp)
     store_model_lists(model, False, None)
     del ind_ideas_dict
     # </editor-fold>
+
+    if store_big_data:
+        df = agent_vars.swaplevel('AgentID', 'Step').dropna().replace('\r\n', '', regex=True).sort_index(axis=0, sort_remaining=True)
+        df2 = pd.read_pickle(model.directory + 'ind_ideas.pkl')
+        df.to_html('tmp/agent.html')
+        print('running big data collection...')
+        to_big_data(df, df2)
+        print('finished big data collection...')
 
     # <editor-fold desc="Part 3: social_output, ideas_entered">
     ind_vars = pd.read_pickle(model.directory + 'ind_ideas.pkl')
@@ -173,6 +187,84 @@ def collect_vars(model):
     # </editor-fold>
 
     f_print("time elapsed:", timeit.default_timer() - start)
+
+
+def to_big_data(df, df2):  # df2 = ind_ideas
+    has_past = False  # NOTE: IMPORTANT SWITCH FOR AI!!!
+    last_scientist = 1  # first scientists
+
+    # format: effort_amount, research, learning, funding, idea_age,
+    # idea_phase (based on concavity), exp_num_scientists/scientist_age_bayes_prop (depending on the switch),
+    # time till death, actual_return (the output)
+    # 7+1=8 variables total
+    current_data = None
+    new_list = {}
+    for idx, val in df.iterrows():
+        # print(idx)
+        if idx[0] != last_scientist:
+            last_scientist = idx[0]
+            if new_list != {}:  # check that row was not empty
+                # for nl in list(new_list.values()):  # a list of np arrays
+                append_data = np.asarray(list(new_list.values()))
+                if current_data is None:
+                    current_data = append_data
+                else:
+                    # print(current_data.shape, append_data.shape)
+                    current_data = np.concatenate((current_data, append_data))
+                new_list = {}
+        for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
+            id = str(new_dict['idea'])
+            try:
+                new_list[id]
+            except KeyError as e:  # if idea doesn't except add it to dictionary
+                new_list[id] = np.zeros(9)
+            new_list[id][0] += new_dict['effort']
+            new_list[id][2] = 1  # True
+            if new_list[id][4] == 0:  # we count idea age based on the first time a scientists invests in the idea
+                new_list[id][4] = idx[1] - (int(id) // config.ideas_per_time) + 0.0001  # to account for 0-aged ideas
+            if new_list[id][7] == 0:  # scientist can't be dead in 0 years or else he would not be here!
+                # should be positive
+                new_list[id][7] = math.ceil(idx[0] / config.N) + config.time_periods_alive - idx[1]  # curr TP = idx[1]
+                if math.ceil(idx[0] / config.N) + config.time_periods_alive - idx[1] < 0:
+                    w.warn("scientist time left is negative! see pack_data.py")
+            # use idea_idx to locate certain values faster for indeces 5 and 6 of new_list dictionary
+            row = df2.loc[(df2['scientist_id'] == idx[0]) & (df2['idea_idx'] == new_dict['idea'])]
+            if new_list[id][5] == 0:
+                # positive concav means early stage, and vice versa
+                # new_list[id][5] = 0.1 if row.loc[row.index[0]]['concav'] > 0 else new_list[id][5] = 0.9
+                # method 2: try inverse of concavity
+                new_list[id][5] = -row.loc[row.index[0]]['concav']
+                if -row.loc[row.index[0]]['concav'] == 0:
+                    w.warn('concavity is 0')
+            if new_list[id][6] == 0:
+                new_list[id][6] = row.loc[row.index[0]]['exp']
+                if row.loc[row.index[0]]['exp'] == 0:
+                    w.warn("exp value should not be 0!")
+            del row
+        for new_dict in process_dict(val['Effort Invested In Period (K)']):
+            id = str(new_dict['idea'])
+            # don't need to modify 0's which are by default False
+            # above concern is cancelled out since idea only needs to
+            # be updated once when it is first invested before learning
+            new_list[id][1] = 1
+            # confirm with jay that we want increment (marginal + k)
+            new_list[id][0] += new_dict['effort']
+        for new_dict in process_dict(val['Effort Invested In Period (Funding)']):
+            id = str(new_dict['idea'])
+            # don't need to modify 0's which are by default False
+            # above concern is cancelled out since idea only needs to
+            # be updated once when it is first invested before learning
+            new_list[id][3] = 1
+        for new_dict in process_dict(val['Actual Returns']):
+            id = str(new_dict['idea'])
+            new_list[id][8] += new_dict['returns']
+
+    if has_past:
+        past_data = np.load('tmp/big_data.npy')
+        np.save('tmp/big_data.npy', np.concatenate((past_data, current_data)))
+    else:
+        np.save('tmp/big_data.npy', current_data)  # np.concatenate((past_data, current_data)))
+    print('Big data now has {} elements'.format(len(np.load('tmp/big_data.npy'))))
 
 
 if __name__ == '__main__':

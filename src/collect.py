@@ -8,28 +8,18 @@ import subprocess as s
 from IPython.core.display import HTML
 
 
-def main():
+def main(in_tmp, step, path):
     config.start = timeit.default_timer()
-
-    # ensure current working directory is in src folder
-    if os.getcwd()[-3:] != 'src':
-        # assuming we are somewhere inside the git directory
-        path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
-        os.chdir(path + '/src')
-
-    in_tmp = False
-    step = None
-    path = None
-    if len(sys.argv) == 2:
-        in_tmp = True
-        step = int(sys.argv[1])
-        path = config.tmp_loc+'step/step_'+str(step)+'/'
 
     # initiate multiprocessing with 'num_processors' threads
     # NOTE: increasing the number of processors does not always increase speed of program. in fact, it may actually
     # slow down the program due to the additional overhead needed for process switching
     # NOTE: fork doesn't work on Mac, spawn is best because it works on Mac and is default on Windows
-    mp.set_start_method('spawn')
+    try:
+        mp.set_start_method('spawn')
+    except Exception as e:
+        print(e)  # context probably already set
+
     p = mp.Pool(processes=config.num_processors)  # default number is mp.cpu_count()
 
     # get starting time from run.py
@@ -149,7 +139,7 @@ def main():
     # saves all of the images to an html file
     png_to_html(path)
 
-    if not in_tmp:
+    if step is None:
         stop_run("Total time to process data")
         f_print("\nEND OF PROGRAM\ntotal runtime:", time.time() - start_prog, "seconds\n\n")
 
@@ -164,19 +154,19 @@ def func_distr(graph_type, *other):
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', None)
 
-    if graph_type == "agent" and other[len(other)-2] is None:  # in_tmp is None
+    if graph_type == "agent":  # in_tmp is None
         # agent dataframe (other[0] contains agent_vars)
         agent_vars = other[0]
         agent_vars = agent_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)
         HTML(agent_vars.to_html('../data/pages/page_agent_vars.html', escape=False))
         del agent_vars
-    elif graph_type == "model" and other[len(other)-2] is None:
+    elif graph_type == "model":
         # model dataframe (other[0] contains model_vars)
         model_vars = other[0]
         model_vars = model_vars.replace(np.nan, '', regex=True).replace("\\r\\n", "<br>", regex=True)  # .transpose()
         HTML(model_vars.to_html('../data/pages/page_model_vars.html', escape=False))
         del model_vars
-    elif graph_type == "ideas" and other[len(other)-2] is None:
+    elif graph_type == "ideas":
         # dataframe specifying info per idea
         data1 = other[0].astype(str)
         columns = ['scientists_invested', "times_invested", "avg_k", "total_effort (marginal)", "prop_invested",
@@ -185,7 +175,7 @@ def func_distr(graph_type, *other):
             data1.ix[pd.to_numeric(data1[col], errors='coerce') == 0, [col]] = ''
         data1.to_html('../data/pages/page_ideas.html')
         del data1
-    elif graph_type == "ind_ideas" and other[len(other)-2] is None:
+    elif graph_type == "ind_ideas":
         ind_vars = other[0]
         ind_vars = ind_vars.transpose()
         ind_vars.to_html('../data/pages/page_ind_ideas.html')
@@ -212,5 +202,30 @@ def func_distr(graph_type, *other):
     f_print("\nfinished", graph_type, stop-start, "seconds")
 
 
+# helper method for main
+def init(step=None):
+    in_tmp = False
+    path = None
+    if step is not None:
+        in_tmp = True
+        path = config.tmp_loc + 'step/step_' + str(step) + '/'
+    main(in_tmp, step, path)
+
+
 if __name__ == '__main__':  # for multiprocessor package so it knows the true main/run function
-    main()
+    # ensure current working directory is in src folder
+    if os.getcwd()[-3:] != 'src':
+        # assuming we are somewhere inside the git directory
+        path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        print('changing working directory from', os.getcwd(), 'to', path)
+        os.chdir(path + '/src')
+
+    in_tmp = False
+    step = None
+    path = None
+    if len(sys.argv) == 2:
+        in_tmp = True
+        step = int(sys.argv[1])
+        path = config.tmp_loc + 'step/step_' + str(step) + '/'
+
+    main(in_tmp, step, path)

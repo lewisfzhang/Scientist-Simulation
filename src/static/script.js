@@ -43,6 +43,7 @@ function get_started() {
     console.log(getCookie("path"));
     document.getElementById("image_frame").src = getCookie("path") + "/pages/all_images.html";
     document.getElementById("out").src = getCookie("path") + "/output.txt";
+    setCookie("is_running", "False", 1)
 
     $.post('html_slideshow', "", function(data, status) {
         setCookie("num_images", data[0], 1)
@@ -81,16 +82,24 @@ function add_buttons() {
 add_buttons();
 
 function run_program() {
-    args = ["run"];
-    args = args.concat(get_button_values());
-    args = args.concat(get_toggle_values());
-    console.log(args.join());
-    // ajax the JSON to the server
-    $.post("receiver", args.join(), function(){
+    if (getCookie("is_running") == 'False') {
+        console.log("running")
+        setCookie("is_running", "True", 1)
+        args = ["run"];
+        args = args.concat(get_button_values());
+        args = args.concat(get_toggle_values());
+        console.log(args.join());
+        // ajax the JSON to the server
+        $.post("receiver", args.join(), function(data, status) {
+            // once program has finished running
+            setCookie("is_running", "False", 1)
+        });
+        // stop link reloading the page
+        event.preventDefault();
+    } else {
+        alert("Error! Program is still running!")
+    }
 
-    });
-    // stop link reloading the page
-    event.preventDefault();
 }
 
 function data_path() {
