@@ -15,10 +15,12 @@ class Brain:
 
     def process(self, data):
         results = self.model.predict(data).flatten()
+        # NOTE: everything is duplicated to simulate with and without funding (very important factor!)
         idea_choice = np.argmax(results)
         # format: idea_choice, exp_return, with_funding
-        # no past funding --> 0 --> need funding
-        return idea_choice, results[idea_choice], data[idea_choice][3] == 0
+        # disregard || no past funding --> 0 --> need funding
+        # 1 = using funding, 0 = don't use funding
+        return int(idea_choice/2), results[idea_choice], idea_choice % 2 == 1
 
     @staticmethod
     def load_brain():

@@ -335,4 +335,16 @@ def dict_itr(dict, id, idx, val, add_on):
 
 def from_3d_to_2d(arr):
     # arr.shape returns (x, y, z) --> y is the transformed length in 2d
-    return arr.transpose(0, 1, 2).reshape(arr.shape[0] * arr.shape[1], -1)
+    out_arr = arr.transpose(0, 1, 2).reshape(arr.shape[0] * arr.shape[1], -1)
+    i = 0
+    while i < len(out_arr):
+        # check of Index Out of Bounds Exception
+        try:
+            out_arr[i]
+        except IndexError as e:
+            break
+        if np.array_equal(out_arr[i], np.zeros(out_arr.shape[1])):
+            out_arr = np.delete(out_arr, i, 0)
+        else:
+            i += 1
+    return out_arr

@@ -39,7 +39,7 @@ prop_start = 0.25
 # 2 = bayesian stats
 # 3 = greedy heuristic
 # 4 = neural net
-switch = 4
+switch = 2
 
 # whether to report all scientists in agent_df
 all_scientists = False
@@ -58,3 +58,7 @@ tmp_loc = 'tmp/'
 
 # where to run the server
 server_address = '127.0.0.1'  # default is localhost
+
+rand_funding = True
+
+with_NIH = False

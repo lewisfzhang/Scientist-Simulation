@@ -84,6 +84,10 @@ use_idea_shift = init.use_idea_shift
 # 4 = neural net
 switch = init.switch
 
+rand_funding = init.rand_funding
+
+with_NIH = init.with_NIH
+
 # whether we want interactive steps
 show_step = init.show_step
 

@@ -11413,3 +11413,2059 @@ END OF PROGRAM
 total runtime: 85.41525101661682 seconds
 
  
+
+Variables:
+ {'seed': 743123, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.04742057400289923 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.14219037599832518 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.10810931900050491 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2930162350021419 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.37972452500252984 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.4845719679942704 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.4668910730033531 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.4840947810007492 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5530007400011527 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5108356889977586 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.48076836700056447 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.4820569040020928 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.7145199040023726 
+ 
+step: 11 
+Elapsed runtime:  2.2610708069987595 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 10.299202566005988 seconds 
+
+finished ideas 0.16661544599628542 seconds 
+
+finished agent 0.3423873639985686 seconds 
+
+finished model 0.11583243799395859 seconds 
+
+finished ind_ideas 0.8339943030005088 seconds 
+
+finished im_graph 1.045533816999523 seconds 
+
+finished two_var_line_graph 0.799861866995343 seconds 
+
+finished im_graph 1.0213324389987974 seconds 
+
+finished one_var_bar_graph 0.707272635998379 seconds 
+
+finished one_var_bar_graph 0.7192311809994862 seconds 
+
+finished one_var_bar_graph 0.7329038000025321 seconds 
+
+finished one_var_bar_graph 0.7194533590009087 seconds 
+
+finished resid_scatterplot 3.1427238550022594 seconds 
+
+finished one_var_bar_graph 0.7008857890032232 seconds 
+
+finished line_graph 0.6665725939965341 seconds 
+
+finished discrete_line_graph 0.766536051996809 seconds 
+
+finished discrete_line_graph 0.6056533899973147 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.709489018001477 seconds 
+
+END OF PROGRAM
+total runtime: 18.57470703125 seconds
+
+ 
+
+Variables:
+ {'seed': 838624, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  1.1645893280001474 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.3351809080049861 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.16484255299292272 seconds 
+ 
+step: 2 
+Elapsed runtime:  1.007595349001349 seconds 
+ 
+step: 3 
+Elapsed runtime:  1.9723087880047387 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.8533525389939314 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.765835539001273 seconds 
+ 
+step: 6 
+Elapsed runtime:  1.0629126480052946 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.3968157489944133 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.3800048180055455 seconds 
+ 
+step: 9 
+Elapsed runtime:  1.1944881460003671 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.7910686439936399 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.7184491269945283 
+ 
+step: 11 
+Elapsed runtime:  4.549388838000596 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 23.35947160000069 seconds 
+
+finished ideas 0.1472635239988449 seconds 
+
+finished agent 0.2909971300032339 seconds 
+
+finished model 0.0948512489994755 seconds 
+
+finished ind_ideas 0.914315563000855 seconds 
+
+finished im_graph 1.1399552559960284 seconds 
+
+finished two_var_line_graph 1.219464676003554 seconds 
+
+finished im_graph 1.6295341840013862 seconds 
+
+finished one_var_bar_graph 1.294476795999799 seconds 
+
+finished one_var_bar_graph 0.9032179460045882 seconds 
+
+finished resid_scatterplot 4.050390099000651 seconds 
+
+finished one_var_bar_graph 0.9057243919960456 seconds 
+
+finished one_var_bar_graph 1.2714419859985355 seconds 
+
+finished line_graph 1.023412518996338 seconds 
+
+finished one_var_bar_graph 1.022499152997625 seconds 
+
+finished discrete_line_graph 0.7877954470022814 seconds 
+
+finished discrete_line_graph 0.7897884390040417 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.263597099998151 seconds 
+
+END OF PROGRAM
+total runtime: 32.927181005477905 seconds
+
+ 
+
+Variables:
+ {'seed': 612093, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03059017800114816 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.14212828499876196 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.0755898729985347 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.41667730000335723 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.5857253380017937 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.0554648109973641 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.9550834210022003 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.8882223239997984 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.835196852000081 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.0045753869999317 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.8959901269990951 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.1210747980003362 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.8422610940033337 
+ 
+step: 11 
+Elapsed runtime:  2.7828713989947573 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 15.414635749999434 seconds 
+
+finished ideas 0.13269720999960555 seconds 
+
+finished agent 0.3244765390045359 seconds 
+
+finished model 0.15869566799665336 seconds 
+
+finished ind_ideas 0.9208164809970185 seconds 
+
+finished im_graph 1.0787551120010903 seconds 
+
+finished two_var_line_graph 0.8290599310057587 seconds 
+
+finished im_graph 1.133388948001084 seconds 
+
+finished one_var_bar_graph 0.8442279029986821 seconds 
+
+finished one_var_bar_graph 0.8121826050046366 seconds 
+
+finished one_var_bar_graph 0.783860771000036 seconds 
+
+finished resid_scatterplot 3.576753525005188 seconds 
+
+finished one_var_bar_graph 0.936611377997906 seconds 
+
+finished one_var_bar_graph 0.9662429939999129 seconds 
+
+finished line_graph 1.7014134540004306 seconds 
+
+finished discrete_line_graph 1.9953138980054064 seconds 
+
+finished discrete_line_graph 0.6400604099981138 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.431751819996862 seconds 
+
+END OF PROGRAM
+total runtime: 23.953233003616333 seconds
+
+ 
+
+Variables:
+ {'seed': 408874, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.9127875519989175 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10926965399994515 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.07383237199974246 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.953751037006441 seconds 
+ 
+step: 3 
+Elapsed runtime:  1.3556340409995755 seconds 
+ 
+step: 4 
+Elapsed runtime:  2.882945015997393 seconds 
+ 
+step: 5 
+Elapsed runtime:  2.789023573997838 seconds 
+ 
+step: 6 
+Elapsed runtime:  2.780744321004022 seconds 
+ 
+step: 7 
+Elapsed runtime:  3.8700103869996383 seconds 
+ 
+step: 8 
+Elapsed runtime:  3.980473900999641 seconds 
+ 
+step: 9 
+Elapsed runtime:  2.3320277519960655 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.1364131810041727 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.8149691819999134 
+ 
+step: 11 
+Elapsed runtime:  3.039946560995304 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 30.33512290300132 seconds 
+
+finished ideas 0.139793054004258 seconds 
+
+finished agent 0.33598019100463716 seconds 
+
+finished model 0.06962932299938984 seconds 
+
+finished ind_ideas 0.7370468949957285 seconds 
+
+finished im_graph 1.0170432389932103 seconds 
+
+finished two_var_line_graph 0.8365563760016812 seconds 
+
+finished im_graph 0.9210862489999272 seconds 
+
+finished one_var_bar_graph 0.736297169001773 seconds 
+
+finished one_var_bar_graph 0.7489775709982496 seconds 
+
+finished one_var_bar_graph 1.2028214829988428 seconds 
+
+finished one_var_bar_graph 1.0835647020066972 seconds 
+
+finished resid_scatterplot 4.136973958004091 seconds 
+
+finished one_var_bar_graph 1.5613812929950655 seconds 
+
+finished discrete_line_graph 1.880087450001156 seconds 
+
+finished line_graph 1.6749927619966911 seconds 
+
+finished discrete_line_graph 0.9440999119979097 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.72987144200306 seconds 
+
+END OF PROGRAM
+total runtime: 39.67603611946106 seconds
+
+ 
+
+Variables:
+ {'seed': 168697, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03541435300576268 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.096718446999148 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05224599399662111 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.41830207200109726 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.6521683640021365 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.232814420000068 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.738235213997541 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.8327650790015468 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.8264246990001993 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.7374999559979187 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.7958803380024619 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.8011228449977352 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 3.5211864779994357 
+ 
+step: 11 
+Elapsed runtime:  4.567995570003404 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 15.748818299995037 seconds 
+
+finished ideas 0.224406266999722 seconds 
+
+finished agent 0.8300679340027273 seconds 
+
+finished model 0.17872677599370945 seconds 
+
+finished ind_ideas 3.1198500850005075 seconds 
+
+finished im_graph 3.1517522190042655 seconds 
+
+finished two_var_line_graph 2.190027752003516 seconds 
+
+finished im_graph 2.7847832290062797 seconds 
+
+finished one_var_bar_graph 2.5895808830027818 seconds 
+
+finished one_var_bar_graph 2.2666134239989333 seconds 
+
+finished resid_scatterplot 7.9912675009982195 seconds 
+
+finished one_var_bar_graph 0.9685645179997664 seconds 
+
+finished one_var_bar_graph 0.8014465320011368 seconds 
+
+finished line_graph 0.7901292669994291 seconds 
+
+finished one_var_bar_graph 0.6941903089973493 seconds 
+
+finished discrete_line_graph 0.7837309509995976 seconds 
+
+finished discrete_line_graph 0.5908375090002664 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  14.745261067000683 seconds 
+
+END OF PROGRAM
+total runtime: 29.54304790496826 seconds
+
+ 
+
+Variables:
+ {'seed': 598582, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03500693599926308 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.114284821000183 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.0534696510003414 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.5219747820010525 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.6438375189973158 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.4632384190044831 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.1596218249978847 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.7288005169975804 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.1450329910003347 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.8092760450017522 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.8260380520005128 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.8691227919989615 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.986732707999181 
+ 
+step: 11 
+Elapsed runtime:  3.0361017329996685 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 15.373232869998901 seconds 
+
+finished ideas 0.15307056900201133 seconds 
+
+finished agent 0.3349679910024861 seconds 
+
+finished model 0.09331513199867913 seconds 
+
+finished im_graph 1.21374212000228 seconds 
+
+finished ind_ideas 1.1422963779987185 seconds 
+
+finished two_var_line_graph 0.9977506800059928 seconds 
+
+finished im_graph 1.1954965490003815 seconds 
+
+finished one_var_bar_graph 0.8956859760000953 seconds 
+
+finished one_var_bar_graph 0.9054158240032848 seconds 
+
+finished one_var_bar_graph 0.8402611759956926 seconds 
+
+finished resid_scatterplot 3.7554798080018372 seconds 
+
+finished one_var_bar_graph 0.9703636010017362 seconds 
+
+finished one_var_bar_graph 0.7428680970042478 seconds 
+
+finished line_graph 0.8728541360032978 seconds 
+
+finished discrete_line_graph 0.8422763109992957 seconds 
+
+finished discrete_line_graph 0.646511842001928 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.04687303800165 seconds 
+
+END OF PROGRAM
+total runtime: 24.926340103149414 seconds
+
+ 
+
+Variables:
+ {'seed': 807953, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03651476599770831 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10206186499999603 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05315067199990153 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.34586358800152084 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.4191346389998216 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.5238342599986936 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5191095789996325 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.509973414002161 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5306720379958278 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.523885260001407 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5386876670017955 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5298242249991745 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.87864140199963 
+ 
+step: 11 
+Elapsed runtime:  2.4132953439984703 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 11.214686719999008 seconds 
+
+finished ideas 0.13273626099544344 seconds 
+
+finished agent 0.3806630100007169 seconds 
+
+finished model 0.09776935300033074 seconds 
+
+finished im_graph 1.090098280001257 seconds 
+
+finished ind_ideas 1.3047698709997348 seconds 
+
+finished two_var_line_graph 1.041305573999125 seconds 
+
+finished im_graph 1.3742728759971214 seconds 
+
+finished one_var_bar_graph 0.7642512999955215 seconds 
+
+finished one_var_bar_graph 0.7466372150011011 seconds 
+
+finished one_var_bar_graph 0.7208369509971817 seconds 
+
+finished one_var_bar_graph 0.7580253100022674 seconds 
+
+finished resid_scatterplot 3.604523704001622 seconds 
+
+finished one_var_bar_graph 0.6619504490008694 seconds 
+
+finished line_graph 0.776897182004177 seconds 
+
+finished discrete_line_graph 0.943442233998212 seconds 
+
+finished discrete_line_graph 0.6296095659999992 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.154764617000183 seconds 
+
+END OF PROGRAM
+total runtime: 18.594021797180176 seconds
+
+ 
+
+Variables:
+ {'seed': 690904, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.032367692998377606 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.09941463600262068 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05127548299788032 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2394695410039276 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.3133797929986031 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.4307045230016229 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.49279890499747125 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.45895869199739536 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5382193289988209 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5197901930005173 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5326075560005847 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.0284077510004863 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.036486608994892 
+ 
+step: 11 
+Elapsed runtime:  2.7888977769980556 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 10.878638704998593 seconds 
+
+finished ideas 0.16351472600217676 seconds 
+
+finished agent 0.3416838099947199 seconds 
+
+finished model 0.05658423299610149 seconds 
+
+finished ind_ideas 0.8576749190033297 seconds 
+
+finished im_graph 1.013703769996937 seconds 
+
+finished two_var_line_graph 0.7480804189981427 seconds 
+
+finished im_graph 0.8899459389940603 seconds 
+
+finished one_var_bar_graph 0.6956081969983643 seconds 
+
+finished one_var_bar_graph 0.7098237099999096 seconds 
+
+finished one_var_bar_graph 0.6695805630006362 seconds 
+
+finished resid_scatterplot 3.00309165300132 seconds 
+
+finished one_var_bar_graph 0.7091506219949224 seconds 
+
+finished one_var_bar_graph 0.6453885239970987 seconds 
+
+finished line_graph 0.6611430140037555 seconds 
+
+finished discrete_line_graph 0.7748856949983747 seconds 
+
+finished discrete_line_graph 0.6670120199996745 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.541393350002181 seconds 
+
+END OF PROGRAM
+total runtime: 19.185400009155273 seconds
+
+ 
+
+Variables:
+ {'seed': 667046, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.05413504599709995 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.09831671500433004 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05488990800222382 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.3929765509965364 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.47997969899734017 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.5075216570039629 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5042943750013364 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5531237719987985 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5078783159988234 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.54263535499922 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5247023289994104 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5125944030005485 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.9908634059975157 
+ 
+step: 11 
+Elapsed runtime:  2.5451138999997056 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 11.485756393994961 seconds 
+
+finished ideas 0.1210835509991739 seconds 
+
+finished agent 0.3221548369983793 seconds 
+
+finished model 0.07087037699966459 seconds 
+
+finished ind_ideas 0.9001872060034657 seconds 
+
+finished im_graph 0.9682469959952869 seconds 
+
+finished two_var_line_graph 0.9491647270042449 seconds 
+
+finished im_graph 1.0593980760022532 seconds 
+
+finished one_var_bar_graph 0.9683104760042625 seconds 
+
+finished one_var_bar_graph 1.0279436990022077 seconds 
+
+finished one_var_bar_graph 0.8475461060006637 seconds 
+
+finished one_var_bar_graph 0.8327505410052254 seconds 
+
+finished resid_scatterplot 3.7429993429977912 seconds 
+
+finished one_var_bar_graph 0.6954921119977371 seconds 
+
+finished line_graph 0.7102806510010851 seconds 
+
+finished discrete_line_graph 0.8859127460018499 seconds 
+
+finished discrete_line_graph 0.6066677640046692 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.378488789996482 seconds 
+
+END OF PROGRAM
+total runtime: 19.713070154190063 seconds
+
+ 
+
+Variables:
+ {'seed': 518773, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.033827919003670104 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.13674888999958057 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.09604193199629663 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.47002117200463545 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.5977523269975791 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.6517767640034435 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.6131496789967059 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.6957490370041342 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.6560922409989871 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.6568767709977692 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.6837548249968677 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.613126980002562 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 3.674763333001465 
+ 
+step: 11 
+Elapsed runtime:  4.614516931003891 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 14.68628393799736 seconds 
+
+finished ideas 0.18252070900052786 seconds 
+
+finished agent 0.4556345989985857 seconds 
+
+finished model 0.04877609100367408 seconds 
+
+finished ind_ideas 1.1713949359982507 seconds 
+
+finished im_graph 1.252345045999391 seconds 
+
+finished two_var_line_graph 0.9233122250007 seconds 
+
+finished im_graph 1.11719470800017 seconds 
+
+finished one_var_bar_graph 1.0414575789982337 seconds 
+
+finished one_var_bar_graph 1.0313858750014333 seconds 
+
+finished one_var_bar_graph 0.8865747020026902 seconds 
+
+finished resid_scatterplot 3.961701906999224 seconds 
+
+finished one_var_bar_graph 0.8679911569997785 seconds 
+
+finished one_var_bar_graph 0.8319371469988255 seconds 
+
+finished line_graph 0.9271466819991474 seconds 
+
+finished discrete_line_graph 1.0325548820037511 seconds 
+
+finished discrete_line_graph 0.6143355169988354 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  12.42316405299789 seconds 
+
+END OF PROGRAM
+total runtime: 27.753664016723633 seconds
+
+ 
+
+Variables:
+ {'seed': 934091, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.033705016001476906 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.09791509199567372 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05156407700269483 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2973773909980082 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.4459707240021089 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.46431165900139604 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5048907159944065 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5500420349999331 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5519559910026146 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5443566140020266 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5533901569942827 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5392996440059505 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 1.9947610199960764 
+ 
+step: 11 
+Elapsed runtime:  2.5366898459978984 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 12.76350349400309 seconds 
+
+finished ideas 0.16387393200420775 seconds 
+
+finished agent 0.48462815299717477 seconds 
+
+finished model 0.08434211099665845 seconds 
+
+finished ind_ideas 1.1185865020015626 seconds 
+
+finished im_graph 1.256227038000361 seconds 
+
+finished two_var_line_graph 0.860487979996833 seconds 
+
+finished im_graph 1.0903004810024868 seconds 
+
+finished one_var_bar_graph 0.833520365995355 seconds 
+
+finished one_var_bar_graph 0.9226642059948063 seconds 
+
+finished one_var_bar_graph 0.9694150599971181 seconds 
+
+finished resid_scatterplot 3.4809376610064646 seconds 
+
+finished one_var_bar_graph 0.7843254620020161 seconds 
+
+finished one_var_bar_graph 0.8432011619952391 seconds 
+
+finished line_graph 1.0253592640001443 seconds 
+
+finished discrete_line_graph 1.1003782620027778 seconds 
+
+finished discrete_line_graph 0.6453502400036086 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.024191655000322 seconds 
+
+END OF PROGRAM
+total runtime: 19.78741979598999 seconds
+
+ 
+
+Variables:
+ {'seed': 883531, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03357403999689268 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10145722999732243 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05130484800611157 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.3329438559958362 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.4518635400017956 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.5065750060020946 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5291400860005524 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5386099370007287 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5767237559994101 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.6050536849943455 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.6952122830043663 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5890975049987901 seconds 
+
+
+done with step 11 ... now running collect_vars 
+
+Variables:
+ {'seed': 419129, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.0308807679975871 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.11346187599701807 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.08059597400279017 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2913672009963193 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.3884923160003382 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.4599699230020633 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.452191374002723 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.467143945999851 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5077056660011294 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5024801029940136 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.48551218100328697 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.48086796999996295 seconds 
+
+
+done with step 11 ... now running collect_vars 
+
+Variables:
+ {'seed': 506618, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.030623504004324786 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.09563546199933626 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.053212130995234475 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.32989646400528727 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.37004475299909245 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.48597496999718715 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.7318860590021359 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.6108918099998846 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5853241259974311 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5835021599996253 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5476814930007095 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5216540649998933 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 4.553825855000468 
+ 
+step: 11 
+Elapsed runtime:  5.066453059000196 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 13.975600129997474 seconds 
+
+finished ideas 0.16411504699499346 seconds 
+
+finished agent 0.3713963869959116 seconds 
+
+finished model 0.0814122160008992 seconds 
+
+finished im_graph 1.1303670199995395 seconds 
+
+finished ind_ideas 1.1271854329970665 seconds 
+
+finished two_var_line_graph 0.8848062990000471 seconds 
+
+finished im_graph 1.0721084870019695 seconds 
+
+finished one_var_bar_graph 0.7094072770050843 seconds 
+
+finished one_var_bar_graph 0.7450395560008474 seconds 
+
+finished one_var_bar_graph 0.7907651830028044 seconds 
+
+finished one_var_bar_graph 0.7690669309959048 seconds 
+
+finished resid_scatterplot 3.4423372950041085 seconds 
+
+finished one_var_bar_graph 0.6789458060011384 seconds 
+
+finished line_graph 0.7516947059993981 seconds 
+
+finished discrete_line_graph 0.920275780998054 seconds 
+
+finished discrete_line_graph 0.6261842660023831 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.334758564997173 seconds 
+
+END OF PROGRAM
+total runtime: 24.753585815429688 seconds
+
+ 
+
+Variables:
+ {'seed': 612828, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.04631781699572457 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10487216600449756 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.051828942996507976 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2781320130015956 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.38676498999848263 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.5361448510011542 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5543128810022608 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5768058819958242 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5071581480005989 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.49450821299979 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.4673044290029793 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5035785689979093 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.01613054000336 
+ 
+step: 11 
+Elapsed runtime:  2.576973994000582 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 11.27968346599664 seconds 
+
+finished ideas 0.1200302590004867 seconds 
+
+finished agent 0.2825997720065061 seconds 
+
+finished model 0.11105466799926944 seconds 
+
+finished im_graph 1.0046618049964309 seconds 
+
+finished ind_ideas 0.9303821439971216 seconds 
+
+finished two_var_line_graph 0.758593036000093 seconds 
+
+finished im_graph 0.9412415249971673 seconds 
+
+finished one_var_bar_graph 0.712964992999332 seconds 
+
+finished one_var_bar_graph 0.7053291819975129 seconds 
+
+finished one_var_bar_graph 0.7248137960050371 seconds 
+
+finished one_var_bar_graph 0.6999942339971312 seconds 
+
+finished resid_scatterplot 3.0588639650013647 seconds 
+
+finished one_var_bar_graph 0.7353311319966451 seconds 
+
+finished line_graph 0.7254058779944899 seconds 
+
+finished discrete_line_graph 0.9387813239954994 seconds 
+
+finished discrete_line_graph 0.6025298629974714 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.483625466004014 seconds 
+
+END OF PROGRAM
+total runtime: 18.883610010147095 seconds
+
+ 
+
+Variables:
+ {'seed': 361867, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.8809986589985783 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10395000900462037 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.053100697994523216 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.5134045759987202 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.6454579530036426 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.8162780490019941 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.9464740289986366 seconds 
+ 
+step: 6 
+Elapsed runtime:  1.0834156179989805 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.196991718999925 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.2219570239976747 seconds 
+ 
+step: 9 
+Elapsed runtime:  1.4378766400041059 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.1565834790017107 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.742937691997213 
+ 
+step: 11 
+Elapsed runtime:  4.184302288995241 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 19.180928668996785 seconds 
+
+finished ideas 0.13241778999508824 seconds 
+
+finished agent 0.2997544640020351 seconds 
+
+finished model 0.04900184000143781 seconds 
+
+finished im_graph 0.9363223330001347 seconds 
+
+finished ind_ideas 0.875588021997828 seconds 
+
+finished two_var_line_graph 0.780122432995995 seconds 
+
+finished im_graph 0.9433480789957684 seconds 
+
+finished one_var_bar_graph 1.2055875590012874 seconds 
+
+finished one_var_bar_graph 1.11277672900178 seconds 
+
+finished resid_scatterplot 3.6939492210003664 seconds 
+
+finished one_var_bar_graph 1.09777163999388 seconds 
+
+finished one_var_bar_graph 1.1226519219999318 seconds 
+
+finished line_graph 1.5099096519988962 seconds 
+
+finished one_var_bar_graph 1.4109020120013156 seconds 
+
+finished discrete_line_graph 1.4417174240006716 seconds 
+
+finished discrete_line_graph 0.6052288109931396 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.986327397004061 seconds 
+
+END OF PROGRAM
+total runtime: 27.093982934951782 seconds
+
+ 
+
+Variables:
+ {'seed': 117207, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03236599600495538 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10222769399842946 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.056074970998452045 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.35605030500300927 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.44221039099647896 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.5771276309969835 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5673758840057417 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5303370260007796 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.6205088239948964 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.6979513830010546 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.557679151002958 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5909819559965399 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.5310739249980543 
+ 
+step: 11 
+Elapsed runtime:  3.210927965999872 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 12.336905787000433 seconds 
+
+finished ideas 0.1776045630031149 seconds 
+
+finished agent 0.40400280299945734 seconds 
+
+finished model 0.09995233600056963 seconds 
+
+finished im_graph 1.1384404089985765 seconds 
+
+finished ind_ideas 1.1779419009981211 seconds 
+
+finished two_var_line_graph 1.0638003979984205 seconds 
+
+finished im_graph 1.22360286500043 seconds 
+
+finished one_var_bar_graph 0.9656560529983835 seconds 
+
+finished one_var_bar_graph 0.978900870999496 seconds 
+
+finished one_var_bar_graph 0.84426901700499 seconds 
+
+finished one_var_bar_graph 0.8338672890022281 seconds 
+
+finished resid_scatterplot 3.887849588005338 seconds 
+
+finished one_var_bar_graph 0.7987613849982154 seconds 
+
+finished line_graph 1.011138996000227 seconds 
+
+finished discrete_line_graph 1.1732625059958082 seconds 
+
+finished discrete_line_graph 0.7834436369957984 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.491720567995799 seconds 
+
+END OF PROGRAM
+total runtime: 22.302769899368286 seconds
+
+ 
+
+Variables:
+ {'seed': 313558, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.9377451109976391 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.1316994890003116 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.06636673799948767 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.5568538950028596 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.6613434169994434 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.9892560219959705 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.1019312729986268 seconds 
+
+Variables:
+ {'seed': 235334, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.035193520998291206 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10008184499747586 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.04913212900282815 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.31285003799712285 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.38991364300454734 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.4865277279968723 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.4819314280030085 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.4560015549941454 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.4856272210017778 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.48324297000363003 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5132272409973666 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5180497449982795 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.0709153290008544 
+ 
+step: 11 
+Elapsed runtime:  2.603388421004638 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 10.782180743000936 seconds 
+
+finished ideas 0.16783607799879974 seconds 
+
+finished agent 0.3473274889984168 seconds 
+
+finished model 0.08985448199382517 seconds 
+
+finished ind_ideas 0.9042933089949656 seconds 
+
+finished im_graph 1.1272194550037966 seconds 
+
+finished two_var_line_graph 0.802267290004238 seconds 
+
+finished im_graph 0.9963431360010873 seconds 
+
+finished one_var_bar_graph 0.7733426070044516 seconds 
+
+finished one_var_bar_graph 0.679477304998727 seconds 
+
+finished one_var_bar_graph 0.8098252950003371 seconds 
+
+finished one_var_bar_graph 0.8121725469973171 seconds 
+
+finished resid_scatterplot 3.2952898379953695 seconds 
+
+finished one_var_bar_graph 0.7293688680001651 seconds 
+
+finished line_graph 0.7578653230011696 seconds 
+
+finished discrete_line_graph 0.8676947460044175 seconds 
+
+finished discrete_line_graph 0.6600119409995386 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.86270264799532 seconds 
+
+END OF PROGRAM
+total runtime: 18.263653993606567 seconds
+
+ 
+
+Variables:
+ {'seed': 271214, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.7772685460004141 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10310209300223505 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.055005832997267134 seconds 
+
+Variables:
+ {'seed': 228558, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.041287502004706766 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10909981399890967 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.052935889994842 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2876060900016455 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.3930845490031061 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.47383173999696737 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.5182816000015009 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.50565586599987 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.467856600000232 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.6098416649983847 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.7449302960012574 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.891004161996534 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.7846376300003612 
+ 
+step: 11 
+Elapsed runtime:  3.570451031002449 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 13.975818574996083 seconds 
+
+finished ideas 0.4348227649970795 seconds 
+
+finished agent 0.661543674999848 seconds 
+
+finished model 0.15589809099765262 seconds 
+
+finished ind_ideas 1.0678624950014637 seconds 
+
+finished im_graph 1.3685289900022326 seconds 
+
+finished two_var_line_graph 1.000443171004008 seconds 
+
+finished im_graph 1.2121507199990447 seconds 
+
+finished one_var_bar_graph 0.839425623002171 seconds 
+
+finished one_var_bar_graph 0.8023812450046535 seconds 
+
+finished one_var_bar_graph 0.8598244120003073 seconds 
+
+finished resid_scatterplot 3.6573077039938653 seconds 
+
+finished one_var_bar_graph 0.8876380989968311 seconds 
+
+finished one_var_bar_graph 0.7911365030013258 seconds 
+
+finished line_graph 0.907576566998614 seconds 
+
+finished discrete_line_graph 0.9616125149987056 seconds 
+
+finished discrete_line_graph 0.6963696360035101 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  14.41834675699647 seconds 
+
+END OF PROGRAM
+total runtime: 28.62372088432312 seconds
+
+ 
+
+Variables:
+ {'seed': 850760, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  2.2622915800020564 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.1499477109973668 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.13368769500084454 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.6623701350035844 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.7350853059979272 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.0864844850002555 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.1636202090012375 seconds 
+ 
+step: 6 
+Elapsed runtime:  1.26795219899941 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.5157750159996795 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.912963189999573 seconds 
+ 
+step: 9 
+Elapsed runtime:  1.5772685459960485 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.5046364740046556 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 3.682486252000672 
+ 
+step: 11 
+Elapsed runtime:  5.285018686001422 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 26.290894232995925 seconds 
+
+finished ideas 0.12475255499884952 seconds 
+
+finished agent 0.31982106099894736 seconds 
+
+finished model 0.0830930919983075 seconds 
+
+finished ind_ideas 0.7304725089998101 seconds 
+
+finished im_graph 0.9488833520008484 seconds 
+
+finished two_var_line_graph 0.7842793889940367 seconds 
+
+finished im_graph 0.8869932950037764 seconds 
+
+finished one_var_bar_graph 0.9053805369985639 seconds 
+
+finished one_var_bar_graph 1.0631372110001394 seconds 
+
+finished one_var_bar_graph 1.4300969479954801 seconds 
+
+finished one_var_bar_graph 1.6951042149958084 seconds 
+
+finished resid_scatterplot 4.570861372005311 seconds 
+
+finished one_var_bar_graph 1.3716962170001352 seconds 
+
+finished discrete_line_graph 1.2281330219993833 seconds 
+
+finished line_graph 1.1165120040022884 seconds 
+
+finished discrete_line_graph 0.8356773420018726 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  11.034356652999122 seconds 
+
+END OF PROGRAM
+total runtime: 37.63745903968811 seconds
+
+ 
+
+Variables:
+ {'seed': 790068, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.03197708199877525 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.12503262900281698 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.08979002699925331 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.27650627399998484 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.37542058899998665 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.4927224179991754 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.47979060799843865 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.5280730500016944 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.5339072429997032 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5322671960020671 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5362950790004106 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.5284275699959835 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.6202243470033864 
+ 
+step: 11 
+Elapsed runtime:  3.156543798999337 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 11.28896738900221 seconds 
+
+finished ideas 0.13622719300474273 seconds 
+
+finished agent 0.32034526599454693 seconds 
+
+finished model 0.07578439899953082 seconds 
+
+finished ind_ideas 0.8708475690000341 seconds 
+
+finished im_graph 1.043270586997096 seconds 
+
+finished two_var_line_graph 0.8597029550001025 seconds 
+
+finished im_graph 1.089139192001312 seconds 
+
+finished one_var_bar_graph 1.620936499995878 seconds 
+
+finished one_var_bar_graph 1.409216688000015 seconds 
+
+finished one_var_bar_graph 1.3516133849989274 seconds 
+
+finished resid_scatterplot 4.466995926995878 seconds 
+
+finished one_var_bar_graph 1.3159922240010928 seconds 
+
+finished one_var_bar_graph 1.216144753001572 seconds 
+
+finished line_graph 1.509437196997169 seconds 
+
+finished discrete_line_graph 1.66570213399973 seconds 
+
+finished discrete_line_graph 1.4110952600021847 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  11.513975679998111 seconds 
+
+END OF PROGRAM
+total runtime: 22.339370012283325 seconds
+
+ 
+
+Variables:
+ {'seed': 532574, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.8860573269994347 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.10919277100038016 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.0550444120017346 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.7470175319976988 seconds 
+ 
+step: 3 
+Elapsed runtime:  1.5361631010018755 seconds 
+ 
+step: 4 
+Elapsed runtime:  1.4087937299991609 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.3349786789985956 seconds 
+ 
+step: 6 
+Elapsed runtime:  1.567181680999056 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.5889926920062862 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.6499463679938344 seconds 
+ 
+step: 9 
+Elapsed runtime:  1.7537922440023976 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.7755019949981943 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.0003368299949216 
+ 
+step: 11 
+Elapsed runtime:  3.9572814450002625 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 25.595368111004063 seconds 
+
+finished ideas 0.1280634499998996 seconds 
+
+finished agent 0.31927423200249905 seconds 
+
+finished model 0.13795527500042226 seconds 
+
+finished ind_ideas 0.9026632660024916 seconds 
+
+finished im_graph 1.0927433780016145 seconds 
+
+finished two_var_line_graph 1.0640014780001366 seconds 
+
+finished im_graph 1.27593749800144 seconds 
+
+finished one_var_bar_graph 0.9769948300017859 seconds 
+
+finished one_var_bar_graph 0.7266913929997827 seconds 
+
+finished one_var_bar_graph 0.851912985999661 seconds 
+
+finished one_var_bar_graph 0.8567753770039417 seconds 
+
+finished resid_scatterplot 3.654457355994964 seconds 
+
+finished one_var_bar_graph 0.6587795949963038 seconds 
+
+finished line_graph 0.6880320159980329 seconds 
+
+finished discrete_line_graph 0.7800872010047897 seconds 
+
+finished discrete_line_graph 0.5831827770016389 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.868904285998724 seconds 
+
+END OF PROGRAM
+total runtime: 30.411654949188232 seconds
+
+ 
+
+Variables:
+ {'seed': 653765, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.043627968996588606 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.13217872400127817 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.07309894500212977 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.2768410569988191 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.40981623900006525 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.47358675899886293 seconds 
+ 
+step: 5 
+Elapsed runtime:  0.47710004100372316 seconds 
+ 
+step: 6 
+Elapsed runtime:  0.47276963599870214 seconds 
+ 
+step: 7 
+Elapsed runtime:  0.48246538099920144 seconds 
+ 
+step: 8 
+Elapsed runtime:  0.5061409900008584 seconds 
+ 
+step: 9 
+Elapsed runtime:  0.5333955149981193 seconds 
+ 
+step: 10 
+Elapsed runtime:  0.6575802010047482 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.8286507809971226 
+ 
+step: 11 
+Elapsed runtime:  3.573895794994314 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 11.583116510002583 seconds 
+
+finished ideas 0.15288666899868986 seconds 
+
+finished agent 0.32262885599629954 seconds 
+
+finished model 0.06109822599682957 seconds 
+
+finished ind_ideas 0.7691402709970134 seconds 
+
+finished im_graph 0.9278883009974379 seconds 
+
+finished two_var_line_graph 0.764040052999917 seconds 
+
+finished im_graph 0.9372470909947879 seconds 
+
+finished one_var_bar_graph 0.8004054159973748 seconds 
+
+finished one_var_bar_graph 0.7394555170030799 seconds 
+
+finished one_var_bar_graph 0.7271127170024556 seconds 
+
+finished resid_scatterplot 3.0924366549952538 seconds 
+
+finished one_var_bar_graph 0.7423089559961227 seconds 
+
+finished one_var_bar_graph 0.6661046449953574 seconds 
+
+finished line_graph 0.685448660995462 seconds 
+
+finished discrete_line_graph 0.7767232589976629 seconds 
+
+finished discrete_line_graph 0.5901050419997773 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.13122691299941 seconds 
+
+END OF PROGRAM
+total runtime: 23.383880853652954 seconds
+
+ 
+
+Variables:
+ {'seed': 551427, 'use_multiprocessing': False, 'use_store': False, 'optimization': 4, 'time_periods': 10, 'ideas_per_time': 5, 'N': 5, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.9101020259986399 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.11048286800360074 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.05660085300041828 seconds 
+ 
+step: 2 
+Elapsed runtime:  0.472052156997961 seconds 
+ 
+step: 3 
+Elapsed runtime:  0.7482205380001687 seconds 
+ 
+step: 4 
+Elapsed runtime:  0.9682624190027127 seconds 
+ 
+step: 5 
+Elapsed runtime:  1.0843847159994766 seconds 
+ 
+step: 6 
+Elapsed runtime:  1.2557589880016167 seconds 
+ 
+step: 7 
+Elapsed runtime:  1.3943978549941676 seconds 
+ 
+step: 8 
+Elapsed runtime:  1.4535984470057883 seconds 
+ 
+step: 9 
+Elapsed runtime:  1.520613303000573 seconds 
+ 
+step: 10 
+Elapsed runtime:  1.8820694609967177 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 2.4390450779974344 
+ 
+step: 11 
+Elapsed runtime:  4.1245797669980675 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 19.54444784900261 seconds 
+
+finished ideas 0.15036928699555574 seconds 
+
+finished agent 0.4405447019962594 seconds 
+
+finished model 0.1917787929996848 seconds 
+
+finished im_graph 2.194208927998261 seconds 
+
+finished ind_ideas 2.3591891929972917 seconds 
+
+finished im_graph 2.4078676349963644 seconds 
+
+finished two_var_line_graph 2.1575387330012745 seconds 
+
+finished one_var_bar_graph 1.4642252100020414 seconds 
+
+finished one_var_bar_graph 1.6013494090002496 seconds 
+
+finished one_var_bar_graph 1.8286352440045448 seconds 
+
+finished one_var_bar_graph 1.7520271410030546 seconds 
+
+finished resid_scatterplot 7.703329253999982 seconds 
+
+finished one_var_bar_graph 0.9014241039985791 seconds 
+
+finished discrete_line_graph 1.1478581440023845 seconds 
+
+finished line_graph 0.9075878680014284 seconds 
+
+finished discrete_line_graph 0.7085619930003304 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  15.730511653993744 seconds 
+
+END OF PROGRAM
+total runtime: 34.222389936447144 seconds
+
+ 

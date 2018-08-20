@@ -134,9 +134,28 @@ def smart_returns(scientist, *lock):  # mp locks not implemented since probably 
         new_dict = {'avail_effort': scientist.avail_effort,
                     'learning check': int(scientist.curr_k[idea] > 0 and scientist.marginal_effort[idea] > 0),
                     'research check': int(scientist.marginal_effort[idea] > 0),
-                    'funding check': int(funding_remaining <= 0),  # False = funding done, True = funding remains
+                    'funding check': 0,  # int(funding_remaining <= 0),  # False = funding done, True = funding remains
                     'scientist time alive': math.ceil(scientist.unique_id / config.N) + config.time_periods_alive - scientist.model.schedule.time,
                     'idea age': scientist.model.schedule.time - (idea // config.ideas_per_time) + 0.0001,  # to account for 0-aged ideas
+                    'concav': concav,
+                    'exp': exp_val[idea],
+                    'slope': slope,
+                    'learning k': scientist.curr_k[idea],
+                    'marginal': scientist.marginal_effort[idea],
+                    'funding': scientist.model.funding[idea],
+                    'increment': scientist.increment,
+                    'times invested': len(scientist.model.final_marginal_invested_ideas[scientist.unique_id - 1])}
+        exp_rtn.append(np.hstack(list(new_dict.values())))  # convert vstack into hstack
+
+        # ONE WITH FUNDING, ANOTHER WITHOUT
+        new_dict = {'avail_effort': scientist.avail_effort,
+                    'learning check': int(scientist.curr_k[idea] > 0 and scientist.marginal_effort[idea] > 0),
+                    'research check': int(scientist.marginal_effort[idea] > 0),
+                    'funding check': 1,  # int(funding_remaining <= 0),  # False = funding done, True = funding remains
+                    'scientist time alive': math.ceil(
+                        scientist.unique_id / config.N) + config.time_periods_alive - scientist.model.schedule.time,
+                    'idea age': scientist.model.schedule.time - (idea // config.ideas_per_time) + 0.0001,
+                    # to account for 0-aged ideas
                     'concav': concav,
                     'exp': exp_val[idea],
                     'slope': slope,

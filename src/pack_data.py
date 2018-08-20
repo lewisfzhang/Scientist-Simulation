@@ -90,7 +90,6 @@ def collect_vars(model, store_big_data):
     ind_vars = pd.read_pickle(model.directory + 'ind_ideas.pkl')
     actual_returns = agent_vars[agent_vars['Actual Returns'].str.startswith("{", na=False)]['Actual Returns']
 
-    # format of scientist_tracker: [agent_id][num_ideas_invested][total_returns]
     returns_tracker = np.zeros(model.num_scientists)
     # getting total returns from each scientists in their entire lifetime
     # idx format: (step, agent id), val is a dictionary is in string format
@@ -122,8 +121,17 @@ def collect_vars(model, store_big_data):
         if ind_vars['agent_k_invested_ideas'][idx] != 0:
             counter_x += 1
         del idx, val
+    # catch last scientist when for loop exits
+    while len(x_var) <= counter_x:
+        x_var.append(0)
+        y_var.append(0)
+    x_var[counter_x] += 1
+    y_var[counter_x] += returns_tracker[curr_id - 1]
+    counter_x = 0
+    # save to model directory
     np.save(model.directory + 'social_output.npy', np.asarray(y_var))
     np.save(model.directory + 'ideas_entered.npy', np.asarray(x_var))
+    print("TOTAL ACTUAL RETURN:", sum(y_var), sum(returns_tracker))
     del ind_vars, actual_returns, returns_tracker, curr_id, counter_x, x_var, y_var
     # </editor-fold>
 
@@ -215,7 +223,8 @@ def to_big_data(df, df2):  # df2 = ind_ideas
     param_size = 15
     current_data = None
     new_list = {}
-    tp_1 = 2
+    tp_1 = 2  # first active tp for scientist
+    # keeps track of number of tp that a scientist is active
     tp_active = len(df.loc[1].index)  # Agent 1 should be the first agent in the df
     for idx, val in df.iterrows():
         # print(idx)
@@ -233,13 +242,39 @@ def to_big_data(df, df2):  # df2 = ind_ideas
                     current_data = np.concatenate((current_data, from_3d_to_2d(append_data)))
                 new_list = {}
         np_idx = idx[1] - tp_1
+        id_set = set()  # keeps track of all ideas
         # NOTE: all +='s are the same as ='s now since we want TP
+        # NOTE: don't change order of for loops! (order matters here)
         for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
             id = str(new_dict['idea'])
+            id_set.add(id)
             new_list = check_id(new_list, id, param_size, tp_active)
             new_list[id][np_idx][0] += new_dict['effort']
             new_list[id][np_idx][10] += new_dict['effort']
             new_list[id][np_idx][2] = 1  # True
+        for new_dict in process_dict(val['Effort Invested In Period (K)']):
+            id = str(new_dict['idea'])
+            id_set.add(id)
+            new_list = check_id(new_list, id, param_size, tp_active)
+            # don't need to modify 0's which are by default False
+            # above concern is cancelled out since idea only needs to
+            # be updated once when it is first invested before learning
+            new_list[id][np_idx][1] = 1
+            # confirm with jay that we want increment (marginal + k + funding)
+            new_list[id][np_idx][0] += new_dict['effort']
+            new_list[id][np_idx][9] += new_dict['effort']
+        for new_dict in process_dict(val['Effort Invested In Period (Funding)']):
+            id = str(new_dict['idea'])
+            id_set.add(id)
+            new_list = check_id(new_list, id, param_size, tp_active)
+            # don't need to modify 0's which are by default False
+            # above concern is cancelled out since idea only needs to
+            # be updated once when it is first invested before learning
+            new_list[id][np_idx][3] = 1
+            # confirm with jay that we want increment (marginal + k + funding)
+            new_list[id][np_idx][0] += new_dict['effort']
+            new_list[id][np_idx][11] += new_dict['effort']
+        for id in id_set:
             if new_list[id][np_idx][4] == 0:  # we count idea age based on the first time a scientists invests in the idea
                 new_list[id][np_idx][4] = idx[1] - (int(id) // config.ideas_per_time) + 0.0001  # to account for 0-aged ideas
             if new_list[id][np_idx][7] == 0:  # scientist can't be dead in 0 years or else he would not be here!
@@ -283,30 +318,22 @@ def to_big_data(df, df2):  # df2 = ind_ideas
                 if count == 0:
                     w.warn(mess.format('tp'))
             del row, mess
-        for new_dict in process_dict(val['Effort Invested In Period (K)']):
-            id = str(new_dict['idea'])
-            new_list = check_id(new_list, id, param_size, tp_active)
-            # don't need to modify 0's which are by default False
-            # above concern is cancelled out since idea only needs to
-            # be updated once when it is first invested before learning
-            new_list[id][np_idx][1] = 1
-            # confirm with jay that we want increment (marginal + k + funding)
-            new_list[id][np_idx][0] += new_dict['effort']
-            new_list[id][np_idx][9] += new_dict['effort']
-        for new_dict in process_dict(val['Effort Invested In Period (Funding)']):
-            id = str(new_dict['idea'])
-            new_list = check_id(new_list, id, param_size, tp_active)
-            # don't need to modify 0's which are by default False
-            # above concern is cancelled out since idea only needs to
-            # be updated once when it is first invested before learning
-            new_list[id][np_idx][3] = 1
-            # confirm with jay that we want increment (marginal + k + funding)
-            new_list[id][np_idx][0] += new_dict['effort']
-            new_list[id][np_idx][11] += new_dict['effort']
         for new_dict in process_dict(val['Actual Returns']):
             id = str(new_dict['idea'])
+            id_set.add(id)
             new_list = check_id(new_list, id, param_size, tp_active)
-            new_list[id][np_idx][14] += new_dict['returns']
+            # scaling total actual returns in a TP to that in a loop (more accurate for smart_returns() in optimize.py)
+            # actual_returns_tp / times invested --> makes sense because of average increment
+            new_list[id][np_idx][14] += new_dict['returns'] / new_list[id][np_idx][13]
+    # run for last scientist
+    if new_list != {}:  # check that row was not empty
+        # for nl in list(new_list.values()):  # a list of np arrays
+        append_data = np.asarray(list(new_list.values()))  # 3D array
+        if current_data is None:
+            current_data = from_3d_to_2d(append_data)
+        else:
+            # print(current_data.shape, append_data.shape)
+            current_data = np.concatenate((current_data, from_3d_to_2d(append_data)))
 
     if has_past:
         past_data = np.load('tmp/big_data.npy')

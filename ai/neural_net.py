@@ -100,7 +100,7 @@ def main():
         chart_regression(pred.flatten(), test_labels)  # sort is True by default
         chart_regression(pred.flatten(), test_labels, sort=False)
 
-    print('\n\nsaving models...')
+    print('\nsaving models...\n\n')
     if save_current:
         model.save('results/model.h5')
     model.save('results/model_{}.h5'.format(EPOCHS))

@@ -35,7 +35,7 @@ class Scientist(Agent):
         # he or she is alive (not accounting for start effort decay)
         # can set to constant if needed rather than poisson distribution
         np.random.seed(config.seed_array[unique_id][0])
-        self.start_effort = 150  # poisson(lam=config.start_effort_lam)  # utility
+        self.start_effort = poisson(lam=config.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
@@ -78,6 +78,12 @@ class Scientist(Agent):
                                                                    config.true_idea_shift)  # void
         else:
             self.idea_shift = np.zeros(self.model.total_ideas)
+
+        if config.rand_funding:
+            np.random.seed(config.seed_array[unique_id][10])  # index should change?
+            self.must_fund = (np.random.normal() > 0)
+        else:
+            self.must_fund = (self.unique_id % 2 == 0)
 
         # ARRAY: Create the ideas/returns matrix
         # NOTE: logistic_cdf is not ranodm, always generates same curve based on means and sds
@@ -214,6 +220,8 @@ class ScientistModel(Model):
         self.k = poisson(lam=config.k_lam, size=self.total_ideas)  # void/utility (used for init agent objects)
         np.random.seed(config.seed_array[0][1])
         self.funding = poisson(lam=int(config.k_lam/2), size=self.total_ideas)
+        if config.with_NIH:  # NIH help reduces effect for scientists to get funding by a certain amount
+            self.funding = self.funding // 2
         np.random.seed(config.seed_array[0][2])
         # NOTE: only actual funding multiplier needs to be calculate since we assume scientists are smart and know
         # how funding will help them, confirm this with jay
