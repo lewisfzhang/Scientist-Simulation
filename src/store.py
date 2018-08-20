@@ -6,6 +6,7 @@ import pickle
 import config
 import pandas as pd
 from collections import Counter
+from ai.brain import Brain
 
 
 def store_model_arrays(model, is_first, lock):
@@ -92,6 +93,14 @@ def store_model_lists(model, is_first, lock):
             pickle.dump(model.final_concavity, fp)
         model.final_concavity = None
 
+        with open(model.directory + "final_increment.txt", "wb") as fp:
+            pickle.dump(model.final_increment, fp)
+        model.final_increment = None
+
+        with open(model.directory + "final_tp_invested.txt", "wb") as fp:
+            pickle.dump(model.final_tp_invested, fp)
+        model.final_tp_invested = None
+
         if is_first:
             np.save(model.directory + 'actual_returns_matrix.npy', model.actual_returns_matrix)
         model.actual_returns_matrix = None
@@ -164,6 +173,12 @@ def unpack_model_lists(model, lock):
 
         with open(model.directory + "final_concavity.txt", "rb") as fp:
             model.final_concavity = pickle.load(fp)
+
+        with open(model.directory + "final_increment.txt", "rb") as fp:
+            model.final_increment = pickle.load(fp)
+
+        with open(model.directory + "final_tp_invested.txt", "rb") as fp:
+            model.final_tp_invested = pickle.load(fp)
 
 
 def unlock_actual_returns(model, lock):
@@ -354,6 +369,8 @@ def update_model_df(model, data_list):
 
 
 def save_model(model):
+    if config.switch == 4:
+        model.brain = None  # TypeError: can't pickle _thread.RLock objects
     with open(model.directory + "model.pkl", "wb") as fp:
         pickle.dump(model, fp)
 
@@ -361,4 +378,8 @@ def save_model(model):
 def load_model():
     model_directory = config.tmp_loc + 'model/'
     with open(model_directory + "model.pkl", "rb") as fp:
-        return pickle.load(fp)
+        model = pickle.load(fp)
+    # reload brain
+    if config.switch == 4:
+        model.brain = Brain.load_brain()
+    return model

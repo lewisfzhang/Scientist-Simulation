@@ -14,6 +14,7 @@ from functions import *
 from pack_data import *
 from process import *
 import subprocess as s
+from ai.brain import Brain
 
 
 # utility = important, don't run GC on it
@@ -34,7 +35,7 @@ class Scientist(Agent):
         # he or she is alive (not accounting for start effort decay)
         # can set to constant if needed rather than poisson distribution
         np.random.seed(config.seed_array[unique_id][0])
-        self.start_effort = poisson(lam=config.start_effort_lam)  # utility
+        self.start_effort = 150  # poisson(lam=config.start_effort_lam)  # utility
 
         # Scalar: amount of effort a scientist has left; goes down within a
         # given time period as a scientist invests in various ideas
@@ -108,7 +109,9 @@ class Scientist(Agent):
         # NOTE: resets to 0 after each time period and DOES include investment costs
         self.eff_inv_in_period_k = np.zeros(self.model.total_ideas)  # utility
         self.eff_inv_in_period_marginal = np.zeros(self.model.total_ideas)  # utility
+        # amount invested in funding
         self.eff_inv_in_period_funding = np.zeros(self.model.total_ideas)  # utility
+        # actual funding multiplier factor
         self.eff_inv_in_period_f_mult = np.zeros(self.model.total_ideas)  # utility
 
         store_agent_arrays(self)
@@ -252,6 +255,11 @@ class ScientistModel(Model):
         # format = [young,old]
         self.effort_invested_by_age = np.asarray([np.zeros(self.total_ideas), np.zeros(self.total_ideas)])
 
+        # the DNN decision making process shared across all scientists
+        self.brain = None
+        if config.switch == 4:
+            self.brain = Brain.load_brain()
+
         # data collector variables that have no effect on results of model
         self.total_perceived_returns = np.zeros(self.total_ideas)
         self.total_actual_returns = np.zeros(self.total_ideas)
@@ -271,6 +279,8 @@ class ScientistModel(Model):
         self.final_marginal_invested_ideas = [[] for i in range(self.num_scientists)]
         self.final_slope = [[[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)], [[] for i in range(self.num_scientists)]]  # third one is for order keeping
         self.final_concavity = [[] for i in range(self.num_scientists)]
+        self.final_increment = [[] for i in range(self.num_scientists)]
+        self.final_tp_invested = [[] for i in range(self.num_scientists)]
         # exp_bayes is shared between older/number scientists depending on switch
         if config.use_equal:  # confident, optimistic scientist believes he is the first to invest in idea
             # 1.1 also benefits where in the future +1 enforces confidence (decrease avg)

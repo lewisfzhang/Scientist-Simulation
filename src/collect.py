@@ -1,6 +1,9 @@
 # collect.py
 # execute the run.py program before running collect.py!
 
+import warnings as w
+w.filterwarnings("ignore", message="numpy.dtype size changed")
+w.filterwarnings("ignore", message="numpy.ufunc size changed")
 import multiprocessing as mp
 from run_graphs import *
 import time, sys

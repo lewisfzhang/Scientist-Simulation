@@ -81,6 +81,7 @@ use_idea_shift = init.use_idea_shift
 # 1 = z-scores
 # 2 = bayesian stats
 # 3 = greedy heuristic
+# 4 = neural net
 switch = init.switch
 
 # whether we want interactive steps

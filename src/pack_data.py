@@ -62,9 +62,12 @@ def collect_vars(model, store_big_data):
                           flatten_list(model.final_perceived_returns_invested_ideas)),
                       "agent_actual_return_invested_ideas": rounded_tuple(
                           flatten_list(model.final_actual_returns_invested_ideas)),
-                      "slopes": rounded_tuple(flatten_list(flat_2d(model.final_slope, model.num_scientists))),
+                      "slopes": rounded_tuple(flatten_list(flat_2d(model.final_slope))),
                       "exp": rounded_tuple(expand_2d(model.exp_bayes, model.final_idea_idx, model.final_scientist_id)),
-                      "concav": rounded_tuple(flatten_list(model.final_concavity))}
+                      "increment": rounded_tuple(flatten_list(model.final_increment)),
+                      # not sure if multiplying concav by 10^6 will affect the neural net / big data
+                      "concav": rounded_tuple(np.asarray(flatten_list(model.final_concavity)) * 10**6),
+                      "tp": rounded_tuple(flatten_list(model.final_tp_invested))}
     pd.DataFrame.from_dict(ind_ideas_dict).to_pickle(model.directory + 'ind_ideas.pkl')
     # df = df.reset_index().sort_values(['scientist_id', 'idea_idx']).set_index('index').\
     #     rename_axis(None).reset_index(drop=True)
@@ -193,71 +196,117 @@ def to_big_data(df, df2):  # df2 = ind_ideas
     has_past = False  # NOTE: IMPORTANT SWITCH FOR AI!!!
     last_scientist = 1  # first scientists
 
-    # format: effort_amount, research, learning, funding, idea_age,
-    # idea_phase (based on concavity), exp_num_scientists/scientist_age_bayes_prop (depending on the switch),
-    # time till death, actual_return (the output)
-    # 7+1=8 variables total
+    # format (life):
+    #   0. effort_amount (all 3 combined),  --> essentially avail effort, increment
+    #   1. learning (k)  [0,1]
+    #   2. research (marginal)  [0,1]
+    #   3. funding  [0,1]
+    #   4. idea_age,
+    #   5. idea_phase (based on concavity)
+    #   6. exp_num_scientists/scientist_age_bayes_prop (depending on the switch),
+    #   7. ***time till death (simulates TP)***,
+    #   8. slope
+    #   9. k,
+    #   10. marginal,
+    #   11. funding_k,
+    #   12. avg increment
+    #   13. times invested
+    #   14. actual_return (the output)
+    param_size = 15
     current_data = None
     new_list = {}
+    tp_1 = 2
+    tp_active = len(df.loc[1].index)  # Agent 1 should be the first agent in the df
     for idx, val in df.iterrows():
         # print(idx)
         if idx[0] != last_scientist:
             last_scientist = idx[0]
+            tp_1 = idx[1]
+            tp_active = len(df.loc[idx[0]].index)
             if new_list != {}:  # check that row was not empty
                 # for nl in list(new_list.values()):  # a list of np arrays
-                append_data = np.asarray(list(new_list.values()))
+                append_data = np.asarray(list(new_list.values()))  # 3D array
                 if current_data is None:
-                    current_data = append_data
+                    current_data = from_3d_to_2d(append_data)
                 else:
                     # print(current_data.shape, append_data.shape)
-                    current_data = np.concatenate((current_data, append_data))
+                    current_data = np.concatenate((current_data, from_3d_to_2d(append_data)))
                 new_list = {}
+        np_idx = idx[1] - tp_1
+        # NOTE: all +='s are the same as ='s now since we want TP
         for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
             id = str(new_dict['idea'])
-            try:
-                new_list[id]
-            except KeyError as e:  # if idea doesn't except add it to dictionary
-                new_list[id] = np.zeros(9)
-            new_list[id][0] += new_dict['effort']
-            new_list[id][2] = 1  # True
-            if new_list[id][4] == 0:  # we count idea age based on the first time a scientists invests in the idea
-                new_list[id][4] = idx[1] - (int(id) // config.ideas_per_time) + 0.0001  # to account for 0-aged ideas
-            if new_list[id][7] == 0:  # scientist can't be dead in 0 years or else he would not be here!
+            new_list = check_id(new_list, id, param_size, tp_active)
+            new_list[id][np_idx][0] += new_dict['effort']
+            new_list[id][np_idx][10] += new_dict['effort']
+            new_list[id][np_idx][2] = 1  # True
+            if new_list[id][np_idx][4] == 0:  # we count idea age based on the first time a scientists invests in the idea
+                new_list[id][np_idx][4] = idx[1] - (int(id) // config.ideas_per_time) + 0.0001  # to account for 0-aged ideas
+            if new_list[id][np_idx][7] == 0:  # scientist can't be dead in 0 years or else he would not be here!
                 # should be positive
-                new_list[id][7] = math.ceil(idx[0] / config.N) + config.time_periods_alive - idx[1]  # curr TP = idx[1]
+                new_list[id][np_idx][7] = math.ceil(idx[0] / config.N) + config.time_periods_alive - idx[1]  # curr TP = idx[1]
                 if math.ceil(idx[0] / config.N) + config.time_periods_alive - idx[1] < 0:
                     w.warn("scientist time left is negative! see pack_data.py")
             # use idea_idx to locate certain values faster for indeces 5 and 6 of new_list dictionary
             row = df2.loc[(df2['scientist_id'] == idx[0]) & (df2['idea_idx'] == new_dict['idea'])]
-            if new_list[id][5] == 0:
+            mess = '{} value should not be 0! (see entry '+str(row.index[0])+')'
+            if new_list[id][np_idx][5] == 0:
                 # positive concav means early stage, and vice versa
                 # new_list[id][5] = 0.1 if row.loc[row.index[0]]['concav'] > 0 else new_list[id][5] = 0.9
                 # method 2: try inverse of concavity
-                new_list[id][5] = -row.loc[row.index[0]]['concav']
+                new_list[id][np_idx][5] = -row.loc[row.index[0]]['concav']
                 if -row.loc[row.index[0]]['concav'] == 0:
-                    w.warn('concavity is 0')
-            if new_list[id][6] == 0:
-                new_list[id][6] = row.loc[row.index[0]]['exp']
+                    w.warn(mess.format('concav'))
+            if new_list[id][np_idx][6] == 0:
+                new_list[id][np_idx][6] = row.loc[row.index[0]]['exp']
                 if row.loc[row.index[0]]['exp'] == 0:
-                    w.warn("exp value should not be 0!")
-            del row
+                    w.warn(mess.format('exp'))
+            if new_list[id][np_idx][8] == 0:
+                new_list[id][np_idx][8] = row.loc[row.index[0]]['slopes']
+                if row.loc[row.index[0]]['slopes'] == 0:
+                    w.warn(mess.format('slopes'))
+            if new_list[id][np_idx][12] == 0:
+                sum = 0
+                for i in range(len(row.index)):
+                    sum += row.loc[row.index[i]]['increment']
+                new_list[id][np_idx][12] = sum / len(row.index)
+                if new_list[id][np_idx][12] == 0:
+                    w.warn(mess.format('increment'))
+                del sum
+            if new_list[id][np_idx][13] == 0:
+                count = 0
+                for i in range(len(row.index)):
+                    # could at break statement to make more efficient, but that would involve handling > and < cases
+                    if row.loc[row.index[i]]['tp'] == idx[1]:
+                        count += 1
+                new_list[id][np_idx][13] = count
+                if count == 0:
+                    w.warn(mess.format('tp'))
+            del row, mess
         for new_dict in process_dict(val['Effort Invested In Period (K)']):
             id = str(new_dict['idea'])
+            new_list = check_id(new_list, id, param_size, tp_active)
             # don't need to modify 0's which are by default False
             # above concern is cancelled out since idea only needs to
             # be updated once when it is first invested before learning
-            new_list[id][1] = 1
-            # confirm with jay that we want increment (marginal + k)
-            new_list[id][0] += new_dict['effort']
+            new_list[id][np_idx][1] = 1
+            # confirm with jay that we want increment (marginal + k + funding)
+            new_list[id][np_idx][0] += new_dict['effort']
+            new_list[id][np_idx][9] += new_dict['effort']
         for new_dict in process_dict(val['Effort Invested In Period (Funding)']):
             id = str(new_dict['idea'])
+            new_list = check_id(new_list, id, param_size, tp_active)
             # don't need to modify 0's which are by default False
             # above concern is cancelled out since idea only needs to
             # be updated once when it is first invested before learning
-            new_list[id][3] = 1
+            new_list[id][np_idx][3] = 1
+            # confirm with jay that we want increment (marginal + k + funding)
+            new_list[id][np_idx][0] += new_dict['effort']
+            new_list[id][np_idx][11] += new_dict['effort']
         for new_dict in process_dict(val['Actual Returns']):
             id = str(new_dict['idea'])
-            new_list[id][8] += new_dict['returns']
+            new_list = check_id(new_list, id, param_size, tp_active)
+            new_list[id][np_idx][14] += new_dict['returns']
 
     if has_past:
         past_data = np.load('tmp/big_data.npy')

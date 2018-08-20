@@ -2,15 +2,24 @@
 
 import sys, init, os, timeit, time
 import subprocess as s
+import warnings as w
+w.filterwarnings("ignore", message="numpy.dtype size changed")
+w.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 
-def main():
-    with_collect = False  # whether or not to run collect after run is finished
-    with_prompt = True
+already_trained = False
+with_dnn = True  # whether to train the neural net after storing big_data
+with_prompt = True
+
+
+def main(run_again, with_dnn, with_prompt):
+    with_collect = True  # whether or not to run collect after run is finished
 
     if with_prompt:
         print("Are you sure you have checked the following variables?")
         print(" - with_collect (run.py)")
+        print(" - with_dnn (run.py")
+        print(" - already_trained (run.py")
         print(" - has_past (pack_data.py)")
         check = input('(y/n) ')
         if not check in ['y', 'Y']:
@@ -27,7 +36,7 @@ def main():
         print('changing working directory from', os.getcwd(), 'to', path)
         os.chdir(path + '/src')
 
-    print('Args:',sys.argv[:])
+    print('Run Args:',sys.argv[:])
     # if user wants to pass in arguments
     if len(sys.argv) >= 5:  # config 1
         init.time_periods = int(sys.argv[1])
@@ -49,6 +58,10 @@ def main():
         init.use_equal = sys.argv[12] == 'True'
         init.use_idea_shift = sys.argv[13] == 'True'
         init.show_step = sys.argv[14] == 'True'
+    if run_again:
+        init.switch = 2  # need bayesian stats to train neural net the first time
+    else:
+        init.switch = 4  # prefer neural net over bayesian stats if already trained
 
     # check if we are using batch runs
     if os.path.isdir('tmp_batch'):
@@ -97,8 +110,20 @@ def main():
 
     if with_collect:
         s.call('python3 collect.py', shell=True)
-    # collect.init()
+        path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
+        # s.call('open ../data/pages/page_agent_vars.html', shell=True)
+        s.call("/usr/bin/open -a '/Applications/Google Chrome.app' 'file://"+path+"/data/images/scatterplot_resid.png'", shell=True)  # open image with Chrome
+        # collect.init()
+    if with_dnn:
+        s.call('python3 ../ai/neural_net.py', shell=True)
+    if run_again:
+        s.call('python3 run.py False False False', shell=True)
+        # main(False, False, False)
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == 'False' and sys.argv[2] == 'False' and sys.argv[3] == 'False':
+        main(False, False, False)
+    else:
+        main(already_trained == False, with_dnn, with_prompt)

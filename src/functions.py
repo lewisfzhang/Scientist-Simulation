@@ -287,11 +287,16 @@ def process_dict(s):
 
 
 # helper function for final_slopes list format flattening
-def flat_2d(l, num):  # l = slope
+def flat_2d(l):  # l = slope
+    num = len(l[0])  # num = num scientists
     order_idx = flatten_list(l[len(l) - 1])  # same as l[2]?
-    new_list = [[] for i in range(num)]  # num = num scientists
+    new_list = [[] for a in range(num)]
+    count = [[0, 0] for a in range(num)]
     for i in range(len(order_idx)):
-        new_list[order_idx[i][1] - 1].append(l[order_idx[i][0]][order_idx[i][1] - 1])  # 0 based index
+        idx_id = order_idx[i][0]
+        sci_id = order_idx[i][1] - 1  # 0 based index
+        new_list[sci_id].append(l[idx_id][sci_id][count[sci_id][idx_id]])
+        count[sci_id][idx_id] += 1
     return new_list
 
 
@@ -308,3 +313,26 @@ def expand_2d(l1, l2, l3):  # l2 = idea_idx, l3 = scientist_id
         for i in range(len(l2)):  # l2 and l3 should be same length
             new_list.append(a[l3[i]-1][l2[i]])  # -1 for 0 based index
     return new_list
+
+
+def check_id(new_list, id, param_size, height):
+    try:
+        new_list[id]
+        # add additional row below
+        # new_list[id] = np.vsplit([new_list[id], np.zeros(param_size)])
+    except KeyError as e:  # if idea doesn't except add it to dictionary
+        new_list[id] = np.zeros(param_size*height).reshape(height, param_size)
+    return new_list
+
+
+def dict_itr(dict, id, idx, val, add_on):
+    for i in range(len(dict)):
+        if add_on:
+            dict[i][id][idx] += val
+        else:
+            dict[i][id][idx] = val
+
+
+def from_3d_to_2d(arr):
+    # arr.shape returns (x, y, z) --> y is the transformed length in 2d
+    return arr.transpose(0, 1, 2).reshape(arr.shape[0] * arr.shape[1], -1)
