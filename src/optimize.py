@@ -5,6 +5,7 @@ import random, magic
 from store import *
 from scipy import stats
 from functions import *
+import warnings as w
 
 
 # scientist chooses the idea that returns the most at each step
@@ -259,13 +260,13 @@ def probabilistic_returns(scientist, with_funding, *lock):  # optimistic disrega
                         # IndexError should not happen if program runs smoothly
                         except Exception as e:
                             left = 0
-                            raise Exception('check prob_slope in optimize.py')
+                            w.warn('check prob_slope in optimize.py')
                         try:
                             right = prob_slope[i][idx+1]
                         # IndexError should not happen if program runs smoothly
                         except Exception as e:
                             right = 0
-                            raise Exception('check prob_slope in optimize.py')
+                            w.warm('check prob_slope in optimize.py')
                         prob_slope[i][idx] = (left + right)/2
                 bins[i][0] = -100000  # so least value is included in last bin
                 bins[i][-1] = 100000  # so greatest value is included in last bin
