@@ -1,14 +1,8 @@
 # functions.py
 
 import numpy as np
-import config
-import timeit
-import glob
-import os
-import gc
-import ast
-import random
-import math
+import config, timeit, glob, os, gc, ast, random, math
+import subprocess as s
 from scipy.stats import cauchy
 
 
@@ -63,6 +57,19 @@ def logistic_cdf_2d(x, idea, returns_info):
     return (logistic_cdf_derivative(x-shift+0.000001, loc=means, scale=sds) - logistic_cdf_derivative(x-shift-0.000001, loc=means, scale=sds)) / 0.000002
 
 
+# probably not needed since idea quality can be found using simply M? ask jay...
+def max_cdf_calc(returns_info):
+    out = np.zeros(len(returns_info[0]))
+    x = 300  # just random edgy number
+    for idea in range(len(out)):
+        M = returns_info[0][idea]
+        sds = returns_info[1][idea]
+        means = returns_info[2][idea]
+        shift = returns_info[3][idea]
+        out[idea] = M * logistic_cdf(x-shift, loc=means, scale=sds)
+    return out
+
+
 # remember anything from your calculus class?
 def logistic_cdf_inv_deriv(slope_val, loc, scale):
     # strictly because too lazy to correctly update this formula, but it works based on new formula
@@ -91,8 +98,9 @@ def get_returns(idea, returns_info, start_idx, end_idx):
     sds = returns_info[1][idea]
     means = returns_info[2][idea]
     shift = returns_info[3][idea]
-    start = m * logistic_cdf(start_idx - shift, loc=means, scale=sds)
-    end = m * logistic_cdf(end_idx - shift, loc=means, scale=sds)
+    # WE DON'T NEED SHIFT RIGHT?!
+    start = m * logistic_cdf(start_idx, loc=means, scale=sds)
+    end = m * logistic_cdf(end_idx, loc=means, scale=sds)
     return end-start
 
 
@@ -134,6 +142,10 @@ def log_0(np_array):
 # num, denom can also be lists!
 def divide_0(num, denom):
     return np.divide(num, denom, out=np.zeros_like(num), where=denom != 0)
+
+
+def clear_images():
+    s.call('rm '+config.parent_dir+'data/images/*.png', shell=True)
 
 
 def png_to_html(tmp_path):
@@ -241,6 +253,7 @@ def random_noise(seed1, seed2, unique_id, total_ideas, x):
 
     # uniform is better?
     np.random.seed(config.seed_array[unique_id][seed2])
+    # should be 3 but we don't want negative values for now
     noise = np.random.uniform(-3 * end_limit(x), 3 * end_limit(x), size=total_ideas)
 
     return noise
@@ -253,7 +266,10 @@ def end_limit(x):
 
 # returns proportion based on array of numbers
 def get_pdf(arr):
-    return arr / sum(arr)
+    if arr.shape[0] == 1:
+        return arr / sum(arr)
+    else:
+        return (arr / np.asarray([sum(i) for i in arr]).reshape(arr.shape[0], 1))[:, 0]
 
 
 # returns cdf based on pdf array
@@ -348,3 +364,20 @@ def from_3d_to_2d(arr):
         else:
             i += 1
     return out_arr
+
+
+# takes the average of the intervals
+def process_bin(arr, bin_size, num_bin):
+    out = np.zeros(num_bin)
+    for bin in range(num_bin - 1):
+        out[bin] = sum(arr[bin*bin_size:(bin+1)*bin_size]) / bin_size
+    bin += 1
+    out[bin] = sum(arr[bin*bin_size:]) / len(arr[bin*bin_size:])
+    return out
+
+
+def append_list(arr1, arr2):
+    out = list(arr1)
+    for i in arr2:
+        out.append(i)
+    return np.asarray(out)

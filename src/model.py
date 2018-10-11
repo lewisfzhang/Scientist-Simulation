@@ -14,6 +14,7 @@ from functions import *
 from pack_data import *
 from process import *
 import subprocess as s
+import warnings as w
 from ai.brain import Brain
 
 
@@ -79,11 +80,12 @@ class Scientist(Agent):
         else:
             self.idea_shift = np.zeros(self.model.total_ideas)
 
-        if config.rand_funding:
-            np.random.seed(config.seed_array[unique_id][10])  # index should change?
-            self.must_fund = (np.random.normal() > 0)
-        else:
-            self.must_fund = (self.unique_id % 2 == 0)
+        self.must_fund = config.use_fund
+        # if config.rand_funding:
+        #     np.random.seed(config.seed_array[unique_id][10])  # index should change?
+        #     self.must_fund = (np.random.normal() > 0)
+        # else:
+        #     self.must_fund = (self.unique_id % 2 == 0)
 
         # ARRAY: Create the ideas/returns matrix
         # NOTE: logistic_cdf is not ranodm, always generates same curve based on means and sds
@@ -92,8 +94,10 @@ class Scientist(Agent):
         # check if anything is < 0 (that is a concern!)
         r, c = np.where(self.perceived_returns_matrix < 0)
         for i in range(len(r)):
-            print("agent_id", self.unique_id, 'r', r[i], 'c', c[i])
-            print(self.perceived_returns_matrix[r[i]][c[i]])
+            print("agent_id", self.unique_id, 'r', r[i], 'c', c[i], 'value', self.perceived_returns_matrix[r[i]][c[i]])
+            # raise Exception("you should probably try again for positive values!")
+            w.warn("value is less than 0! artificially changing this value to 0.001")
+            self.perceived_returns_matrix[r[i]][c[i]] = 0.001
         del r, c
 
         # dereferencing 'void' variables
@@ -259,7 +263,7 @@ class ScientistModel(Model):
         # Array: keeps track of total effort allocated to each idea across all scientists
         self.total_effort = np.zeros(self.total_ideas)
 
-        # data collector variable
+        # data collector variable, effort invested by age for EACH idea, so kind of useless because too complex?
         # format = [young,old]
         self.effort_invested_by_age = np.asarray([np.zeros(self.total_ideas), np.zeros(self.total_ideas)])
 
@@ -275,7 +279,7 @@ class ScientistModel(Model):
         self.total_times_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested = np.zeros(self.total_ideas)
         self.total_scientists_invested_helper = [set() for i in range(self.total_ideas)]
-        self.total_idea_phase = np.zeros(3)
+        self.total_idea_phase = np.zeros(6).reshape(3, 2)
 
         # Array: keeping track of all the returns of investing in each available and invested ideas
         # NOTE: the K is based on initial learning cost, not current cost

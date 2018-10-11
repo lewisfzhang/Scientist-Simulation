@@ -3,11 +3,13 @@
 from functions import *
 from store import *
 import warnings as w
+import subprocess as s
 
 
 def main():
     model = load_model()
     collect_vars(model, True)
+    s.call('python3 collect.py', shell=True)
 
 
 # for data collecting after model has finished running
@@ -29,10 +31,12 @@ def collect_vars(model, store_big_data):
     idea = range(0, model.total_ideas, 1)
     tp = np.arange(model.total_ideas) // config.ideas_per_time
     prop_invested = rounded_tuple(model.total_effort / inv_logistic_cdf(0.99, model.actual_returns_matrix[2], model.actual_returns_matrix[1]))
+    idea_qual = model.actual_returns_matrix[0][np.where(np.asarray(prop_invested, dtype=np.float32) != 0.0)]
     avg_k = np.round(divide_0(model.total_k, model.total_scientists_invested), 2)
     total_perceived_returns = np.round(model.total_perceived_returns, 2)
     total_actual_returns = np.round(model.total_actual_returns, 2)
-    idea_phase = divide_0(model.total_idea_phase, sum(model.total_idea_phase))
+    idea_phase_age = divide_0(model.total_idea_phase, sum(sum(model.total_idea_phase)))
+    idea_phase = divide_0(np.asarray([sum(s) for s in model.total_idea_phase]), sum(sum(model.total_idea_phase)))
     ideas_dict = {"idea": idea,
                   "TP": tp,
                   "scientists_invested": model.total_scientists_invested,
@@ -47,6 +51,8 @@ def collect_vars(model, store_big_data):
     np.save(model.directory + 'prop_invested.npy', prop_invested)
     np.save(model.directory + 'prop_remaining.npy', 1 - prop_invested)
     np.save(model.directory + 'idea_phase.npy', idea_phase)
+    np.save(model.directory + 'idea_phase_age.npy', idea_phase_age)
+    np.save(model.directory + 'idea_qual.npy', idea_qual)
     store_model_arrays_data(model, False, None)
     store_actual_returns(model, None)
     del ideas_dict, idea, tp, prop_invested, avg_k, total_perceived_returns, total_actual_returns, idea_phase
@@ -139,23 +145,90 @@ def collect_vars(model, store_big_data):
     agent_vars = agent_vars.replace(np.nan, '', regex=True)
     # format: [prop paying k][total num of scientists] || two rows, TP_alive columns
     age_tracker = np.zeros(2 * config.time_periods_alive).reshape(2, config.time_periods_alive)
-    for idx, val in agent_vars['Effort Invested In Period (K)'].items():
+    for idx, val in agent_vars.iterrows():
         curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
+        if 0 <= curr_age < config.time_periods_alive:
+            ids = set()
+            for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
+                ids.add(new_dict['idea'])
+            age_tracker[1][curr_age] += len(ids)
+            for new_dict in process_dict(val['Effort Invested In Period (K)']):
+                if new_dict['idea'] in ids:
+                    age_tracker[0][curr_age] += 1
 
-        # if statements should only pass if curr_age is within range in the array
-        if val != '':
-            # total number of ideas / occurrences
-            num_ideas = agent_vars.loc[idx[0]].loc[idx[1]]['Effort Invested In Period (Marginal)'].count('idea')
-            age_tracker[1][curr_age] += num_ideas  # DEPENDS ON WHAT JAY WANTS --> (could use 1)
-            del num_ideas
-            # checks those that paid k
-            if val[0] == '{':
-                age_tracker[0][curr_age] += val.count('idea')
-        del idx, val, curr_age
+    # for idx, val in agent_vars['Effort Invested In Period (K)'].items():
+    #     curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
+    #
+    #     # if statements should only pass if curr_age is within range in the array
+    #     if val != '':
+    #         # total number of ideas / occurrences
+    #         num_ideas = agent_vars.loc[idx[0]].loc[idx[1]]['Effort Invested In Period (Marginal)'].count('idea')
+    #         age_tracker[1][curr_age] += num_ideas  # DEPENDS ON WHAT JAY WANTS --> (could use 1)
+    #         del num_ideas
+    #         # checks those that paid k
+    #         if val[0] == '{':
+    #             age_tracker[0][curr_age] += val.count('idea')
+    #     del idx, val, curr_age
     prop_age = divide_0(age_tracker[0], age_tracker[1])
     np.save(model.directory + 'prop_age.npy', prop_age)
     del prop_age, age_tracker
     # </editor-fold>
+
+    perceived, actual = [], []
+    for idx, val in agent_vars.iterrows():
+        # have set to keep track of ideas when scientists invests learning but no research
+        ids_actual, ids_perceived = set(), set()
+        # order should be listed the same for multiple row/data cells otherwise
+        for new_dict in process_dict(val['Actual Returns']):
+            ids_actual.add(new_dict['idea'])
+        for new_dict in process_dict(val['Perceived Returns']):
+            ids_perceived.add(new_dict['idea'])
+        for new_dict in process_dict(val['Actual Returns']):
+            if new_dict['idea'] in ids_perceived:
+                actual.append(new_dict['returns'])
+        for new_dict in process_dict(val['Perceived Returns']):
+            if new_dict['idea'] in ids_actual:
+                perceived.append(new_dict['returns'])
+    np.save(model.directory + 'pVSa.npy', np.asarray([np.asarray(perceived), np.asarray(actual)]))
+
+    idea_table = model.actual_returns_matrix[2] + 3*model.actual_returns_matrix[1]  # essentially means + 3*sds
+    data = np.vstack([idea_table, np.zeros(2*model.total_ideas).reshape(2,model.total_ideas)])  # format: (young, old)
+    data_time = None  # format: (age of idea, young, old)
+    new_data = []
+    last_tp = -1
+    idea_past = np.zeros(model.total_ideas)
+    data_past = []
+    # np.vstack([np.arange(model.total_ideas), np.zeros(3*model.total_ideas).reshape(3, model.total_ideas)])
+    for idx, val in agent_vars.iterrows():
+        if last_tp != idx[0]:  # new TP
+            if new_data != []:
+                for i in range(len(new_data)):
+                    new_data[i][0] = last_tp - (new_data[i][0] // config.ideas_per_time)
+                    data_time = np.vstack([data_time, new_data]) if data_time is not None else new_data
+            new_data = []
+            last_tp = idx[0]
+        curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
+        rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
+        for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
+            data_past.append(np.asarray([idea_past[new_dict['idea']], 0, 0]))
+            data_past[len(data_past)-1][rel_age+1] += new_dict['effort']   # rel+1 because 0 index is idea effort info
+            idea_past[new_dict['idea']] += new_dict['effort']
+
+            data[rel_age+1][new_dict['idea']] += new_dict['effort']  # rel+1 because 0 index is idea effort info
+            if new_data != [] and new_dict['idea'] in new_data[0]:
+                idx = new_data[0].index(new_dict['idea'])
+                try:
+                    new_data[idx][rel_age+1] += new_dict['effort']
+                except Exception as e:
+                    w.warn("index error, idx: "+str(idx)+" rel_age: "+str(rel_age)+" curr_age: "+str(curr_age))
+            else:
+                new_data.append([new_dict['idea'], 0, 0])
+                new_data[len(new_data)-1][rel_age+1] += new_dict['effort']  # rel+1 because 0 index is idea effort info
+    # remove all columns of 0, where idea has 0 effort invested across all scientists
+    np.save(model.directory + "age_effort_length.npy", data[:, ~np.all(data[1:] == 0, axis=0)])
+    np.save(model.directory + "age_effort_time.npy", data_time.transpose())
+    np.save(model.directory + "age_effort_past.npy", np.asarray(data_past).transpose())
+    del data, idea_table
 
     # <editor-fold desc="Part 5: marginal_effort_by_age, prop_idea">
     unpack_model_arrays(model, None)
@@ -163,7 +236,7 @@ def collect_vars(model, store_big_data):
         str.startswith("{", na=False)]['Effort Invested In Period (Marginal)']
 
     marginal_effort = [[0, 0]]  # format: [young, old]
-    prop_idea = [0]
+    prop_idea = [np.asarray([0, 0])]
     total_ideas = 0
     for idx, val in agent_marg.items():
         last_bracket = 0
@@ -180,19 +253,21 @@ def collect_vars(model, store_big_data):
 
             while len(marginal_effort) <= idea_age:
                 marginal_effort.append([0, 0])
-                prop_idea.append(0)
+                prop_idea.append(np.asarray([0, 0]))
 
             marginal_effort[idea_age][rel_age] += effort
-            prop_idea[idea_age] += 1
+            prop_idea[idea_age][rel_age] += 1
             total_ideas += 1
             del left_bracket, right_bracket, effort, idea, idea_age, curr_age, rel_age
         del idx, val, last_bracket
 
-    prop_idea = np.asarray(prop_idea) / total_ideas
+    prop_idea_age = np.asarray(prop_idea) / total_ideas
+    prop_idea = np.asarray([sum(i) for i in prop_idea]) / total_ideas
     marginal_effort = flatten_list(marginal_effort)
     marginal_effort = np.asarray([marginal_effort[::2], marginal_effort[1::2]])
     np.save(model.directory + "marginal_effort_by_age.npy", marginal_effort)
     np.save(model.directory + "prop_idea.npy", prop_idea)
+    np.save(model.directory + "prop_idea_age.npy", prop_idea_age)
     store_model_arrays(model, False, None)
     del agent_vars, agent_marg, marginal_effort, prop_idea, total_ideas
     # </editor-fold>
@@ -201,7 +276,7 @@ def collect_vars(model, store_big_data):
 
 
 def to_big_data(df, df2):  # df2 = ind_ideas
-    has_past = False  # NOTE: IMPORTANT SWITCH FOR AI!!!
+    has_past = True  # NOTE: IMPORTANT SWITCH FOR AI!!!
     last_scientist = 1  # first scientists
 
     # format (life):
@@ -219,8 +294,9 @@ def to_big_data(df, df2):  # df2 = ind_ideas
     #   11. funding_k,
     #   12. avg increment
     #   13. times invested
-    #   14. actual_return (the output)
-    param_size = 15
+    #   14. funding_mult
+    #   15. actual_return (the output)
+    param_size = 16
     current_data = None
     new_list = {}
     tp_1 = 2  # first active tp for scientist
@@ -274,6 +350,11 @@ def to_big_data(df, df2):  # df2 = ind_ideas
             # confirm with jay that we want increment (marginal + k + funding)
             new_list[id][np_idx][0] += new_dict['effort']
             new_list[id][np_idx][11] += new_dict['effort']
+        for new_dict in process_dict(val['Funding Multiplier']):
+            id = str(new_dict['idea'])
+            id_set.add(id)
+            new_list = check_id(new_list, id, param_size, tp_active)
+            new_list[id][np_idx][14] += new_dict['f_mult']
         for id in id_set:
             if new_list[id][np_idx][4] == 0:  # we count idea age based on the first time a scientists invests in the idea
                 new_list[id][np_idx][4] = idx[1] - (int(id) // config.ideas_per_time) + 0.0001  # to account for 0-aged ideas
@@ -324,7 +405,7 @@ def to_big_data(df, df2):  # df2 = ind_ideas
             new_list = check_id(new_list, id, param_size, tp_active)
             # scaling total actual returns in a TP to that in a loop (more accurate for smart_returns() in optimize.py)
             # actual_returns_tp / times invested --> makes sense because of average increment
-            new_list[id][np_idx][14] += new_dict['returns'] / new_list[id][np_idx][13]
+            new_list[id][np_idx][15] += new_dict['returns'] / new_list[id][np_idx][13]
     # run for last scientist
     if new_list != {}:  # check that row was not empty
         # for nl in list(new_list.values()):  # a list of np arrays

@@ -88,6 +88,8 @@ rand_funding = init.rand_funding
 
 with_NIH = init.with_NIH
 
+use_fund = init.use_fund
+
 # whether we want interactive steps
 show_step = init.show_step
 

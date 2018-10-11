@@ -13,8 +13,8 @@ with_dnn = True  # whether to train the neural net after storing big_data
 with_prompt = False
 
 
-def main(run_again, with_dnn, with_prompt, override):
-    with_collect = True  # whether or not to run collect after run is finished
+def main(run_again, with_dnn, with_prompt, override, with_collect=True):
+    # with_collect = True  # whether or not to run collect after run is finished
 
     if with_prompt:
         print("Are you sure you have checked the following variables?")
@@ -37,33 +37,36 @@ def main(run_again, with_dnn, with_prompt, override):
         print('changing working directory from', os.getcwd(), 'to', path)
         os.chdir(path + '/src')
 
-    print('Run Args:',sys.argv[:])
+    print('Run Args:', sys.argv[:])
     # if user wants to pass in arguments
-    if len(sys.argv) >= 5:  # config 1
-        init.time_periods = int(sys.argv[1])
-        init.ideas_per_time = int(sys.argv[2])
-        init.N = int(sys.argv[3])
-        init.time_periods_alive = int(sys.argv[4])
-    if len(sys.argv) >= 8:  # config 2
-        init.prop_sds = float(sys.argv[5])
-        init.prop_means = float(sys.argv[6])
-        init.prop_start = float(sys.argv[7])
-    if len(sys.argv) == 15:  # server config
-        init.true_means_lam = float(sys.argv[5])
-        init.prop_sds = float(sys.argv[6])
-        init.prop_means = float(sys.argv[7])
-        init.prop_start = float(sys.argv[8])
-        init.switch = float(sys.argv[9])
-        # sys.argv[10] is empty for now
-        init.all_scientists = sys.argv[11] == 'True'
-        init.use_equal = sys.argv[12] == 'True'
-        init.use_idea_shift = sys.argv[13] == 'True'
-        init.show_step = sys.argv[14] == 'True'
-    if not override:
-        if run_again:
-            init.switch = 2  # need bayesian stats to train neural net the first time
-        else:
-            init.switch = 4  # prefer neural net over bayesian stats if already trained
+    if len(sys.argv) > 1 and sys.argv[2] == 'master':
+        init.use_fund = sys.argv[2] == 'True'
+    else:
+        if len(sys.argv) >= 5:  # config 1
+            init.time_periods = int(sys.argv[1])
+            init.ideas_per_time = int(sys.argv[2])
+            init.N = int(sys.argv[3])
+            init.time_periods_alive = int(sys.argv[4])
+        if len(sys.argv) >= 8:  # config 2
+            init.prop_sds = float(sys.argv[5])
+            init.prop_means = float(sys.argv[6])
+            init.prop_start = float(sys.argv[7])
+        if len(sys.argv) == 15:  # server config
+            init.true_means_lam = float(sys.argv[5])
+            init.prop_sds = float(sys.argv[6])
+            init.prop_means = float(sys.argv[7])
+            init.prop_start = float(sys.argv[8])
+            init.switch = float(sys.argv[9])
+            # sys.argv[10] is empty for now
+            init.all_scientists = sys.argv[11] == 'True'
+            init.use_equal = sys.argv[12] == 'True'
+            init.use_idea_shift = sys.argv[13] == 'True'
+            init.show_step = sys.argv[14] == 'True'
+        if not override:
+            if run_again:
+                init.switch = 2  # need bayesian stats to train neural net the first time
+            else:
+                init.switch = 4  # prefer neural net over bayesian stats if already trained
 
     # check if we are using batch runs
     if os.path.isdir('tmp_batch'):
@@ -114,8 +117,8 @@ def main(run_again, with_dnn, with_prompt, override):
         s.call('python3 collect.py', shell=True)
         path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
         # s.call('open ../data/pages/page_agent_vars.html', shell=True)
-        s.call("/usr/bin/open -a '/Applications/Google Chrome.app' 'file://"+path+"/data/images/scatterplot_resid.png'", shell=True)  # open image with Chrome
-        s.call("/usr/bin/open -a '/Applications/Google Chrome.app' 'file://"+path+"/data/images/1-var_bar_graph_prop_idea_phase.png'", shell=True)  # open image with Chrome
+        # s.call("/usr/bin/open -a '/Applications/Google Chrome.app' 'file://"+path+"/data/images/scatterplot_resid.png'", shell=True)  # open image with Chrome
+        # s.call("/usr/bin/open -a '/Applications/Google Chrome.app' 'file://"+path+"/data/images/1-var_bar_graph_prop_idea_phase.png'", shell=True)  # open image with Chrome
         # collect.init()
     if not override:
         if with_dnn:
@@ -126,7 +129,9 @@ def main(run_again, with_dnn, with_prompt, override):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] == 'False' and sys.argv[2] == 'False' and sys.argv[3] == 'False':
+    if len(sys.argv) > 1 and sys.argv[1] == 'master':
+        main(False, False, False, True, with_collect=False)
+    elif len(sys.argv) > 1 and sys.argv[1] == 'False' and sys.argv[2] == 'False' and sys.argv[3] == 'False':
         main(False, False, False, override)
     else:
         main(already_trained == False, with_dnn, with_prompt, override)

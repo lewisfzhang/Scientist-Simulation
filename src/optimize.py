@@ -1,7 +1,7 @@
 # optimize.py
 
 from model import *
-import random
+import random, magic
 from store import *
 from scipy import stats
 from functions import *
@@ -43,11 +43,11 @@ def investing_helper(scientist, lock):
         # and exceptions on when the idea with the max return isn't chosen
         if config.switch == 3:
             # equally split scientists who need to go through funding and don't need to
-            idea_choice, max_return, funding_amt = greedy_returns(scientist, scientist.unique_id % 2 == True, lock[1], lock[2])
+            idea_choice, max_return, funding_amt = greedy_returns(scientist, scientist.must_fund, lock[1], lock[2])
         elif config.switch == 4:
             idea_choice, max_return, funding_amt = smart_returns(scientist, lock[1], lock[2])
         else:
-            idea_choice, max_return, funding_amt = probabilistic_returns(scientist, scientist.unique_id % 2 == True, lock[1], lock[2])
+            idea_choice, max_return, funding_amt = probabilistic_returns(scientist, scientist.must_fund, lock[1], lock[2])
 
         # NOTE: Commented out since this probably won't happen, just letting for loop keep on going isn't too costly
         # NOTE2: on the other hand, we need max_return to be 0 at times to encourage learning and funding parts
@@ -61,7 +61,9 @@ def investing_helper(scientist, lock):
 
         unpack_model_arrays_data(scientist.model, lock[0])
         idx_idea_phase = (scientist.model.idea_phase_label[idea_choice] < scientist.total_effort_start[idea_choice]).sum()
-        scientist.model.total_idea_phase[idx_idea_phase] += 1
+        curr_age = scientist.model.schedule.time - math.ceil(scientist.unique_id / config.N)  # same as TP - birth order in agent step function
+        rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
+        scientist.model.total_idea_phase[idx_idea_phase][rel_age] += 1
         scientist.model.total_effort[idea_choice] += scientist.marginal_effort[idea_choice]
         scientist.model.total_perceived_returns[idea_choice] += max_return
         scientist.model.total_times_invested[idea_choice] += 1
@@ -144,7 +146,8 @@ def smart_returns(scientist, *lock):  # mp locks not implemented since probably 
                     'marginal': scientist.marginal_effort[idea],
                     'funding': scientist.model.funding[idea],
                     'increment': scientist.increment,
-                    'times invested': len(scientist.model.final_marginal_invested_ideas[scientist.unique_id - 1])}
+                    'times invested': len(scientist.model.final_marginal_invested_ideas[scientist.unique_id - 1]),
+                    'f_mult': scientist.funding_invested_by_scientist[idea]}
         exp_rtn.append(np.hstack(list(new_dict.values())))  # convert vstack into hstack
 
         # ONE WITH FUNDING, ANOTHER WITHOUT
@@ -163,12 +166,15 @@ def smart_returns(scientist, *lock):  # mp locks not implemented since probably 
                     'marginal': scientist.marginal_effort[idea],
                     'funding': scientist.model.funding[idea],
                     'increment': scientist.increment,
-                    'times invested': len(scientist.model.final_marginal_invested_ideas[scientist.unique_id - 1])}
+                    'times invested': len(scientist.model.final_marginal_invested_ideas[scientist.unique_id - 1]),
+                    'f_mult': scientist.funding_invested_by_scientist[idea]}
         exp_rtn.append(np.hstack(list(new_dict.values())))  # convert vstack into hstack
         del effort, concav, slope, new_dict
 
     # exp_return simulates actual return prediction
     idea_choice, exp_return, with_funding = scientist.model.brain.process(np.asarray(exp_rtn))
+    # NOTE: compute magic without this division
+    exp_return /= magic.dnn_exp_slope_c
 
     # CHECK ON THIS, MAKE A GRAPH!!!  --> nvm, already in scatterplot residual
     # print('exp:', exp_return, 'act:', end=" ")
