@@ -209,6 +209,8 @@ def collect_vars(model, store_big_data):
             last_tp = idx[0]
         curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
         rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
+        if rel_age >= 2:
+            rel_age = 1
         for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
             data_past.append(np.asarray([idea_past[new_dict['idea']], 0, 0]))
             data_past[len(data_past)-1][rel_age+1] += new_dict['effort']   # rel+1 because 0 index is idea effort info
@@ -217,10 +219,7 @@ def collect_vars(model, store_big_data):
             data[rel_age+1][new_dict['idea']] += new_dict['effort']  # rel+1 because 0 index is idea effort info
             if new_data != [] and new_dict['idea'] in new_data[0]:
                 idx = new_data[0].index(new_dict['idea'])
-                try:
-                    new_data[idx][rel_age+1] += new_dict['effort']
-                except Exception as e:
-                    w.warn("index error, idx: "+str(idx)+" rel_age: "+str(rel_age)+" curr_age: "+str(curr_age))
+                new_data[idx][rel_age+1] += new_dict['effort']
             else:
                 new_data.append([new_dict['idea'], 0, 0])
                 new_data[len(new_data)-1][rel_age+1] += new_dict['effort']  # rel+1 because 0 index is idea effort info

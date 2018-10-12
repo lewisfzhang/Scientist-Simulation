@@ -20,7 +20,7 @@ import src.config as config
 def main():
     clear_tb_board()
 
-    EPOCHS = 30
+    EPOCHS = 50
     rms_k = 0.001
     path = 'results/best_weights_{0}.{1}'
     scope = ''

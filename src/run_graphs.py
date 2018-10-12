@@ -5,7 +5,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 import matplotlib.pyplot as plt
-import math, config, pickle
+import math, config, pickle, time
 import pandas as pd
 from functions import *
 from scipy.interpolate import spline
@@ -202,7 +202,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
     count = 1
     if title[:2] == "2x":
         count = 2
-        title = title[3:]+' (FUNDING)'  # format: "2x stuff"
+        title = title[3:]+'\n (FUNDING)'  # format: "2x stuff"
     if average is None:
         name = ''
     elif average:
@@ -219,6 +219,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
         name += linear  # linear represents the string we want
     temp_x_var = np.copy(x_var)
     temp_y_var = np.copy(y_var)
+    x_none = True
     for i in range(count):
         if count != 1:
             y_var = temp_y_var[i]
@@ -229,6 +230,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
         if linear is False:
             y_var = log_0(y_var)
         if x_var is not None:
+            x_none = False
             x_var = np.arange(1, len(y_var))
         else:
             x_var = np.arange(len(y_var))
@@ -252,7 +254,10 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
             plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
         plt.xticks(np.arange(min(x_var), max(x_var) + 1, 2.0))
         labels(x_label, y_label, title)
-        title = "NO FUNDING"
+        if x_none is True:
+            x_var = None  # reset for condition checking above
+        if count != 1:
+            title = "NO FUNDING"
     fig = plt.gcf()
     dpi = fig.get_dpi()
     fig.set_size_inches(count * config.x_width / float(dpi), config.y_width / float(dpi))

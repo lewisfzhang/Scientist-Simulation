@@ -39,7 +39,7 @@ prop_start = 0.25
 # 2 = bayesian stats
 # 3 = greedy heuristic
 # 4 = neural net
-switch = 2
+switch = 4
 
 # whether to report all scientists in agent_df
 all_scientists = False

@@ -30,7 +30,6 @@ def main2():
 
     model_directory1 = '../zipped_archives/master/funding/'
     model_directory2 = '../zipped_archives/master/no_funding/'
-    model_directory = model_directory1
 
     # loading variables after model is done running
     social_output = np_load2('social_output', model_directory1, model_directory2, is_same="double")
@@ -38,7 +37,7 @@ def main2():
     prop_age = np_load2('prop_age', model_directory1, model_directory2, is_same="double")
     prop_idea = np_load2('prop_idea', model_directory1, model_directory2, is_same="double")
     prop_idea_age = insert_x(np_load2('prop_idea_age', model_directory1, model_directory2, is_same=True))
-    marginal_effort_by_age = np_load2('marginal_effort_by_age', model_directory1, model_directory2, is_same="vstack")
+    marginal_effort_by_age = np_load2('marginal_effort_by_age', model_directory1, model_directory2)
     idea_phase = np_load2("idea_phase", model_directory1, model_directory2, is_same="double")
     idea_phase_age = np_load2('idea_phase_age', model_directory1, model_directory2, is_same=True)
     prop_invested = np_load2("prop_invested", model_directory1, model_directory2, is_same="double")
@@ -93,6 +92,8 @@ def main2():
     for i in arg_list:
         i.append(False)
         i.append(False)
+        # print('\n\nstarting', i)
+        # func_distr(*i)
 
     p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
     p.close()
