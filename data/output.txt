@@ -23727,3 +23727,102 @@ Elapsed runtime:  28.01957090900396 seconds
  
 step: 17 
 Elapsed runtime:  30.200254750001477 seconds 
+ 
+step: 18 
+Elapsed runtime:  38.54342243398423 seconds 
+ 
+step: 19 
+Elapsed runtime:  54.50778191999416 seconds 
+ 
+step: 20 
+Elapsed runtime:  43.95903135702247 seconds 
+
+
+done with step 21 ... now running collect_vars 
+
+finished line_graph 1.5156329949968494 seconds 
+
+finished line_graph 1.7629429800144862 seconds 
+
+finished line_graph 1.8716106139763724 seconds 
+
+finished line_graph 1.4405963990138844 seconds 
+
+finished one_var_bar_graph 1.452886334998766 seconds 
+
+finished two_var_line_graph 1.5965587609971408 seconds 
+
+finished two_var_line_graph 1.4281603870040271 seconds 
+
+finished two_var_line_graph 1.4805581340042409 seconds 
+
+finished discrete_line_graph 2.9483440599869937 seconds 
+
+finished two_var_scatterplot 1.3795714619918726 seconds 
+
+finished two_var_line_graph 1.8048235500173178 seconds 
+
+finished double_bar 1.1119340949808247 seconds 
+
+finished two_var_line_graph 3.61446415699902 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  14.703326317976462 seconds 
+
+END OF PROGRAM
+total runtime: 542.0424919128418 seconds
+
+ 
+
+
+done with step 21 ... now running collect_vars 
+
+
+done with step 21 ... now running collect_vars 
+
+
+done with step 21 ... now running collect_vars 
+
+
+done with step 21 ... now running collect_vars 
+
+
+done with step 21 ... now running collect_vars 
+
+
+done with step 21 ... now running collect_vars 
+time elapsed: 5.969513538992032 
+
+finished line_graph 1.4545724560157396 seconds 
+
+finished line_graph 1.802997841994511 seconds 
+
+finished line_graph 1.8948900219984353 seconds 
+
+finished line_graph 1.6421925019822083 seconds 
+
+finished one_var_bar_graph 1.462500794994412 seconds 
+
+finished two_var_line_graph 1.5941559560014866 seconds 
+
+finished two_var_line_graph 1.7070883359992877 seconds 
+
+finished two_var_line_graph 1.8283271370164584 seconds 
+
+finished discrete_line_graph 3.312488402996678 seconds 
+
+finished two_var_scatterplot 1.259821102983551 seconds 
+
+finished two_var_line_graph 1.6786875530087855 seconds 
+
+finished double_bar 0.9892252529971302 seconds 
+
+finished two_var_line_graph 3.0189001349790487 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  14.174973287998 seconds 
+
+END OF PROGRAM
+total runtime: 1057.2170948982239 seconds
+
+ 

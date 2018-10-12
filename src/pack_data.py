@@ -8,8 +8,8 @@ import subprocess as s
 
 def main():
     model = load_model()
-    collect_vars(model, True)
-    s.call('python3 collect.py', shell=True)
+    collect_vars(model, False)
+    # s.call('python3 collect.py', shell=True)
 
 
 # for data collecting after model has finished running
@@ -198,6 +198,7 @@ def collect_vars(model, store_big_data):
     last_tp = -1
     idea_past = np.zeros(model.total_ideas)
     data_past = []
+    idea_list = []
     # np.vstack([np.arange(model.total_ideas), np.zeros(3*model.total_ideas).reshape(3, model.total_ideas)])
     for idx, val in agent_vars.iterrows():
         if last_tp != idx[0]:  # new TP
@@ -206,6 +207,7 @@ def collect_vars(model, store_big_data):
                     new_data[i][0] = last_tp - (new_data[i][0] // config.ideas_per_time)
                     data_time = np.vstack([data_time, new_data]) if data_time is not None else new_data
             new_data = []
+            idea_list = []
             last_tp = idx[0]
         curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
         rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
@@ -217,12 +219,13 @@ def collect_vars(model, store_big_data):
             idea_past[new_dict['idea']] += new_dict['effort']
 
             data[rel_age+1][new_dict['idea']] += new_dict['effort']  # rel+1 because 0 index is idea effort info
-            if new_data != [] and new_dict['idea'] in new_data[0]:
-                idx = new_data[0].index(new_dict['idea'])
+            if new_data != [] and new_dict['idea'] in idea_list:
+                idx = idea_list.index(new_dict['idea'])
                 new_data[idx][rel_age+1] += new_dict['effort']
             else:
                 new_data.append([new_dict['idea'], 0, 0])
                 new_data[len(new_data)-1][rel_age+1] += new_dict['effort']  # rel+1 because 0 index is idea effort info
+                idea_list.append(new_dict['idea'])
     # remove all columns of 0, where idea has 0 effort invested across all scientists
     np.save(model.directory + "age_effort_length.npy", data[:, ~np.all(data[1:] == 0, axis=0)])
     np.save(model.directory + "age_effort_time.npy", data_time.transpose())
