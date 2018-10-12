@@ -269,7 +269,10 @@ def get_pdf(arr):
     if arr.shape[0] == 1:
         return arr / sum(arr)
     else:
-        return (arr / np.asarray([sum(i) for i in arr]).reshape(arr.shape[0], 1))[:, 0]
+        out = []
+        out.append(arr[0] / sum(arr[0]))
+        out.append(arr[1] / sum(arr[1]))
+        return np.asarray(out)
 
 
 # returns cdf based on pdf array

@@ -23,24 +23,34 @@ def main():
 
     s.call('mkdir ../zipped_archives/master', shell=True)
 
-    print("\n\n------------------FUNDING------------------\n\n")
-    s.call('python3 run.py master True', shell=True)
-    copy_contents("funding")
+    key = ['Bayesian', "Heuristic", "DNN"]
+    folder_list = []
+    count = 1
+    has_big_data = False
+    for alg in [2, 3, 4, 4]:
+        print("\n\n------------------ALG {}------------------\n\n".format(alg))
+        s.call('mkdir ../zipped_archives/master/'+key[alg-2]+str(count), shell=True)
+        params = str(alg) + ' ' + str(has_big_data)
 
-    print("\n\n------------------NO FUNDING------------------\n\n")
-    s.call('python3 run.py master False', shell=True)
-    copy_contents("no_funding")
+        print("\n\n------------------FUNDING------------------\n\n")
+        s.call('python3 run.py master True '+params, shell=True)
+        copy_contents("funding")
+        save_contents(key[alg-2]+str(count), "funding")
 
-    # # RUN HEURISTIC
-    # s.call('python3 run.py alg H', shell=True)
-    # copy_contents('heuristic')
-    #
-    # # RUN BAYESIAN
-    # s.call('python3 run.py alg B', shell=True)
-    # copy_contents('bayesian')
-    #
-    # # RUN DNN
-    # s.call('python3 run.py', shell=True)
+        print("\n\n------------------NO FUNDING------------------\n\n")
+        s.call('python3 run.py master False '+params, shell=True)
+        copy_contents("no_funding")
+        save_contents(key[alg-2]+str(count), "no_funding")
+
+        collect()
+        save_data(key[alg-2]+str(count))
+        folder_list.append(key[alg-2]+str(count))
+        has_big_data = True  # all future runs add on to big data
+
+        if alg == 4:
+            count = 2
+
+    generate_html(folder_list)
 
 
 def collect():
@@ -48,6 +58,25 @@ def collect():
     s.call('python collect.py master', shell=True)
 
 
+def save_data(folder):
+    # saving the graphs/data
+    s.call('mkdir ../zipped_archives/master/'+folder+'/data', shell=True)
+    s.call('cp -r ../data/ ../zipped_archives/master/'+folder+'/data', shell=True)
+
+
+def save_contents(folder, name):
+    s.call('mkdir ../zipped_archives/master/'+folder+'/'+name, shell=True)
+    s.call('cp -r tmp/model/ ../zipped_archives/master/'+folder+'/'+name, shell=True)
+
+
+def generate_html(folder_list):
+    html = ''
+    for i in folder_list:
+        html += '<a href="{0}/data/pages/all_images.html">{0}</a><br />'.format(i)
+    with open('../zipped_archives/master/image_explorer.html', 'w') as file:
+        file.write(html)
+
+
 if __name__ == '__main__':
-    # main()
-    collect()
+    main()
+    # collect()

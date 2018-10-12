@@ -1,0 +1,456 @@
+
+
+Variables:
+ {'seed': 518671, 'use_multiprocessing': False, 'use_store': False, 'optimization': 2, 'time_periods': 10, 'ideas_per_time': 5, 'N': 10, 'use_store_model': False, 'time_periods_alive': 4, 'true_means_lam': 300.0, 'true_sds_lam': 120, 'start_effort_lam': 150, 'k_lam': 37, 'use_multithreading': False, 'use_equal': False, 'use_idea_shift': False} 
+ 
+time to create model object... now entering main function 
+Elapsed runtime:  0.06030344404280186 seconds 
+ 
+step: 0 
+Elapsed runtime:  0.0650979689671658 seconds 
+ 
+step: 1 
+Elapsed runtime:  0.0342761889914982 seconds 
+
+
+done with step 2 ... now running collect_vars 
+time elapsed: 0.0672121139941737 
+
+finished agent 0.061692057992331684 seconds 
+
+finished ideas 0.058778545004315674 seconds 
+
+finished model 0.06090199702885002 seconds 
+
+finished ind_ideas 0.06259942200267687 seconds 
+
+finished two_var_line_graph 0.9933165609836578 seconds 
+
+finished im_graph 1.2110015960060991 seconds 
+
+finished one_var_bar_graph 0.9317852539825253 seconds 
+
+finished resid_scatterplot 2.267912570037879 seconds 
+
+finished im_graph 1.2366051059798338 seconds 
+
+finished one_var_bar_graph 0.9117401080438867 seconds 
+
+finished line_graph 0.874517077987548 seconds 
+
+finished one_var_bar_graph 0.8955054960097186 seconds 
+
+finished one_var_bar_graph 0.7806887530023232 seconds 
+
+finished discrete_line_graph 0.8572891699732281 seconds 
+
+finished one_var_bar_graph 0.7811326690134592 seconds 
+
+finished discrete_line_graph 0.714923410967458 seconds 
+ 
+step: 2 
+Elapsed runtime:  14.10466231702594 seconds 
+
+
+done with step 3 ... now running collect_vars 
+time elapsed: 0.10132551699643955 
+
+finished agent 0.0697920800303109 seconds 
+
+finished ideas 0.06650765700032935 seconds 
+
+finished model 0.05417332303477451 seconds 
+
+finished ind_ideas 0.05260034999810159 seconds 
+
+finished two_var_line_graph 0.9473078720038757 seconds 
+
+finished im_graph 1.158442798012402 seconds 
+
+finished one_var_bar_graph 0.8108068400179036 seconds 
+
+finished im_graph 1.0872081500128843 seconds 
+
+finished resid_scatterplot 2.5140914529911242 seconds 
+
+finished one_var_bar_graph 0.8997987469774671 seconds 
+
+finished one_var_bar_graph 0.989646818023175 seconds 
+
+finished line_graph 1.048678636958357 seconds 
+
+finished one_var_bar_graph 0.9756138650118373 seconds 
+
+finished one_var_bar_graph 0.7607028509955853 seconds 
+
+finished discrete_line_graph 0.7746495169703849 seconds 
+
+finished discrete_line_graph 0.6011968789971434 seconds 
+ 
+step: 3 
+Elapsed runtime:  15.566522141976748 seconds 
+
+
+done with step 4 ... now running collect_vars 
+time elapsed: 0.3928187899873592 
+
+finished agent 0.07246094004949555 seconds 
+
+finished ideas 0.0700480790110305 seconds 
+
+finished model 0.0611538760131225 seconds 
+
+finished ind_ideas 0.046928278054110706 seconds 
+
+finished two_var_line_graph 1.5650052670389414 seconds 
+
+finished im_graph 1.7498874210286885 seconds 
+
+finished one_var_bar_graph 2.009404861018993 seconds 
+
+finished im_graph 2.816830894036684 seconds 
+
+finished one_var_bar_graph 1.5860024919966236 seconds 
+
+finished resid_scatterplot 5.256637351994868 seconds 
+
+finished one_var_bar_graph 1.1718295169994235 seconds 
+
+finished one_var_bar_graph 1.3698698110529222 seconds 
+
+finished line_graph 1.3863095820415765 seconds 
+
+finished one_var_bar_graph 0.9839504990377463 seconds 
+
+finished discrete_line_graph 0.7094499539816752 seconds 
+
+finished discrete_line_graph 0.636258643004112 seconds 
+ 
+step: 4 
+Elapsed runtime:  17.879360160033684 seconds 
+
+
+done with step 5 ... now running collect_vars 
+time elapsed: 0.4999081559944898 
+
+finished agent 0.056472503987606615 seconds 
+
+finished model 0.055956146970856935 seconds 
+
+finished ideas 0.05473183101275936 seconds 
+
+finished ind_ideas 0.04220890800934285 seconds 
+
+finished two_var_line_graph 1.0095953110139817 seconds 
+
+finished im_graph 1.1951269879937172 seconds 
+
+finished one_var_bar_graph 0.7987164329970255 seconds 
+
+finished im_graph 1.4568982240161858 seconds 
+
+finished one_var_bar_graph 1.4886402860283852 seconds 
+
+finished one_var_bar_graph 1.4068248210242018 seconds 
+
+finished resid_scatterplot 4.33832145301858 seconds 
+
+finished one_var_bar_graph 1.060571476991754 seconds 
+
+finished one_var_bar_graph 0.9323415159597062 seconds 
+
+finished line_graph 0.9834983839537017 seconds 
+
+finished discrete_line_graph 1.0904654710320756 seconds 
+
+finished discrete_line_graph 0.6781760160229169 seconds 
+ 
+step: 5 
+Elapsed runtime:  17.34448072197847 seconds 
+
+
+done with step 6 ... now running collect_vars 
+time elapsed: 0.4405071279616095 
+
+finished ideas 0.061848801968153566 seconds 
+
+finished agent 0.06786947802174836 seconds 
+
+finished model 0.061731586989481 seconds 
+
+finished ind_ideas 0.07541046995902434 seconds 
+
+finished two_var_line_graph 0.9034922069986351 seconds 
+
+finished im_graph 1.143307571997866 seconds 
+
+finished one_var_bar_graph 0.8739981109974906 seconds 
+
+finished im_graph 1.181314530025702 seconds 
+
+finished one_var_bar_graph 0.8665097079938278 seconds 
+
+finished one_var_bar_graph 0.8568758909823373 seconds 
+
+finished one_var_bar_graph 0.8581500509753823 seconds 
+
+finished resid_scatterplot 3.8964082470047288 seconds 
+
+finished one_var_bar_graph 0.8134021020377986 seconds 
+
+finished discrete_line_graph 0.9343133569927886 seconds 
+
+finished line_graph 0.7170116910128854 seconds 
+
+finished discrete_line_graph 0.6649061719654128 seconds 
+ 
+step: 6 
+Elapsed runtime:  13.827777151018381 seconds 
+
+
+done with step 7 ... now running collect_vars 
+time elapsed: 0.4663993899594061 
+
+finished ideas 0.127395591000095 seconds 
+
+finished agent 0.12524890899658203 seconds 
+
+finished ind_ideas 0.06406221998622641 seconds 
+
+finished model 0.05249093798920512 seconds 
+
+finished two_var_line_graph 1.4213649849989451 seconds 
+
+finished im_graph 1.586851370986551 seconds 
+
+finished one_var_bar_graph 0.7502917330130003 seconds 
+
+finished im_graph 0.9910448209848255 seconds 
+
+finished one_var_bar_graph 0.7010349819902331 seconds 
+
+finished one_var_bar_graph 0.70320357196033 seconds 
+
+finished one_var_bar_graph 0.7022495849523693 seconds 
+
+finished one_var_bar_graph 0.6574746260303073 seconds 
+
+finished discrete_line_graph 0.7616975280106999 seconds 
+
+finished resid_scatterplot 4.422253875993192 seconds 
+
+finished line_graph 0.5603435179800726 seconds 
+
+finished discrete_line_graph 0.6822096459800377 seconds 
+ 
+step: 7 
+Elapsed runtime:  15.087760848982725 seconds 
+
+
+done with step 8 ... now running collect_vars 
+time elapsed: 0.5538350730203092 
+
+finished agent 0.05838427395792678 seconds 
+
+finished ideas 0.055431003973353654 seconds 
+
+finished model 0.04248801997164264 seconds 
+
+finished ind_ideas 0.04586217802716419 seconds 
+
+finished two_var_line_graph 0.9200514019466937 seconds 
+
+finished im_graph 1.1199237700202502 seconds 
+
+finished one_var_bar_graph 0.8389405279885978 seconds 
+
+finished im_graph 1.0529116209945641 seconds 
+
+finished one_var_bar_graph 0.7470389689551666 seconds 
+
+finished one_var_bar_graph 0.747302055999171 seconds 
+
+finished one_var_bar_graph 0.6943412309628911 seconds 
+
+finished one_var_bar_graph 0.6955209959996864 seconds 
+
+finished discrete_line_graph 0.7877580170170404 seconds 
+
+finished resid_scatterplot 4.048778886033688 seconds 
+
+finished line_graph 0.5614367619855329 seconds 
+
+finished discrete_line_graph 0.684994947980158 seconds 
+ 
+step: 8 
+Elapsed runtime:  13.496389510983136 seconds 
+
+
+done with step 9 ... now running collect_vars 
+time elapsed: 0.5848188599920832 
+
+finished agent 0.05607073201099411 seconds 
+
+finished ideas 0.05191228003241122 seconds 
+
+finished ind_ideas 0.04288334696320817 seconds 
+
+finished model 0.048195511975791305 seconds 
+
+finished two_var_line_graph 0.8236509549897164 seconds 
+
+finished im_graph 1.0480351849691942 seconds 
+
+finished one_var_bar_graph 0.7155348340165801 seconds 
+
+finished im_graph 0.9671621050219983 seconds 
+
+finished one_var_bar_graph 0.6956774970167316 seconds 
+
+finished one_var_bar_graph 0.6716056530131027 seconds 
+
+finished one_var_bar_graph 0.703185936959926 seconds 
+
+finished one_var_bar_graph 0.6526021070312709 seconds 
+
+finished discrete_line_graph 0.8161307569826022 seconds 
+
+finished resid_scatterplot 4.145585139049217 seconds 
+
+finished discrete_line_graph 0.7191607940476388 seconds 
+
+finished line_graph 0.6292868420132436 seconds 
+ 
+step: 9 
+Elapsed runtime:  13.823683805007022 seconds 
+
+
+done with step 10 ... now running collect_vars 
+time elapsed: 0.5648841439979151 
+
+finished agent 0.1252822109963745 seconds 
+
+finished ideas 0.05361244798405096 seconds 
+
+finished model 0.04688755900133401 seconds 
+
+finished ind_ideas 0.05771260097390041 seconds 
+
+finished two_var_line_graph 1.1237445090082474 seconds 
+
+finished im_graph 1.3482022079988383 seconds 
+
+finished one_var_bar_graph 0.9476479209843092 seconds 
+
+finished im_graph 1.5194285999750718 seconds 
+
+finished one_var_bar_graph 0.9313700560014695 seconds 
+
+finished one_var_bar_graph 0.7300456449738704 seconds 
+
+finished one_var_bar_graph 0.8251264760037884 seconds 
+
+finished one_var_bar_graph 0.6952154900063761 seconds 
+
+finished discrete_line_graph 0.8952233780291863 seconds 
+
+finished resid_scatterplot 5.550073544029146 seconds 
+
+finished discrete_line_graph 0.8708948999992572 seconds 
+
+finished line_graph 0.5918270159745589 seconds 
+ 
+step: 10 
+Elapsed runtime:  16.32275772903813 seconds 
+
+
+done with step 11 ... now running collect_vars 
+time elapsed: 0.6991866009775549 
+ 
+step: 11 
+Elapsed runtime:  1.9630317249684595 seconds 
+
+TOTAL TIME TO FINISH RUNNING SIMULATION: 144.9174393650028 seconds 
+
+finished agent 0.0603968600044027 seconds 
+
+finished ideas 0.0855566899990663 seconds 
+
+finished ind_ideas 0.06281429994851351 seconds 
+
+finished model 0.0920639350079 seconds 
+
+finished two_var_line_graph 0.8458248200477101 seconds 
+
+finished im_graph 1.0867264189873822 seconds 
+
+finished one_var_bar_graph 0.8234260440221988 seconds 
+
+finished im_graph 1.0225817229948007 seconds 
+
+finished one_var_bar_graph 0.696418632986024 seconds 
+
+finished one_var_bar_graph 0.6553634449956007 seconds 
+
+finished one_var_bar_graph 0.6991712030139752 seconds 
+
+finished one_var_bar_graph 0.6679371729842387 seconds 
+
+finished discrete_line_graph 0.7761811260133982 seconds 
+
+finished discrete_line_graph 0.797302421007771 seconds 
+
+finished resid_scatterplot 4.6581263660336845 seconds 
+
+finished line_graph 0.5223006719606929 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.320013922988437 seconds 
+
+END OF PROGRAM
+total runtime: 152.11394500732422 seconds
+
+ 
+
+finished agent 0.07563933701021597 seconds 
+
+finished ideas 0.07589811598882079 seconds 
+
+finished model 0.06753279303666204 seconds 
+
+finished ind_ideas 0.062215695972554386 seconds 
+
+finished two_var_line_graph 0.9011643980047666 seconds 
+
+finished im_graph 1.0448492519790307 seconds 
+
+finished one_var_bar_graph 0.7276959730079398 seconds 
+
+finished im_graph 1.0084058900247328 seconds 
+
+finished one_var_bar_graph 0.7309598279534839 seconds 
+
+finished one_var_bar_graph 0.69838538300246 seconds 
+
+finished one_var_bar_graph 1.0879478830029257 seconds 
+
+finished one_var_bar_graph 1.1127530820085667 seconds 
+
+finished discrete_line_graph 1.289884317026008 seconds 
+
+finished resid_scatterplot 5.630501028965227 seconds 
+
+finished discrete_line_graph 0.9788705779938027 seconds 
+
+finished line_graph 0.5791294520022348 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.460776388994418 seconds 
+
+END OF PROGRAM
+total runtime: 165.75437998771667 seconds
+
+ 
+Scientist Simulation.ipynb __pycache__ batch.sh collect.py config.py final.py functions.py html_helper.py img init.py install.log install.sh model.py optimize.py process.py run.py run.sh run_graphs.py server.py static store.py templates tmp zip.sh Succeed Scientist Simulation.ipynb __pycache__ batch.sh collect.py config.py final.py functions.py html_helper.py img init.py install.log install.sh model.py optimize.py process.py run.py run.sh run_graphs.py server.py static store.py templates tmp zip.sh
+
+tar -C ../data -czf ../data/zipped/run_10_5_10_4_300_0.4_0.5_0.25_2_50_True_True_True_True.tar.gz images pages parameters.txt output.txt saved tmp_model

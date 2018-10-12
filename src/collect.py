@@ -13,17 +13,19 @@ from IPython.core.display import HTML
 
 def main2():
     config.start = timeit.default_timer()
+    use_mp = True
 
     # initiate multiprocessing with 'num_processors' threads
     # NOTE: increasing the number of processors does not always increase speed of program. in fact, it may actually
     # slow down the program due to the additional overhead needed for process switching
     # NOTE: fork doesn't work on Mac, spawn is best because it works on Mac and is default on Windows
-    try:
-        mp.set_start_method('spawn')
-    except Exception as e:
-        print(e)  # context probably already set
+    if use_mp:
+        try:
+            mp.set_start_method('spawn')
+        except Exception as e:
+            print(e)  # context probably already set
 
-    p = mp.Pool(processes=config.num_processors)  # default number is mp.cpu_count()
+        p = mp.Pool(processes=config.num_processors)  # default number is mp.cpu_count()
 
     # get starting time from run.py
     start_prog = int(open(config.tmp_loc + 'start_prog.txt', 'r').read())
@@ -92,12 +94,14 @@ def main2():
     for i in arg_list:
         i.append(False)
         i.append(False)
-        # print('\n\nstarting', i)
-        # func_distr(*i)
+        if not use_mp:
+            print('\n\nstarting', i)
+            func_distr(*i)
 
-    p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
-    p.close()
-    p.join()
+    if use_mp:
+        p.starmap(func_distr, arg_list)  # starmap maps each function call into a parallel thread
+        p.close()
+        p.join()
 
     # saves all of the images to an html file
     png_to_html(path)

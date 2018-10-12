@@ -16,7 +16,7 @@ ideas_per_time = 10
 
 # Scalar: number of scientists born per time period
 # NOTE: according to jay, N should be greater than ideas_per_time
-N = 20
+N = 10
 
 # the number of TP a scientist can actively invest in ideas
 time_periods_alive = 8
@@ -64,3 +64,5 @@ rand_funding = False
 with_NIH = False
 
 use_fund = True
+
+has_past = False

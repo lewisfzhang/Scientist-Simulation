@@ -122,3 +122,6 @@ x_width = 1300
 y_width = 1220
 sq_width = 2000
 # </editor-fold>
+
+# whether to create new big data or not
+has_past = init.has_past

@@ -30,7 +30,9 @@ def collect_vars(model, store_big_data):
     unlock_actual_returns(model, None)
     idea = range(0, model.total_ideas, 1)
     tp = np.arange(model.total_ideas) // config.ideas_per_time
-    prop_invested = rounded_tuple(model.total_effort / inv_logistic_cdf(0.99, model.actual_returns_matrix[2], model.actual_returns_matrix[1]))
+    prop_invested = model.total_effort / inv_logistic_cdf(0.99, model.actual_returns_matrix[2], model.actual_returns_matrix[1])
+    # ensures the maximum is 100% overall after adjustment of means, sds, and shift
+    prop_invested = rounded_tuple(prop_invested / max(prop_invested))
     idea_qual = model.actual_returns_matrix[0][np.where(np.asarray(prop_invested, dtype=np.float32) != 0.0)]
     avg_k = np.round(divide_0(model.total_k, model.total_scientists_invested), 2)
     total_perceived_returns = np.round(model.total_perceived_returns, 2)
@@ -278,7 +280,7 @@ def collect_vars(model, store_big_data):
 
 
 def to_big_data(df, df2):  # df2 = ind_ideas
-    has_past = True  # NOTE: IMPORTANT SWITCH FOR AI!!!
+    has_past = config.has_past  # NOTE: IMPORTANT SWITCH FOR AI!!!
     last_scientist = 1  # first scientists
 
     # format (life):

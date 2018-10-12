@@ -39,8 +39,11 @@ def main(run_again, with_dnn, with_prompt, override, with_collect=True):
 
     print('Run Args:', sys.argv[:])
     # if user wants to pass in arguments
-    if len(sys.argv) > 1 and sys.argv[2] == 'master':
+    if len(sys.argv) > 1 and sys.argv[1] == 'master':
         init.use_fund = sys.argv[2] == 'True'
+        if len(sys.argv) == 5:
+            init.switch = int(sys.argv[3])
+            init.has_past = sys.argv[4] == 'True'
     else:
         if len(sys.argv) >= 5:  # config 1
             init.time_periods = int(sys.argv[1])
@@ -86,7 +89,7 @@ def main(run_again, with_dnn, with_prompt, override, with_collect=True):
 
     # default parameters for model as a dictionary
     all_params = {"seed": config.seed, "use_multiprocessing": config.use_multiprocessing,
-                  "use_store": config.use_store, "optimization": config.switch, "time_periods": config.time_periods,
+                  "use_fund": config.use_fund, "optimization": config.switch, "time_periods": config.time_periods,
                   "ideas_per_time": config.ideas_per_time, "N": config.N, "use_store_model": config.use_store_model,
                   "time_periods_alive": config.time_periods_alive, "true_means_lam": config.true_means_lam,
                   "true_sds_lam": config.true_sds_lam, "start_effort_lam": config.start_effort_lam,
