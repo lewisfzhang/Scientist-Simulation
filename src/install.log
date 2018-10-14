@@ -1,102 +1,125 @@
 Collecting pip
-  Downloading https://files.pythonhosted.org/packages/5f/25/e52d3f31441505a5f3af41213346e5b6c221c9e086a166f3703d2ddaf940/pip-18.0-py2.py3-none-any.whl (1.3MB)
+  Downloading https://files.pythonhosted.org/packages/c2/d7/90f34cb0d83a6c5631cf71dfe64cc1054598c843a92b400e55675cc2ac37/pip-18.1-py2.py3-none-any.whl (1.3MB)
 Installing collected packages: pip
   Found existing installation: pip 9.0.3
     Uninstalling pip-9.0.3:
       Successfully uninstalled pip-9.0.3
-Successfully installed pip-18.0
+Successfully installed pip-18.1
 Collecting IPython
-  Downloading https://files.pythonhosted.org/packages/f7/62/2fef7db3a7b75e8099c3d9db2630ae5ba0b9eefefd91f7497862393d90e8/ipython-6.5.0-py3-none-any.whl (748kB)
+  Downloading https://files.pythonhosted.org/packages/a0/27/29d66ed395a5c2c3a912332d446a54e2bc3277c36b0bbd22bc71623e0193/ipython-7.0.1-py3-none-any.whl (760kB)
 Collecting Mesa
   Using cached https://files.pythonhosted.org/packages/21/6a/cd526b12643847a5c957b7af8c1867f36d09b92531d3d7f7c3f9b9084687/Mesa-0.8.4-py3-none-any.whl
 Collecting matplotlib
-  Using cached https://files.pythonhosted.org/packages/8a/d5/5337662b714c65100f3545ed3909e9478614d1ebf1f692a52981f3f5167b/matplotlib-2.2.2-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+  Downloading https://files.pythonhosted.org/packages/f0/de/49aea99b9d088ce4457b5b171c016173347eba7b79753cdacbbd7da89dee/matplotlib-3.0.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (14.1MB)
 Collecting numpy
-  Downloading https://files.pythonhosted.org/packages/6a/d5/218414f0f41cb3f183d55d68dbcd996fa3602d5849bdf2ad6c059e98fa68/numpy-1.15.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (24.5MB)
+  Downloading https://files.pythonhosted.org/packages/0a/2b/726b7d4e4ba844d4805c52b8e05299a5f49bc16c69ca0fa8e1964c0871fe/numpy-1.15.2-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (24.5MB)
 Collecting scipy
   Using cached https://files.pythonhosted.org/packages/a0/b6/70bf61c1badb5fea82d4c558e05e76c2dee5e77bb072fe465d7c7a87287d/scipy-1.1.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
 Collecting flask
   Using cached https://files.pythonhosted.org/packages/7f/e7/08578774ed4536d3242b14dacb4696386634607af824ea997202cd0edb4b/Flask-1.0.2-py2.py3-none-any.whl
 Collecting requests
   Using cached https://files.pythonhosted.org/packages/65/47/7e02164a2a3db50ed6d8a6ab1d6d60b69c4c3fdf57a284257925dfc12bda/requests-2.19.1-py2.py3-none-any.whl
-Collecting decorator (from IPython)
-  Using cached https://files.pythonhosted.org/packages/bc/bb/a24838832ba35baf52f32ab1a49b906b5f82fb7c76b2f6a7e35e140bac30/decorator-4.3.0-py2.py3-none-any.whl
-Collecting backcall (from IPython)
-  Using cached https://files.pythonhosted.org/packages/84/71/c8ca4f5bb1e08401b916c68003acf0a0655df935d74d93bf3f3364b310e0/backcall-0.1.0.tar.gz
+Collecting tensorflow
+  Downloading https://files.pythonhosted.org/packages/70/78/cd74769027b6249e45807637c1aa3ef212b9492349cca4b87e5de1a10548/tensorflow-1.11.0-cp36-cp36m-macosx_10_11_x86_64.whl (59.3MB)
+Collecting sklearn
 Collecting appnope; sys_platform == "darwin" (from IPython)
   Using cached https://files.pythonhosted.org/packages/87/a9/7985e6a53402f294c8f0e8eff3151a83f1fb901fa92909bb3ff29b4d22af/appnope-0.1.0-py2.py3-none-any.whl
-Collecting pexpect; sys_platform != "win32" (from IPython)
-  Using cached https://files.pythonhosted.org/packages/89/e6/b5a1de8b0cc4e07ca1b305a4fcc3f9806025c1b651ea302646341222f88b/pexpect-4.6.0-py2.py3-none-any.whl
+Collecting simplegeneric>0.8 (from IPython)
+Collecting decorator (from IPython)
+  Using cached https://files.pythonhosted.org/packages/bc/bb/a24838832ba35baf52f32ab1a49b906b5f82fb7c76b2f6a7e35e140bac30/decorator-4.3.0-py2.py3-none-any.whl
+Collecting prompt-toolkit<2.1.0,>=2.0.0 (from IPython)
+  Downloading https://files.pythonhosted.org/packages/06/6f/03f10d2206e34a81934b10fb43975a29028e0fe2ae330f9f000bbc0780b7/prompt_toolkit-2.0.6-py3-none-any.whl (336kB)
+Requirement already satisfied: setuptools>=18.5 in /Users/stanford/venv/lib/python3.6/site-packages (from IPython) (39.0.1)
+Collecting jedi>=0.10 (from IPython)
+  Downloading https://files.pythonhosted.org/packages/7a/1a/9bd24a185873b998611c2d8d4fb15cd5e8a879ead36355df7ee53e9111bf/jedi-0.13.1-py2.py3-none-any.whl (177kB)
 Collecting pygments (from IPython)
   Using cached https://files.pythonhosted.org/packages/02/ee/b6e02dc6529e82b75bb06823ff7d005b141037cb1416b10c6f00fc419dca/Pygments-2.2.0-py2.py3-none-any.whl
-Collecting pickleshare (from IPython)
-  Using cached https://files.pythonhosted.org/packages/9f/17/daa142fc9be6b76f26f24eeeb9a138940671490b91cb5587393f297c8317/pickleshare-0.7.4-py2.py3-none-any.whl
-Collecting simplegeneric>0.8 (from IPython)
-  Using cached https://files.pythonhosted.org/packages/3d/57/4d9c9e3ae9a255cd4e1106bb57e24056d3d0709fc01b2e3e345898e49d5b/simplegeneric-0.8.1.zip
-Collecting jedi>=0.10 (from IPython)
-  Using cached https://files.pythonhosted.org/packages/3d/68/8bbf0ef969095a13ba0d4c77c1945bd86e9811960d052510551d29a2f23b/jedi-0.12.1-py2.py3-none-any.whl
+Collecting backcall (from IPython)
+Collecting pexpect; sys_platform != "win32" (from IPython)
+  Using cached https://files.pythonhosted.org/packages/89/e6/b5a1de8b0cc4e07ca1b305a4fcc3f9806025c1b651ea302646341222f88b/pexpect-4.6.0-py2.py3-none-any.whl
 Collecting traitlets>=4.2 (from IPython)
   Using cached https://files.pythonhosted.org/packages/93/d6/abcb22de61d78e2fc3959c964628a5771e47e7cc60d53e9342e21ed6cc9a/traitlets-4.3.2-py2.py3-none-any.whl
-Collecting prompt-toolkit<2.0.0,>=1.0.15 (from IPython)
-  Using cached https://files.pythonhosted.org/packages/04/d1/c6616dd03701e7e2073f06d5c3b41b012256e42b72561f16a7bd86dd7b43/prompt_toolkit-1.0.15-py3-none-any.whl
-Requirement already satisfied: setuptools>=18.5 in /Users/stanford/venv/lib/python3.6/site-packages (from IPython) (39.0.1)
-Collecting pandas (from Mesa)
-  Using cached https://files.pythonhosted.org/packages/d8/ba/d2c6578afca709e211ac1cd836a66a6a042f1a773a970be345d9d08be426/pandas-0.23.3-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
-Collecting click (from Mesa)
-  Using cached https://files.pythonhosted.org/packages/34/c1/8806f99713ddb993c5366c362b2f908f18269f8d792aff1abfd700775a77/click-6.7-py2.py3-none-any.whl
-Collecting tqdm (from Mesa)
-  Downloading https://files.pythonhosted.org/packages/7d/e6/19dfaff08fcbee7f3453e5b537e65a8364f1945f921a36d08be1e2ff3475/tqdm-4.24.0-py2.py3-none-any.whl (43kB)
+Collecting pickleshare (from IPython)
+  Downloading https://files.pythonhosted.org/packages/9a/41/220f49aaea88bc6fa6cba8d05ecf24676326156c23b991e80b3f2fc24c77/pickleshare-0.7.5-py2.py3-none-any.whl
 Collecting tornado<5.0.0,>=4.2 (from Mesa)
   Using cached https://files.pythonhosted.org/packages/e3/7b/e29ab3d51c8df66922fea216e2bddfcb6430fb29620e5165b16a216e0d3c/tornado-4.5.3.tar.gz
+Collecting click (from Mesa)
+  Downloading https://files.pythonhosted.org/packages/fa/37/45185cb5abbc30d7257104c434fe0b07e5a195a6847506c074527aa599ec/Click-7.0-py2.py3-none-any.whl (81kB)
+Collecting pandas (from Mesa)
+  Downloading https://files.pythonhosted.org/packages/78/78/50ef81a903eccc4e90e278a143c9a0530f05199f6221d2e1b21025852982/pandas-0.23.4-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (14.6MB)
 Collecting networkx (from Mesa)
-  Using cached https://files.pythonhosted.org/packages/11/42/f951cc6838a4dff6ce57211c4d7f8444809ccbe2134179950301e5c4c83c/networkx-2.1.zip
-Collecting pytz (from matplotlib)
-  Using cached https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl
-Collecting kiwisolver>=1.0.1 (from matplotlib)
-  Using cached https://files.pythonhosted.org/packages/fb/96/619db9bf08f652790fa9f3c3884a67dc43da4bdaa185a5aa2117eb4651e1/kiwisolver-1.0.1-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
-Collecting six>=1.10 (from matplotlib)
-  Using cached https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl
-Collecting pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.1 (from matplotlib)
-  Using cached https://files.pythonhosted.org/packages/6a/8a/718fd7d3458f9fab8e67186b00abdd345b639976bc7fb3ae722e1b026a50/pyparsing-2.2.0-py2.py3-none-any.whl
+  Downloading https://files.pythonhosted.org/packages/f3/f4/7e20ef40b118478191cec0b58c3192f822cace858c19505c7670961b76b2/networkx-2.2.zip (1.7MB)
+Collecting tqdm (from Mesa)
+  Downloading https://files.pythonhosted.org/packages/79/43/19c9fee28110cd47f73e6bc596394337fe9f3e5825b4de402bbf30b3beb5/tqdm-4.26.0-py2.py3-none-any.whl (43kB)
 Collecting python-dateutil>=2.1 (from matplotlib)
   Using cached https://files.pythonhosted.org/packages/cf/f5/af2b09c957ace60dcfac112b669c45c8c97e32f94aa8b56da4c6d1682825/python_dateutil-2.7.3-py2.py3-none-any.whl
 Collecting cycler>=0.10 (from matplotlib)
   Using cached https://files.pythonhosted.org/packages/f7/d2/e07d3ebb2bd7af696440ce7e754c59dd546ffe1bbe732c8ab68b9c834e61/cycler-0.10.0-py2.py3-none-any.whl
-Collecting itsdangerous>=0.24 (from flask)
-  Using cached https://files.pythonhosted.org/packages/dc/b4/a60bcdba945c00f6d608d8975131ab3f25b22f2bcfe1dab221165194b2d4/itsdangerous-0.24.tar.gz
+Collecting kiwisolver>=1.0.1 (from matplotlib)
+  Using cached https://files.pythonhosted.org/packages/fb/96/619db9bf08f652790fa9f3c3884a67dc43da4bdaa185a5aa2117eb4651e1/kiwisolver-1.0.1-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting pyparsing!=2.0.4,!=2.1.2,!=2.1.6,>=2.0.1 (from matplotlib)
+  Downloading https://files.pythonhosted.org/packages/2b/4a/f06b45ab9690d4c37641ec776f7ad691974f4cf6943a73267475b05cbfca/pyparsing-2.2.2-py2.py3-none-any.whl (57kB)
 Collecting Jinja2>=2.10 (from flask)
   Using cached https://files.pythonhosted.org/packages/7f/ff/ae64bacdfc95f27a016a7bed8e8686763ba4d277a78ca76f32659220a731/Jinja2-2.10-py2.py3-none-any.whl
+Collecting itsdangerous>=0.24 (from flask)
+  Using cached https://files.pythonhosted.org/packages/dc/b4/a60bcdba945c00f6d608d8975131ab3f25b22f2bcfe1dab221165194b2d4/itsdangerous-0.24.tar.gz
 Collecting Werkzeug>=0.14 (from flask)
   Using cached https://files.pythonhosted.org/packages/20/c4/12e3e56473e52375aa29c4764e70d1b8f3efa6682bef8d0aae04fe335243/Werkzeug-0.14.1-py2.py3-none-any.whl
+Collecting urllib3<1.24,>=1.21.1 (from requests)
+  Using cached https://files.pythonhosted.org/packages/bd/c9/6fdd990019071a4a32a5e7cb78a1d92c53851ef4f56f62a3486e6a7d8ffb/urllib3-1.23-py2.py3-none-any.whl
+Collecting certifi>=2017.4.17 (from requests)
+  Downloading https://files.pythonhosted.org/packages/df/f7/04fee6ac349e915b82171f8e23cee63644d83663b34c539f7a09aed18f9e/certifi-2018.8.24-py2.py3-none-any.whl (147kB)
 Collecting chardet<3.1.0,>=3.0.2 (from requests)
   Using cached https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl
 Collecting idna<2.8,>=2.5 (from requests)
   Using cached https://files.pythonhosted.org/packages/4b/2a/0276479a4b3caeb8a8c1af2f8e4355746a97fab05a372e4a2c6a6b876165/idna-2.7-py2.py3-none-any.whl
-Collecting certifi>=2017.4.17 (from requests)
-  Using cached https://files.pythonhosted.org/packages/7c/e6/92ad559b7192d846975fc916b65f667c7b8c3a32bea7372340bfe9a15fa5/certifi-2018.4.16-py2.py3-none-any.whl
-Collecting urllib3<1.24,>=1.21.1 (from requests)
-  Using cached https://files.pythonhosted.org/packages/bd/c9/6fdd990019071a4a32a5e7cb78a1d92c53851ef4f56f62a3486e6a7d8ffb/urllib3-1.23-py2.py3-none-any.whl
-Collecting ptyprocess>=0.5 (from pexpect; sys_platform != "win32"->IPython)
-  Using cached https://files.pythonhosted.org/packages/d1/29/605c2cc68a9992d18dada28206eeada56ea4bd07a239669da41674648b6f/ptyprocess-0.6.0-py2.py3-none-any.whl
+Collecting gast>=0.2.0 (from tensorflow)
+  Using cached https://files.pythonhosted.org/packages/5c/78/ff794fcae2ce8aa6323e789d1f8b3b7765f601e7702726f430e814822b96/gast-0.2.0.tar.gz
+Collecting keras-preprocessing>=1.0.3 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/fc/94/74e0fa783d3fc07e41715973435dd051ca89c550881b3454233c39c73e69/Keras_Preprocessing-1.0.5-py2.py3-none-any.whl
+Collecting six>=1.10.0 (from tensorflow)
+  Using cached https://files.pythonhosted.org/packages/67/4b/141a581104b1f6397bfa78ac9d43d8ad29a7ca43ea90a2d863fe3056e86a/six-1.11.0-py2.py3-none-any.whl
+Collecting keras-applications>=1.0.5 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/3f/c4/2ff40221029f7098d58f8d7fb99b97e8100f3293f9856f0fb5834bef100b/Keras_Applications-1.0.6-py2.py3-none-any.whl (44kB)
+Collecting protobuf>=3.6.0 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/c7/27/133f225035b9539f2dcfebcdf9a69ff0152f56e0120160ec5c972ea7deb9/protobuf-3.6.1-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (1.2MB)
+Collecting wheel>=0.26 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/fc/e9/05316a1eec70c2bfc1c823a259546475bd7636ba6d27ec80575da523bc34/wheel-0.32.1-py2.py3-none-any.whl
+Collecting tensorboard<1.12.0,>=1.11.0 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/9b/2f/4d788919b1feef04624d63ed6ea45a49d1d1c834199ec50716edb5d310f4/tensorboard-1.11.0-py3-none-any.whl (3.0MB)
+Collecting grpcio>=1.8.6 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/24/1a/84396834b04cd43be3c10f5faeadf62d01689b704b3c99d09e1e08a41d9b/grpcio-1.15.0-cp36-cp36m-macosx_10_7_intel.whl (2.0MB)
+Collecting termcolor>=1.1.0 (from tensorflow)
+Collecting absl-py>=0.1.6 (from tensorflow)
+  Downloading https://files.pythonhosted.org/packages/16/db/cce5331638138c178dd1d5fb69f3f55eb3787a12efd9177177ae203e847f/absl-py-0.5.0.tar.gz (90kB)
+Collecting astor>=0.6.0 (from tensorflow)
+  Using cached https://files.pythonhosted.org/packages/35/6b/11530768cac581a12952a2aad00e1526b89d242d0b9f59534ef6e6a1752f/astor-0.7.1-py2.py3-none-any.whl
+Collecting scikit-learn (from sklearn)
+  Downloading https://files.pythonhosted.org/packages/72/c8/7a449014b506d4fed3d7fef5b86c0210ff882a13da82626a12ce9f7db616/scikit_learn-0.20.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl (7.8MB)
+Collecting wcwidth (from prompt-toolkit<2.1.0,>=2.0.0->IPython)
+  Using cached https://files.pythonhosted.org/packages/7e/9f/526a6947247599b084ee5232e4f9190a38f398d7300d866af3ab571a5bfe/wcwidth-0.1.7-py2.py3-none-any.whl
 Collecting parso>=0.3.0 (from jedi>=0.10->IPython)
   Using cached https://files.pythonhosted.org/packages/09/51/9c48a46334be50c13d25a3afe55fa05c445699304c5ad32619de953a2305/parso-0.3.1-py2.py3-none-any.whl
+Collecting ptyprocess>=0.5 (from pexpect; sys_platform != "win32"->IPython)
+  Using cached https://files.pythonhosted.org/packages/d1/29/605c2cc68a9992d18dada28206eeada56ea4bd07a239669da41674648b6f/ptyprocess-0.6.0-py2.py3-none-any.whl
 Collecting ipython-genutils (from traitlets>=4.2->IPython)
   Using cached https://files.pythonhosted.org/packages/fa/bc/9bd3b5c2b4774d5f33b2d544f1460be9df7df2fe42f352135381c347c69a/ipython_genutils-0.2.0-py2.py3-none-any.whl
-Collecting wcwidth (from prompt-toolkit<2.0.0,>=1.0.15->IPython)
-  Using cached https://files.pythonhosted.org/packages/7e/9f/526a6947247599b084ee5232e4f9190a38f398d7300d866af3ab571a5bfe/wcwidth-0.1.7-py2.py3-none-any.whl
+Collecting pytz>=2011k (from pandas->Mesa)
+  Using cached https://files.pythonhosted.org/packages/30/4e/27c34b62430286c6d59177a0842ed90dc789ce5d1ed740887653b898779a/pytz-2018.5-py2.py3-none-any.whl
 Collecting MarkupSafe>=0.23 (from Jinja2>=2.10->flask)
-  Using cached https://files.pythonhosted.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-1.0.tar.gz
-Installing collected packages: decorator, backcall, appnope, ptyprocess, pexpect, pygments, pickleshare, simplegeneric, parso, jedi, ipython-genutils, six, traitlets, wcwidth, prompt-toolkit, IPython, pytz, python-dateutil, numpy, pandas, click, tqdm, tornado, networkx, Mesa, kiwisolver, pyparsing, cycler, matplotlib, scipy, itsdangerous, MarkupSafe, Jinja2, Werkzeug, flask, chardet, idna, certifi, urllib3, requests
-  Running setup.py install for backcall: started
-    Running setup.py install for backcall: finished with status 'done'
-  Running setup.py install for simplegeneric: started
-    Running setup.py install for simplegeneric: finished with status 'done'
+Collecting h5py (from keras-applications>=1.0.5->tensorflow)
+  Using cached https://files.pythonhosted.org/packages/44/81/50a0560aac57a33c2a624d9e160735f39d7a6324e3f6f115425a1bf01dd9/h5py-2.8.0-cp36-cp36m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
+Collecting markdown>=2.6.8 (from tensorboard<1.12.0,>=1.11.0->tensorflow)
+  Downloading https://files.pythonhosted.org/packages/7a/6b/5600647404ba15545ec37d2f7f58844d690baf2f81f3a60b862e48f29287/Markdown-3.0.1-py2.py3-none-any.whl (89kB)
+Installing collected packages: appnope, simplegeneric, decorator, six, wcwidth, prompt-toolkit, parso, jedi, pygments, backcall, ptyprocess, pexpect, ipython-genutils, traitlets, pickleshare, IPython, tornado, click, numpy, pytz, python-dateutil, pandas, networkx, tqdm, Mesa, cycler, kiwisolver, pyparsing, matplotlib, scipy, MarkupSafe, Jinja2, itsdangerous, Werkzeug, flask, urllib3, certifi, chardet, idna, requests, gast, keras-preprocessing, h5py, keras-applications, protobuf, wheel, markdown, grpcio, tensorboard, termcolor, absl-py, astor, tensorflow, scikit-learn, sklearn
   Running setup.py install for tornado: started
     Running setup.py install for tornado: finished with status 'done'
   Running setup.py install for networkx: started
     Running setup.py install for networkx: finished with status 'done'
   Running setup.py install for itsdangerous: started
     Running setup.py install for itsdangerous: finished with status 'done'
-  Running setup.py install for MarkupSafe: started
-    Running setup.py install for MarkupSafe: finished with status 'done'
-Successfully installed IPython-6.5.0 Jinja2-2.10 MarkupSafe-1.0 Mesa-0.8.4 Werkzeug-0.14.1 appnope-0.1.0 backcall-0.1.0 certifi-2018.4.16 chardet-3.0.4 click-6.7 cycler-0.10.0 decorator-4.3.0 flask-1.0.2 idna-2.7 ipython-genutils-0.2.0 itsdangerous-0.24 jedi-0.12.1 kiwisolver-1.0.1 matplotlib-2.2.2 networkx-2.1 numpy-1.15.0 pandas-0.23.3 parso-0.3.1 pexpect-4.6.0 pickleshare-0.7.4 prompt-toolkit-1.0.15 ptyprocess-0.6.0 pygments-2.2.0 pyparsing-2.2.0 python-dateutil-2.7.3 pytz-2018.5 requests-2.19.1 scipy-1.1.0 simplegeneric-0.8.1 six-1.11.0 tornado-4.5.3 tqdm-4.24.0 traitlets-4.3.2 urllib3-1.23 wcwidth-0.1.7
+  Running setup.py install for gast: started
+    Running setup.py install for gast: finished with status 'done'
+  Running setup.py install for absl-py: started
+    Running setup.py install for absl-py: finished with status 'done'
+Successfully installed IPython-7.0.1 Jinja2-2.10 MarkupSafe-1.0 Mesa-0.8.4 Werkzeug-0.14.1 absl-py-0.5.0 appnope-0.1.0 astor-0.7.1 backcall-0.1.0 certifi-2018.8.24 chardet-3.0.4 click-7.0 cycler-0.10.0 decorator-4.3.0 flask-1.0.2 gast-0.2.0 grpcio-1.15.0 h5py-2.8.0 idna-2.7 ipython-genutils-0.2.0 itsdangerous-0.24 jedi-0.13.1 keras-applications-1.0.6 keras-preprocessing-1.0.5 kiwisolver-1.0.1 markdown-3.0.1 matplotlib-3.0.0 networkx-2.2 numpy-1.15.2 pandas-0.23.4 parso-0.3.1 pexpect-4.6.0 pickleshare-0.7.5 prompt-toolkit-2.0.6 protobuf-3.6.1 ptyprocess-0.6.0 pygments-2.2.0 pyparsing-2.2.2 python-dateutil-2.7.3 pytz-2018.5 requests-2.19.1 scikit-learn-0.20.0 scipy-1.1.0 simplegeneric-0.8.1 six-1.11.0 sklearn-0.0 tensorboard-1.11.0 tensorflow-1.11.0 termcolor-1.1.0 tornado-4.5.3 tqdm-4.26.0 traitlets-4.3.2 urllib3-1.23 wcwidth-0.1.7 wheel-0.32.1

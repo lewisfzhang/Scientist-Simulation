@@ -2,10 +2,11 @@
 # manages all store and access functions for npy and list
 
 import numpy as np
-import pickle
+import pickle, sys
 import config
 import pandas as pd
 from collections import Counter
+sys.path.append('../')
 from ai.brain import Brain
 
 
