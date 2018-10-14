@@ -48,54 +48,58 @@ def main2():
     age_effort_time = np_load2("age_effort_time", model_directory1, model_directory2)
     age_effort_past = np_load2("age_effort_past", model_directory1, model_directory2)
 
-    arg_list = [["line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
-                 "total research output", "2x Average Total Research Output Vs # Of Ideas Entered in Lifetime", True],
+    # print(social_output.shape, ideas_entered.shape, prop_age.shape, prop_idea.shape, prop_idea_age.shape, marginal_effort_by_age.shape,
+    #       idea_phase.shape, idea_phase_age.shape, prop_invested.shape, idea_qual.shape, age_effort_length.shape, age_effort_time.shape,
+    #       age_effort_past.shape)
 
-                ["two_var_line_graph", marginal_effort_by_age, "age of idea", "marginal effort",
-                 "Effort Invested By Ages of Ideas and Scientists", False],
+    arg_list = [["line_graph", ideas_entered, social_output, True, "# of ideas entered in lifetime",
+                 "total research output", "2x Average Total Research Output Given Number\nOf Ideas Entered in Lifetime", True],
+
+                ["two_var_line_graph", marginal_effort_by_age, "Age of Idea\n(in TP's since idea's discovery)", "Total Marginal Effort",
+                 "Effort Invested Given Idea Age", "marg"],
 
                 ["line_graph", None, prop_age, None, "scientist age", "fraction paying k",
                  "2x Proportion of Scientists Paying to Learn By Age", "prop_age"],
 
-                ["line_graph", None, prop_idea, None, "age of idea", "proportion of scientists working on the idea",
-                 "2x Proportion of Scientists Working Based on Age of Idea", "prop_idea"],
+                ["line_graph", None, prop_idea, None, "Age of Idea\n(in TP's since idea's discovery)", "Proportion of Scientists Working on the Idea",
+                 "2x Proportion of Scientists Working Based on Age of An Idea", "prop_idea"],
 
-                ["line_graph", None, get_pdf(ideas_entered), None, "# of ideas entered in lifetime",
-                 "fraction working on 'x' ideas", "2x Proportion of Scientists Working on An Idea (PDF)", "prop_ideas_pdf"],
+                # ["line_graph", None, get_pdf(ideas_entered), None, "# of ideas entered in lifetime",
+                #  "fraction working on 'x' ideas", "2x Proportion of Scientists Working on An Idea (PDF)", "prop_ideas_pdf"],
 
-                ["one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Senescence"], "idea phases",
-                 "proportion of ideas worked on", "2x # of ideas worked on per idea phase", "idea_phase", True],
+                # ["one_var_bar_graph", idea_phase, ["Investment", "Explosion", "Senescence"], "idea phases",
+                #  "proportion of ideas worked on", "2x # of ideas worked on per idea phase", "idea_phase", True],
 
-                ["discrete_line_graph", prop_invested, "ideas", "prop invested",
-                 "2x Distribution of Social Returns Invested Across Ideas", "prop_invested"],
+                # ["discrete_line_graph", prop_invested, "ideas", "prop invested",
+                #  "2x Distribution of Social Returns Invested Across Ideas", "prop_invested"],
 
                 ["two_var_scatterplot", idea_qual, prop_invested,
-                 "Idea Quality\n(in terms of M, slope multiplier", "% exhausted\n(same as prop invested)",
-                 "2x Distribution of Soical Returns Invested According to Idea Quality", "trend"],
+                 "idea quality\n(based on M, the slope multiplier)", "% exhausted\n(same as prop invested)",
+                 "2x Distribution of Social Returns Invested\nBased on Idea Quality\n", "trend"],
 
-                ["two_var_line_graph", age_effort_length, "Short ----> Long\n(in terms of investment)",
-                 "Effort Invested By All Scientists", "Young VS Old, Short VS Long Term Investments",
+                ["two_var_line_graph", age_effort_length, "Investment Style of Idea\n(Short-Term ----> Long-Term)",
+                 "Effort Invested By All Scientists", "Effort Invested Into Idea Based on Investment Style",
                  "age_effort_magnitude"],
 
-                ["two_var_line_graph", age_effort_time, "New ----> Old\n(in terms of age of idea)",
-                 "Effort Invested By All Scientists", "Young VS Old, New VS Old Ideas",
+                ["two_var_line_graph", age_effort_time, "Age of Idea\n(in TP's since idea's discovery)",
+                 "Effort Invested By All Scientists", "Effort Invested Given Idea Age",
                  "age_effort_time"],
 
-                ["two_var_line_graph", age_effort_past, "New ----> Old\n(in terms of amount of past investment)",
-                 "Effort Invested By All Scientists", "Young VS Old, New VS Old Ideas",
+                ["two_var_line_graph", age_effort_past, "Age of Idea\n(Based on Amount of Past Investment)",
+                 "Effort Invested By All Scientists", "Effort Invested Given Idea Age",
                  "age_effort_past"],
 
-                ["two_var_line_graph", prop_idea_age, "age of idea", "proportion of scientists working on the idea",
-                 "Proportion of Scientists Working Based on Age of Idea (YOUNG VS OLD)", "idea_age"],
+                ["two_var_line_graph", prop_idea_age, "Age of Idea\n(in TP's since idea's discovery)", "Proportion of Scientists Working on the Idea",
+                 "Proportion of Scientists Working Based on Age of Idea", "idea_age"],
 
                 ["double_bar", idea_phase_age, ["Investment", "Explosion", "Senescence"], "idea phases",
-                 "proportion of ideas worked on", "# of ideas worked on per idea phase", "idea_phase_age"]]
+                 "proportion of ideas worked on", "Distribution of Effort into Ideas By Phase", "idea_phase_age"]]
 
     for i in arg_list:
         i.append(False)
         i.append(False)
         if not use_mp:
-            print('\n\nstarting', i)
+            # print('\n\nstarting', i)
             func_distr(*i)
 
     if use_mp:

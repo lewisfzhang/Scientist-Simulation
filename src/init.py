@@ -48,7 +48,7 @@ all_scientists = False
 use_equal = False
 
 # whether to shift all CDFs to the right
-use_idea_shift = False
+use_idea_shift = True
 
 # whether we want interactive steps
 show_step = False

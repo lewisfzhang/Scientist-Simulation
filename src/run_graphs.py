@@ -121,7 +121,7 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear, in_tmp, ste
     if title[:2] == "2x":
         count = 2
         title = title[3:]+' (FUNDING)'  # format: "2x stuff"
-    if linear:
+    if linear is True or linear == 'trend':
         name = "linear"
         step_y = 10
     else:
@@ -131,29 +131,30 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear, in_tmp, ste
         step_y = 1
     temp_varx = np.copy(varx)
     temp_vary = np.copy(vary)
+
+    min_y = min([min(x) for x in temp_vary])
+    max_y = max([max(x) for x in temp_vary])
+    min_x = min([min(x) for x in temp_varx])
+    max_x = max([max(x) for x in temp_varx])*1.1
     for i in range(count):
         plt.subplot(1, 2, i+1)
         if count != 1:
             varx = temp_varx[i]
             vary = temp_vary[i]
         if linear == "trend":
-            if not linear:
-                vary = log_0(vary)
             idx = np.argsort(varx)
             varx = varx[idx]
             vary = vary[idx]
             slope, intercept, r_value, p_value, std_err = stats.linregress(varx, vary)
             line = slope * varx + intercept
             plt.plot(varx, vary, 'o', varx, line)
-            txt = "y={0}x+{1}\nr^2={2}".format(round(slope, 2), round(intercept, 2), round(r_value**2, 3))
-            plt.text(0.5*(max(varx)+min(varx)), 0.9*(max(vary)+min(vary)), txt, fontsize=12)
-            # # calc the trendline
-            # z = np.polyfit(varx, vary, 3)  # rightmost number is the order of the polynomial
-            # p = np.poly1d(z)
-            # plt.plot(varx, p(vary), "r--")
-            # # the line equation:
-            # eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
-            # plt.text(0.4 * max(varx), 0.2 * max(vary), eq, fontsize=12)
+            plt.yticks(np.arange(0, 1.1, 0.1))
+            plt.ylim(0, 1.1)
+            plt.xlim(0.9* min_x, 0.9*max_x)
+            txt = "y={0}x+{1}\nr^2={2}".format(round(slope, 4), round(intercept, 4), round(r_value**2, 4))
+            ax = plt.gca()
+            ax.text(0.1, 0.9, txt, horizontalalignment='left', verticalalignment='top', transform=ax.transAxes, fontsize=12)
+            # plt.text(0.4*(max(varx)+min(varx)), 0.95*(max(vary)+min(vary)), txt, fontsize=12)
         else:
             max_y = max(vary)
             plt.yticks(np.arange(0, max_y+1, step_y))
@@ -164,8 +165,10 @@ def two_var_scatterplot(varx, vary, x_label, y_label, title, linear, in_tmp, ste
             title = "(NO FUNDING)"
     labels(x_label, y_label, title)
     fig = plt.gcf()
+    fig.subplots_adjust(wspace=.3)
+    count = 2.5
     dpi = float(fig.get_dpi())*2
-    fig.set_size_inches(count * config.sq_width / dpi, config.sq_width / dpi)
+    fig.set_size_inches(count * config.sq_width / dpi, 1.1 * config.sq_width / dpi)
     save_image(fig, 'two_var_scatterplot_'+name, in_tmp, step)
     plt.close()
     del varx, vary, fig
@@ -202,7 +205,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
     count = 1
     if title[:2] == "2x":
         count = 2
-        title = title[3:]+'\n (FUNDING)'  # format: "2x stuff"
+        title = title[3:]  # +'\n (FUNDING)'  # format: "2x stuff"
     if average is None:
         name = ''
     elif average:
@@ -223,7 +226,7 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
     for i in range(count):
         if count != 1:
             y_var = temp_y_var[i]
-        plt.subplot(1, 2, i+1)
+        # plt.subplot(1, 2, i+1)
         if average:
             x_var = temp_x_var[i]
             y_var = divide_0(y_var, x_var)
@@ -239,6 +242,8 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
         x_var = x_var[idx-1]
         y_var = y_var[idx]
         # plt.scatter(x_var, y_var)
+        key = ['r--', 'b--']
+        label = ["FUNDING", "NO FUNDING"]
         if len(y_var) > 3:
             # blue spline line
             # x_smooth = np.linspace(x_var.min(), x_var.max(), 200)
@@ -248,19 +253,25 @@ def line_graph(x_var, y_var, average, x_label, y_label, title, linear, in_tmp, s
             # calc the trendline
             z = np.polyfit(x_var, y_var, 3)  # rightmost number is the order of the polynomial
             p = np.poly1d(z)
-            plt.plot(x_var, p(x_var), "r--")
+            plt.plot(x_var, p(x_var), key[i], label=label[i])
             # the line equation:
-            eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
-            plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
-        plt.xticks(np.arange(min(x_var), max(x_var) + 1, 2.0))
-        labels(x_label, y_label, title)
+            # eq = "y=(%.6f)x^3+(%.6f)x^2+(%.6f)x+(%.6f)" % (z[0], z[1], z[2], z[3])
+            # plt.text(0.4 * max(x_var), 0.2 * max(y_var), eq, fontsize=12)
+        # plt.xticks(np.arange(2*(min_x//2), 2*(max_x//2 + 1), 2.0))
+        # plt.yticks(np.arange(round(min_y, 2) - 0.02, max_y, 0.02))
+        # plt.ylim(min_y, max_y)
+        # labels(x_label, y_label, title)
         if x_none is True:
             x_var = None  # reset for condition checking above
-        if count != 1:
-            title = "NO FUNDING"
+        # if count != 1:
+        #     title = "NO FUNDING"
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    labels(x_label, y_label, title)
+    plt.legend()
     fig = plt.gcf()
     dpi = fig.get_dpi()
-    fig.set_size_inches(count * config.x_width / float(dpi), config.y_width / float(dpi))
+    fig.set_size_inches(config.x_width / float(dpi), config.y_width / float(dpi))
     save_image(fig, 'line_graph_'+name, in_tmp, step)
     plt.close()
 
@@ -273,6 +284,9 @@ def one_var_bar_graph(data, legend, x_label, y_label, title, name, with_val, in_
         count = 2
         title = title[3:]+' (FUNDING)'  # format: "2x stuff"
     temp_data = np.copy(data)
+
+    min_y = min([min(x) for x in temp_data])
+    max_y = max([max(x) for x in temp_data])*1.2
     for i in range(count):
         plt.subplot(1, 2, i+1)
         if count != 1:
@@ -284,6 +298,7 @@ def one_var_bar_graph(data, legend, x_label, y_label, title, name, with_val, in_
         if with_val:
             for i, v in enumerate(data):
                 plt.text(i - 0.03, v + 0.02, str(round(v, 2)), color='blue', fontweight='bold', fontsize=15)
+        plt.ylim(min_y, max_y)
         labels(x_label, y_label, title)
         if count != 1:
             title = "(NO FUNDING)"
@@ -328,6 +343,13 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
         plt.scatter(x_var2, data1, color='blue')
     elif len(data) == 4:
         mm = 2
+
+        # set axes
+        min_y = -500
+        max_y = 1.2 * max([max(x) for x in data])
+        min_x = -1
+        max_x = 1 + max([len(x) for x in data[::2]])
+
         key = ["(Funding)", "(No Funding)"]
         for i in range(2):
             plt.subplot(1, 2, i+1)
@@ -347,15 +369,29 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
             plt.plot(x_smooth_2, y_smooth_2, color='blue', label='Old '+key[i])
             plt.scatter(x_var1, data0, color='red')
             plt.scatter(x_var2, data1, color='blue')
+            plt.xlim(min_x, max_x)
+            plt.ylim(min_y, max_y)
             plt.legend()
             labels(x_label, y_label, title)
             title = ""
     elif len(data) == 5:
         mm = 2
+        # set axes
+        min_y = min([min(data[1]), min(data[2]), min(data[3]), min(data[4])])
+        max_y = max([max(data[1]), max(data[2]), max(data[3]), max(data[4])])
+        min_x = -1 + min(data[0])
+        max_x = max(data[0])
+
         # with funding
         plt.subplot(1, 2, 1)
         plt.plot(data[0], data[1], color='red', label='Young (Funding)')
         plt.plot(data[0], data[2], color='blue', label='Old (Funding)')
+        plt.scatter(data[0], data[1], color='red')
+        plt.scatter(data[0], data[2], color='blue')
+        plt.xticks(np.arange(2, max_x+2, 2))
+        plt.xlim(min_x, max_x+2)
+        plt.yticks(np.arange(0, max_y+0.02, 0.02))
+        plt.ylim(-0.02, max_y+0.02)
         # plt.scatter(data[0], data[1], color='red')
         # plt.scatter(data[0], data[2], color='blue')
         plt.legend()
@@ -364,43 +400,112 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
 
         # with no funding
         plt.subplot(1, 2, 2)
-        plt.plot(data[0], data[3], color='orange', label='Young (No Funding)')
-        plt.plot(data[0], data[4], color='green', label='Old (No Funding)')
-        # plt.scatter(data[0], data[3], color='orange')
-        # plt.scatter(data[0], data[4], color='green')
-    elif len(data) == 6:
-        title += " (FUNDING)"
+        plt.plot(data[0], data[3], color='red', label='Young (No Funding)')
+        plt.plot(data[0], data[4], color='blue', label='Old (No Funding)')
+        plt.scatter(data[0], data[3], color='red')
+        plt.scatter(data[0], data[4], color='blue')
+        plt.xticks(np.arange(2, max_x+2, 2))
+        plt.xlim(min_x, max_x+2)
+        plt.yticks(np.arange(0, max_y+0.02, 0.02))
+        plt.ylim(-0.02, max_y+0.02)
+        # plt.scatter(data[0], data[3], color='red')
+        # plt.scatter(data[0], data[4], color='blue')
+    elif linear == "age_effort_time":
         mm = 2
         # with funding
-        plt.subplot(1, 2, 1)
         idx = np.argsort(data[0])  # sort by index of x from least to greatest
         data[0] = data[0][idx]
         data[1] = data[1][idx]
         data[2] = data[2][idx]
-        x_var = process_bin(data[0], len(data[0])//10, 10)
-        y_1 = process_bin(data[1], len(data[1])//10, 10)
-        y_2 = process_bin(data[2], len(data[2])//10, 10)
+        x_var, bin = find_dup(data[0])
+        y_1 = remove_dup(data[1], bin)
+        y_2 = remove_dup(data[2], bin)
+
+        # with no funding
+        idx2 = np.argsort(data[3])  # sort by index of x from least to greatest
+        data[3] = data[3][idx2]
+        data[4] = data[4][idx2]
+        data[5] = data[5][idx2]
+        x_var2, bin2 = find_dup(data[3])
+        y_3 = remove_dup(data[4], bin2)
+        y_4 = remove_dup(data[5], bin2)
+
+        # set axes
+        min_y = -20 + min([min(y_1), min(y_2), min(y_3), min(y_4)])
+        max_y = 1.1 * max([max(y_1), max(y_2), max(y_3), max(y_4)])
+        min_x = -1 + min([min(x_var), min(x_var2)])
+        max_x = 1 + max([max(x_var), max(x_var2)])
+
+        plt.subplot(1, 2, 1)
         plt.plot(x_var, y_1, color='red', label='Young (Funding)')
         plt.plot(x_var, y_2, color='blue', label='Old (Funding)')
+        plt.scatter(x_var, y_1, color='red')
+        plt.scatter(x_var, y_2, color='blue')
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
         # plt.scatter(data[0], data[1], color='red')
         # plt.scatter(data[0], data[2], color='blue')
         plt.legend()
         labels(x_label, y_label, title)
-        title = "(NO FUNDING)"
+        title = ""
+
+        plt.subplot(1, 2, 2)
+        plt.plot(x_var2, y_3, color='red', label='Young (No Funding)')
+        plt.plot(x_var2, y_4, color='blue', label='Old (No Funding)')
+        plt.scatter(x_var2, y_3, color='red')
+        plt.scatter(x_var2, y_4, color='blue')
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+        # plt.scatter(data[3], data[4], color='red')
+        # plt.scatter(data[3], data[5], color='blue')
+    elif len(data) == 6:
+        mm = 2
+        # with funding
+        idx = np.argsort(data[0])  # sort by index of x from least to greatest
+        data[0] = data[0][idx]
+        data[1] = data[1][idx]
+        data[2] = data[2][idx]
+        x_var = process_bin(data[0], len(data[0])//20, 20)
+        y_1 = process_bin(data[1], len(data[1])//20, 20)
+        y_2 = process_bin(data[2], len(data[2])//20, 20)
 
         # with no funding
+        idx2 = np.argsort(data[3])  # sort by index of x from least to greatest
+        data[3] = data[3][idx2]
+        data[4] = data[4][idx2]
+        data[5] = data[5][idx2]
+        x_var2 = process_bin(data[3], len(data[3])//20, 20)
+        y_3 = process_bin(data[4], len(data[4])//20, 20)
+        y_4 = process_bin(data[5], len(data[5])//20, 20)
+
+        # set axes
+        min_y = -20 + min([min(y_1), min(y_2), min(y_3), min(y_4)])
+        max_y = 1.1 * max([max(y_1), max(y_2), max(y_3), max(y_4)])
+        min_x = -10 + min([min(x_var), min(x_var2)])
+        max_x = 10 + max([max(x_var), max(x_var2)])
+
+        plt.subplot(1, 2, 1)
+        plt.plot(x_var, y_1, color='red', label='Young (Funding)')
+        plt.plot(x_var, y_2, color='blue', label='Old (Funding)')
+        plt.scatter(x_var, y_1, color='red')
+        plt.scatter(x_var, y_2, color='blue')
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+        # plt.scatter(data[0], data[1], color='red')
+        # plt.scatter(data[0], data[2], color='blue')
+        plt.legend()
+        labels(x_label, y_label, title)
+        title = ""
+
         plt.subplot(1, 2, 2)
-        idx = np.argsort(data[3])  # sort by index of x from least to greatest
-        data[3] = data[3][idx]
-        data[4] = data[4][idx]
-        data[5] = data[5][idx]
-        x_var = process_bin(data[3], len(data[3])//10, 10)
-        y_1 = process_bin(data[4], len(data[4])//10, 10)
-        y_2 = process_bin(data[5], len(data[5])//10, 10)
-        plt.plot(x_var, y_1, color='orange', label='Young (No Funding)')
-        plt.plot(x_var, y_2, color='green', label='Old (No Funding)')
-        # plt.scatter(data[3], data[4], color='orange')
-        # plt.scatter(data[3], data[5], color='green')
+        plt.plot(x_var2, y_3, color='red', label='Young (No Funding)')
+        plt.plot(x_var2, y_4, color='blue', label='Old (No Funding)')
+        plt.scatter(x_var2, y_3, color='red')
+        plt.scatter(x_var2, y_4, color='blue')
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+        # plt.scatter(data[3], data[4], color='red')
+        # plt.scatter(data[3], data[5], color='blue')
     plt.legend()
     labels(x_label, y_label, title)
     fig = plt.gcf()
@@ -420,6 +525,13 @@ def discrete_line_graph(y_var, x_label, y_label, title, name, in_tmp, step):
         count = 2
         title = title[3:]+' (FUNDING)'  # format: "2x stuff"
     temp_yvar = np.copy(y_var)
+
+    # set axes
+    min_y = min([min(x) for x in temp_yvar])
+    max_y = max([max(x) for x in temp_yvar])
+    min_x = 0
+    max_x = max([len(x) for x in temp_yvar])
+
     for i in range(count):
         plt.subplot(2, 1, i+1)
         if count != 1:
@@ -428,6 +540,8 @@ def discrete_line_graph(y_var, x_label, y_label, title, name, in_tmp, step):
         plt.scatter(x_var, y_var)
         plt.plot(x_var, y_var, "r--", linewidth=1)
         plt.text(0.1 * max(x_var), 0.9, "proportion formula:\ntotal effort / inv_logistic_cdf(0.99)", fontsize=12)
+        plt.axis('equal')
+        plt.axis([min_x, max_x, min_y, max_y])
         labels(x_label, y_label, title)
         if count != 1:
             title = "(NO FUNDING)"
@@ -511,9 +625,15 @@ def double_bar_graph(data, legend, x_label, y_label, title, name, in_tmp=False, 
         plt.legend((p1, p2), ('Young', 'Old'))
     elif len(data[0]) == 4:
         mm = 2
+        # find max y
+        max_y = 10*-6
+        for i in range(4):
+            max_y = max(max_y, max(data[:, i]))
+
         plt.subplot(1, 2, 1)
-        p1 = plt.bar(x_var - 0.1, data[:, 0], width=0.2, color='g', align='center')
-        p2 = plt.bar(x_var + 0.1, data[:, 1], width=0.2, color='orange', align='center')
+        p1 = plt.bar(x_var - 0.1, data[:, 0], width=0.2, color='red', align='center')
+        p2 = plt.bar(x_var + 0.1, data[:, 1], width=0.2, color='blue', align='center')
+        plt.ylim(0, 1.1 * max_y)
         plt.legend((p1, p2), ('Young (Funding)', 'Old (Funding)'))
         labels(x_label, y_label, title)
         title = ""
@@ -523,6 +643,7 @@ def double_bar_graph(data, legend, x_label, y_label, title, name, in_tmp=False, 
         plt.subplot(1, 2, 2)
         p3 = plt.bar(x_var - 0.1, data[:, 2], width=0.2, color='red', align='center')
         p4 = plt.bar(x_var + 0.1, data[:, 3], width=0.2, color='blue', align='center')
+        plt.ylim(0, 1.1 * max_y)
         plt.legend((p3, p4), ('Young (No Funding)', 'Old (No Funding)'))
         labels(x_label, y_label, title)
     if legend is not None:

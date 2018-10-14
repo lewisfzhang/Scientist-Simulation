@@ -384,3 +384,30 @@ def append_list(arr1, arr2):
     for i in arr2:
         out.append(i)
     return np.asarray(out)
+
+
+def find_dup(arr):
+    out = []
+    num = []
+    last = arr[0]
+    last_index = 0
+    for i in range(1, len(arr)):
+        if last != arr[i]:
+            out.append((last_index, i))
+            num.append(last)
+            last = arr[i]
+            last_index = i
+    num.append(last)
+    # 2nd part to keep track of how many elements till end of arr, -1 means end
+    out.append((last_index, -1))
+    return np.asarray(num), np.asarray(out)
+
+
+def remove_dup(arr, idx):
+    out = []
+    for i in idx:
+        if i[1] != -1:  # if last element isn't included
+            out.append(sum(arr[i[0]:i[1]])/len(arr[i[0]:i[1]]))
+        else:
+            out.append(sum(arr[i[0]:])/len(arr[i[0]:]))
+    return np.asarray(out)

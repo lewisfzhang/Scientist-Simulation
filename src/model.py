@@ -94,10 +94,11 @@ class Scientist(Agent):
         # check if anything is < 0 (that is a concern!)
         r, c = np.where(self.perceived_returns_matrix < 0)
         for i in range(len(r)):
-            print("agent_id", self.unique_id, 'r', r[i], 'c', c[i], 'value', self.perceived_returns_matrix[r[i]][c[i]])
-            # raise Exception("you should probably try again for positive values!")
-            w.warn("value is less than 0! artificially changing this value to 0.001")
-            self.perceived_returns_matrix[r[i]][c[i]] = 0.001
+            if r[i] != 3:  # 3 = excluding idea shift, which can be negative due to randomness
+                print("agent_id", self.unique_id, 'r', r[i], 'c', c[i], 'value', self.perceived_returns_matrix[r[i]][c[i]])
+                # raise Exception("you should probably try again for positive values!")
+                w.warn("value is less than 0! artificially changing this value to 0.001")
+                self.perceived_returns_matrix[r[i]][c[i]] = 0.001
         del r, c
 
         # dereferencing 'void' variables

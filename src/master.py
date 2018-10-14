@@ -13,13 +13,18 @@ def copy_contents(name):
     s.call('cp -r tmp/model/ ../zipped_archives/master/'+name, shell=True)  # overwrites existing files
 
 
-def main():
+def main(simple=False):
     # ensure current working directory is in src folder
     if os.getcwd()[-3:] != 'src':
         # assuming we are somewhere inside the git directory
         path = s.Popen('git rev-parse --show-toplevel', shell=True, stdout=s.PIPE).communicate()[0].decode("utf-8")[:-1]
         print('changing working directory from', os.getcwd(), 'to', path)
         os.chdir(path + '/src')
+
+    if simple:
+        s.call('python3 run.py master True '+str(2)+' False', shell=True)
+        copy_contents("funding")
+        return
 
     s.call('mkdir ../zipped_archives/master', shell=True)
 
@@ -47,15 +52,36 @@ def main():
         folder_list.append(key[alg-2]+str(count))
         has_big_data = True  # all future runs add on to big data
 
+        if (alg == 4 and count == 1) or alg == 3:
+            print("\n\n------------------TRAINING DNN------------------\n\n")
+            s.call('python3 ../ai/neural_net.py', shell=True)  # training the neural network now
+
         if alg == 4:
             count = 2
 
     generate_html(folder_list)
 
 
-def collect():
-    print("\n\n------------------COLLECTING------------------\n\n")
-    s.call('python collect.py master', shell=True)
+def collect(simple=True):
+    if simple:
+        print("\n\n------------------COLLECTING------------------\n\n")
+        s.call('python collect.py master', shell=True)
+    else:
+        key = ['Bayesian', "Heuristic", "DNN"]
+        count = 1
+        for alg in [2, 3, 4, 4]:
+            print("\n\n------------------ALG {}------------------\n\n".format(alg))
+            move_contents(key[alg - 2] + str(count))
+            collect()
+            save_data(key[alg - 2] + str(count))
+
+            if alg == 4:
+                count = 2
+
+
+def move_contents(folder):
+    s.call('cp -r ../zipped_archives/master/'+folder+'/funding ../zipped_archives/master/', shell=True)
+    s.call('cp -r ../zipped_archives/master/'+folder+'/no_funding ../zipped_archives/master/', shell=True)
 
 
 def save_data(folder):
@@ -80,3 +106,5 @@ def generate_html(folder_list):
 if __name__ == '__main__':
     main()
     # collect()
+    # collect(simple=False)
+    # main(simple=True)

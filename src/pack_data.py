@@ -206,15 +206,18 @@ def collect_vars(model, store_big_data):
         if last_tp != idx[0]:  # new TP
             if new_data != []:
                 for i in range(len(new_data)):
+                    temp = new_data[i][0]
                     new_data[i][0] = last_tp - (new_data[i][0] // config.ideas_per_time)
-                    data_time = np.vstack([data_time, new_data]) if data_time is not None else new_data
+                    if new_data[i][0] > 25:
+                        print(new_data[i][0], last_tp, temp, config.ideas_per_time)
+                data_time = np.vstack([data_time, new_data]) if data_time is not None else new_data
             new_data = []
             idea_list = []
             last_tp = idx[0]
         curr_age = idx[0] - math.ceil(idx[1] / config.N)  # same as TP - birth order in agent step function
         rel_age = int(curr_age * 2 / config.time_periods_alive)  # halflife defines young vs old
-        if rel_age >= 2:
-            rel_age = 1
+        # if rel_age >= 2:
+        #     rel_age = 1
         for new_dict in process_dict(val['Effort Invested In Period (Marginal)']):
             data_past.append(np.asarray([idea_past[new_dict['idea']], 0, 0]))
             data_past[len(data_past)-1][rel_age+1] += new_dict['effort']   # rel+1 because 0 index is idea effort info
