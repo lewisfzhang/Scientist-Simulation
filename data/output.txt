@@ -27,3 +27,1347 @@ END OF PROGRAM
 total runtime: 162.39352917671204 seconds
 
  
+
+finished line_graph 1.414771955984179 seconds 
+
+finished line_graph 1.3220018800057005 seconds 
+
+finished two_var_line_graph 2.3333435539971106 seconds 
+
+finished line_graph 1.0986449850024655 seconds 
+
+finished two_var_scatterplot 1.9982212820032146 seconds 
+
+finished two_var_line_graph 2.234682092006551 seconds 
+
+finished two_var_line_graph 2.440455628995551 seconds 
+
+finished two_var_line_graph 1.903641493001487 seconds 
+
+finished double_bar 1.064906980987871 seconds 
+
+finished two_var_line_graph 1.5908522300014738 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.909276697988389 seconds 
+
+END OF PROGRAM
+total runtime: 29037.49511909485 seconds
+
+ 
+
+finished line_graph 0.86811444000341 seconds 
+
+finished line_graph 0.8503029989951756 seconds 
+
+finished two_var_line_graph 1.6187182849971578 seconds 
+
+finished line_graph 0.8315162449725904 seconds 
+
+finished two_var_scatterplot 1.4142010390060022 seconds 
+
+finished two_var_line_graph 1.684697752003558 seconds 
+
+finished two_var_line_graph 1.7599761020101141 seconds 
+
+finished two_var_line_graph 1.5791373350075446 seconds 
+
+finished double_bar 1.116999413992744 seconds 
+
+finished two_var_line_graph 1.5325859280128498 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.585521798988339 seconds 
+
+END OF PROGRAM
+total runtime: 29051.42870903015 seconds
+
+ 
+
+finished line_graph 1.0143820219964255 seconds 
+
+finished line_graph 0.9820179160160478 seconds 
+
+finished two_var_line_graph 1.8125512939877808 seconds 
+
+finished line_graph 0.9309132779890206 seconds 
+
+finished two_var_scatterplot 1.6231924070161767 seconds 
+
+finished two_var_line_graph 1.795358314004261 seconds 
+
+finished two_var_line_graph 1.9270724740053993 seconds 
+
+finished two_var_line_graph 1.66702018698561 seconds 
+
+finished double_bar 1.1534733689913992 seconds 
+
+finished two_var_line_graph 1.5432369890040718 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.644307938986458 seconds 
+
+END OF PROGRAM
+total runtime: 29064.613863945007 seconds
+
+ 
+
+finished line_graph 0.910408889001701 seconds 
+
+finished line_graph 0.9368501760181971 seconds 
+
+finished two_var_line_graph 1.7046509799838532 seconds 
+
+finished line_graph 0.8430465720011853 seconds 
+
+finished two_var_scatterplot 1.4550970940035768 seconds 
+
+finished two_var_line_graph 1.6931265509920195 seconds 
+
+finished two_var_line_graph 1.9841839279979467 seconds 
+
+finished two_var_line_graph 1.6825257280142978 seconds 
+
+finished double_bar 1.2075058660120703 seconds 
+
+finished two_var_line_graph 1.6280104159959592 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.46050599598675 seconds 
+
+END OF PROGRAM
+total runtime: 29077.514684915543 seconds
+
+ 
+
+finished line_graph 0.7626275520015042 seconds 
+
+finished line_graph 0.7264878310088534 seconds 
+
+finished two_var_line_graph 1.337967920000665 seconds 
+
+finished line_graph 0.7355996910191607 seconds 
+
+finished two_var_scatterplot 1.2501060599752236 seconds 
+
+finished two_var_line_graph 1.5962642939994112 seconds 
+
+finished two_var_line_graph 1.5607747829926666 seconds 
+
+finished two_var_line_graph 1.3999121880042367 seconds 
+
+finished double_bar 0.8971653899934608 seconds 
+
+finished two_var_line_graph 1.1894341160077602 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.845904840010917 seconds 
+
+END OF PROGRAM
+total runtime: 30141.35334920883 seconds
+
+ 
+
+finished line_graph 0.7650667050038464 seconds 
+
+finished line_graph 0.7385581659909803 seconds 
+
+finished two_var_line_graph 1.39233598698047 seconds 
+
+finished line_graph 0.7039850790170021 seconds 
+
+finished two_var_scatterplot 1.2115007280081045 seconds 
+
+finished two_var_line_graph 1.4478247679944616 seconds 
+
+finished two_var_line_graph 1.5312527359928936 seconds 
+
+finished two_var_line_graph 1.33905635602423 seconds 
+
+finished double_bar 0.8988247899978887 seconds 
+
+finished two_var_line_graph 1.2200062540068757 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.723092191998148 seconds 
+
+END OF PROGRAM
+total runtime: 30151.934726953506 seconds
+
+ 
+
+finished line_graph 0.745581338996999 seconds 
+
+finished line_graph 0.7683892940112855 seconds 
+
+finished two_var_line_graph 1.3665328900096938 seconds 
+
+finished line_graph 0.7706804999907035 seconds 
+
+finished two_var_scatterplot 1.5275644329958595 seconds 
+
+finished two_var_line_graph 1.972243564989185 seconds 
+
+finished two_var_line_graph 2.481259302003309 seconds 
+
+finished two_var_line_graph 2.0328709009918384 seconds 
+
+finished double_bar 0.9986411240242887 seconds 
+
+finished two_var_line_graph 1.7833226090006065 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.944400468986714 seconds 
+
+END OF PROGRAM
+total runtime: 30164.797778844833 seconds
+
+ 
+
+finished line_graph 0.7263902290142141 seconds 
+
+finished line_graph 0.7637806300190277 seconds 
+
+finished two_var_line_graph 1.4882317619922105 seconds 
+
+finished line_graph 0.8238708560238592 seconds 
+
+finished two_var_scatterplot 1.3611738100007642 seconds 
+
+finished two_var_line_graph 1.4075720600085333 seconds 
+
+finished two_var_line_graph 1.630866283987416 seconds 
+
+finished two_var_line_graph 1.5862555659841746 seconds 
+
+finished double_bar 1.0576189019775484 seconds 
+
+finished two_var_line_graph 1.4729121520067565 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.276508990995353 seconds 
+
+END OF PROGRAM
+total runtime: 30177.73564696312 seconds
+
+ 
+
+finished line_graph 0.7595380049897358 seconds 
+
+finished line_graph 0.7539467620081268 seconds 
+
+finished two_var_line_graph 1.4010994679993019 seconds 
+
+finished line_graph 0.6957958429702558 seconds 
+
+finished two_var_scatterplot 1.4361084310221486 seconds 
+
+finished two_var_line_graph 1.509707630961202 seconds 
+
+finished two_var_line_graph 1.486647358047776 seconds 
+
+finished two_var_line_graph 1.3568571649957448 seconds 
+
+finished double_bar 0.932697003998328 seconds 
+
+finished two_var_line_graph 1.1969775180332363 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.540418075979687 seconds 
+
+END OF PROGRAM
+total runtime: 30673.02518606186 seconds
+
+ 
+
+finished line_graph 0.7784626089851372 seconds 
+
+finished line_graph 0.7224744019913487 seconds 
+
+finished two_var_line_graph 1.3433335199952126 seconds 
+
+finished line_graph 0.7047102170181461 seconds 
+
+finished two_var_scatterplot 1.2159875099896453 seconds 
+
+finished two_var_line_graph 1.4675870249629952 seconds 
+
+finished two_var_line_graph 1.4551089379820041 seconds 
+
+finished two_var_line_graph 1.356199881003704 seconds 
+
+finished double_bar 0.8766346709453501 seconds 
+
+finished two_var_line_graph 1.2213105889968574 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.443161124014296 seconds 
+
+END OF PROGRAM
+total runtime: 30683.358772039413 seconds
+
+ 
+
+finished line_graph 0.7987277670181356 seconds 
+
+finished line_graph 0.7332733600051142 seconds 
+
+finished two_var_line_graph 1.3854514479753561 seconds 
+
+finished line_graph 0.7190776889910921 seconds 
+
+finished two_var_scatterplot 1.2875324380001985 seconds 
+
+finished two_var_line_graph 1.4521783769596368 seconds 
+
+finished two_var_line_graph 1.4381461269804277 seconds 
+
+finished two_var_line_graph 1.364548815996386 seconds 
+
+finished double_bar 0.8734625990036875 seconds 
+
+finished two_var_line_graph 1.2773321509594098 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.639570109022316 seconds 
+
+END OF PROGRAM
+total runtime: 30693.776360988617 seconds
+
+ 
+
+finished line_graph 0.9397964189993218 seconds 
+
+finished line_graph 0.929164462024346 seconds 
+
+finished two_var_line_graph 1.6100048799999058 seconds 
+
+finished line_graph 0.7119440499809571 seconds 
+
+finished two_var_scatterplot 1.275727830012329 seconds 
+
+finished two_var_line_graph 1.4888056330382824 seconds 
+
+finished two_var_line_graph 1.4943584510474466 seconds 
+
+finished two_var_line_graph 1.4029754149960354 seconds 
+
+finished double_bar 0.8800769249792211 seconds 
+
+finished two_var_line_graph 1.1680380900506862 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.846947912010364 seconds 
+
+END OF PROGRAM
+total runtime: 30705.595089912415 seconds
+
+ 
+
+finished line_graph 1.1138826279784553 seconds 
+
+finished line_graph 1.17482201900566 seconds 
+
+finished line_graph 0.7517988600302488 seconds 
+
+finished two_var_line_graph 1.8544489800115116 seconds 
+
+finished two_var_scatterplot 1.2925128730130382 seconds 
+
+finished two_var_line_graph 1.4338849099585786 seconds 
+
+finished two_var_line_graph 1.5401837709941901 seconds 
+
+finished two_var_line_graph 1.5778049110085703 seconds 
+
+finished double_bar 1.0697218099958263 seconds 
+
+finished two_var_line_graph 1.4420619750162587 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.47619074897375 seconds 
+
+END OF PROGRAM
+total runtime: 30776.790807962418 seconds
+
+ 
+
+finished line_graph 0.7366721369908191 seconds 
+
+finished line_graph 0.7953983839834109 seconds 
+
+finished two_var_line_graph 1.3763741989969276 seconds 
+
+finished line_graph 0.7095569120137952 seconds 
+
+finished two_var_scatterplot 1.2386744679533876 seconds 
+
+finished two_var_line_graph 1.4763666169601493 seconds 
+
+finished two_var_line_graph 1.4630805879714899 seconds 
+
+finished two_var_line_graph 1.3253041270072572 seconds 
+
+finished double_bar 0.8436238880385645 seconds 
+
+finished two_var_line_graph 1.1744468940305524 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.42457370297052 seconds 
+
+END OF PROGRAM
+total runtime: 30787.085865974426 seconds
+
+ 
+
+finished line_graph 0.730396534956526 seconds 
+
+finished line_graph 0.8057715920149349 seconds 
+
+finished two_var_line_graph 1.3492263779626228 seconds 
+
+finished line_graph 0.7277958170161583 seconds 
+
+finished two_var_scatterplot 1.210346774023492 seconds 
+
+finished two_var_line_graph 1.4087773190112785 seconds 
+
+finished two_var_line_graph 1.4625704569625668 seconds 
+
+finished two_var_line_graph 1.3604449140257202 seconds 
+
+finished double_bar 0.8705916430335492 seconds 
+
+finished two_var_line_graph 1.2532732670078985 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.549472587998025 seconds 
+
+END OF PROGRAM
+total runtime: 30797.340355157852 seconds
+
+ 
+
+finished line_graph 2.2574620279483497 seconds 
+
+finished line_graph 2.277313956001308 seconds 
+
+finished two_var_line_graph 3.9071684889495373 seconds 
+
+finished line_graph 1.9177182569983415 seconds 
+
+finished two_var_scatterplot 2.2983860180247575 seconds 
+
+finished two_var_line_graph 2.08893020398682 seconds 
+
+finished two_var_line_graph 2.1712573639815673 seconds 
+
+finished two_var_line_graph 1.9379573300248012 seconds 
+
+finished double_bar 1.0560481460415758 seconds 
+
+finished two_var_line_graph 1.5516189779737033 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  11.332750081026461 seconds 
+
+END OF PROGRAM
+total runtime: 30811.439586162567 seconds
+
+ 
+
+finished line_graph 0.7310195899917744 seconds 
+
+finished line_graph 0.7394108949811198 seconds 
+
+finished line_graph 0.9722070849966258 seconds 
+
+finished two_var_line_graph 1.71511892095441 seconds 
+
+finished two_var_scatterplot 1.6831392230233178 seconds 
+
+finished two_var_line_graph 1.5082380860112607 seconds 
+
+finished two_var_line_graph 1.59502602199791 seconds 
+
+finished two_var_line_graph 1.437366108992137 seconds 
+
+finished double_bar 1.0297016550321132 seconds 
+
+finished two_var_line_graph 1.394689048989676 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.394545113027561 seconds 
+
+END OF PROGRAM
+total runtime: 30963.355587005615 seconds
+
+ 
+
+finished line_graph 0.8337422279873863 seconds 
+
+finished line_graph 0.7732446699519642 seconds 
+
+finished two_var_line_graph 1.4176322279963642 seconds 
+
+finished line_graph 0.7068917970173061 seconds 
+
+finished two_var_scatterplot 1.2436638380168006 seconds 
+
+finished two_var_line_graph 1.4848741390160285 seconds 
+
+finished two_var_line_graph 1.4111489089555107 seconds 
+
+finished two_var_line_graph 1.3580054410267621 seconds 
+
+finished double_bar 0.9211817260365933 seconds 
+
+finished two_var_line_graph 1.2081361790187657 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.859326205973048 seconds 
+
+END OF PROGRAM
+total runtime: 30974.46207690239 seconds
+
+ 
+
+finished line_graph 0.850344642996788 seconds 
+
+finished line_graph 0.7868101299973205 seconds 
+
+finished two_var_line_graph 1.4813171650166623 seconds 
+
+finished line_graph 0.7368574949796312 seconds 
+
+finished two_var_scatterplot 1.255531151953619 seconds 
+
+finished two_var_line_graph 1.6521817769971676 seconds 
+
+finished two_var_line_graph 1.7410950050107203 seconds 
+
+finished two_var_line_graph 2.232807961991057 seconds 
+
+finished double_bar 1.4868772650370374 seconds 
+
+finished two_var_line_graph 1.866814708977472 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.84129228303209 seconds 
+
+END OF PROGRAM
+total runtime: 30986.182361125946 seconds
+
+ 
+
+finished line_graph 0.7378621950047091 seconds 
+
+finished line_graph 0.7541694659739733 seconds 
+
+finished two_var_line_graph 1.425862388976384 seconds 
+
+finished line_graph 0.7244600229896605 seconds 
+
+finished two_var_scatterplot 1.272750450996682 seconds 
+
+finished two_var_line_graph 1.4306177370017394 seconds 
+
+finished two_var_line_graph 1.4713796399882995 seconds 
+
+finished two_var_line_graph 1.3704690340091474 seconds 
+
+finished double_bar 0.905328169988934 seconds 
+
+finished two_var_line_graph 1.1789221770013683 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.338097511033993 seconds 
+
+END OF PROGRAM
+total runtime: 30996.40701198578 seconds
+
+ 
+
+finished line_graph 0.7617641419637948 seconds 
+
+finished line_graph 0.7678141599753872 seconds 
+
+finished two_var_line_graph 1.4466065930319019 seconds 
+
+finished line_graph 0.7211200910387561 seconds 
+
+finished two_var_scatterplot 1.2636150639737025 seconds 
+
+finished two_var_line_graph 1.4811360919848084 seconds 
+
+finished two_var_line_graph 1.534194519976154 seconds 
+
+finished two_var_line_graph 1.364070890005678 seconds 
+
+finished double_bar 0.8548679639934562 seconds 
+
+finished two_var_line_graph 1.1812955499626696 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.720616512000561 seconds 
+
+END OF PROGRAM
+total runtime: 31119.600407123566 seconds
+
+ 
+
+finished line_graph 0.7798843670170754 seconds 
+
+finished line_graph 0.8024602479999885 seconds 
+
+finished two_var_line_graph 1.3763659169781022 seconds 
+
+finished line_graph 0.6923255959991366 seconds 
+
+finished two_var_scatterplot 1.227962032018695 seconds 
+
+finished two_var_line_graph 1.502680514997337 seconds 
+
+finished two_var_line_graph 1.5095711030298844 seconds 
+
+finished two_var_line_graph 1.3396116780349985 seconds 
+
+finished double_bar 0.8748461490031332 seconds 
+
+finished two_var_line_graph 1.1794607629999518 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.712747070996556 seconds 
+
+END OF PROGRAM
+total runtime: 31130.211046934128 seconds
+
+ 
+
+finished line_graph 0.8061038500163704 seconds 
+
+finished line_graph 0.7165719700278714 seconds 
+
+finished two_var_line_graph 1.4248304790235125 seconds 
+
+finished line_graph 0.7212675249902532 seconds 
+
+finished two_var_scatterplot 1.2674386880244128 seconds 
+
+finished two_var_line_graph 1.5049375559901819 seconds 
+
+finished two_var_line_graph 1.439638931013178 seconds 
+
+finished two_var_line_graph 1.3671114590251818 seconds 
+
+finished double_bar 0.8691234529833309 seconds 
+
+finished two_var_line_graph 1.2413548639742658 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.756564710987732 seconds 
+
+END OF PROGRAM
+total runtime: 31140.794902086258 seconds
+
+ 
+
+finished line_graph 0.764515413029585 seconds 
+
+finished line_graph 0.8422016339609399 seconds 
+
+finished two_var_line_graph 1.4317528569954447 seconds 
+
+finished line_graph 0.7298668039729819 seconds 
+
+finished two_var_scatterplot 1.273325565038249 seconds 
+
+finished two_var_line_graph 1.5415349929826334 seconds 
+
+finished two_var_line_graph 1.503915784007404 seconds 
+
+finished two_var_line_graph 1.4841467989608645 seconds 
+
+finished double_bar 0.9357567880069837 seconds 
+
+finished two_var_line_graph 1.2067374300095253 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.448689771990757 seconds 
+
+END OF PROGRAM
+total runtime: 31152.111315965652 seconds
+
+ 
+
+finished line_graph 0.789935914974194 seconds 
+
+finished line_graph 0.7678013179684058 seconds 
+
+finished two_var_line_graph 1.4786587670096196 seconds 
+
+finished line_graph 0.7045945639838465 seconds 
+
+finished two_var_scatterplot 1.2507103069801815 seconds 
+
+finished two_var_line_graph 1.4081464770133607 seconds 
+
+finished two_var_line_graph 1.5115951350308023 seconds 
+
+finished two_var_line_graph 1.4750797990127467 seconds 
+
+finished double_bar 1.0057147939805873 seconds 
+
+finished two_var_line_graph 1.305547945026774 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.748177258996293 seconds 
+
+END OF PROGRAM
+total runtime: 31189.6425011158 seconds
+
+ 
+
+finished line_graph 0.8684322600020096 seconds 
+
+finished line_graph 0.8026079289847985 seconds 
+
+finished two_var_line_graph 1.4439505760092288 seconds 
+
+finished line_graph 0.7685314050177112 seconds 
+
+finished two_var_scatterplot 1.3395269099855796 seconds 
+
+finished two_var_line_graph 1.6891235810471699 seconds 
+
+finished two_var_line_graph 1.6018429030082189 seconds 
+
+finished two_var_line_graph 1.429678792017512 seconds 
+
+finished double_bar 0.8671786529594101 seconds 
+
+finished two_var_line_graph 1.1748715289868414 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.268077515007462 seconds 
+
+END OF PROGRAM
+total runtime: 31200.816017866135 seconds
+
+ 
+
+finished line_graph 0.7393154780147597 seconds 
+
+finished line_graph 0.7980905689764768 seconds 
+
+finished two_var_line_graph 1.4181198430014774 seconds 
+
+finished line_graph 0.7651948890415952 seconds 
+
+finished two_var_scatterplot 1.2803838159888983 seconds 
+
+finished two_var_line_graph 1.516884628974367 seconds 
+
+finished two_var_line_graph 1.6193584669963457 seconds 
+
+finished two_var_line_graph 1.5382423769915476 seconds 
+
+finished double_bar 0.9287125389673747 seconds 
+
+finished two_var_line_graph 1.2669898660387844 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.84771732299123 seconds 
+
+END OF PROGRAM
+total runtime: 31211.623969078064 seconds
+
+ 
+
+finished line_graph 0.7889779930119403 seconds 
+
+finished line_graph 0.791438881016802 seconds 
+
+finished two_var_line_graph 1.4446796919801272 seconds 
+
+finished line_graph 0.7342676300322637 seconds 
+
+finished two_var_scatterplot 1.5979167820187286 seconds 
+
+finished two_var_line_graph 1.7400388770038262 seconds 
+
+finished two_var_line_graph 1.8340565420221537 seconds 
+
+finished two_var_line_graph 1.3893256829469465 seconds 
+
+finished double_bar 0.979398509953171 seconds 
+
+finished two_var_line_graph 1.1782167659839615 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.9432391980080865 seconds 
+
+END OF PROGRAM
+total runtime: 31222.51450896263 seconds
+
+ 
+
+finished line_graph 0.7667825149837881 seconds 
+
+finished line_graph 0.7796999979764223 seconds 
+
+finished two_var_line_graph 1.4953600809676573 seconds 
+
+finished line_graph 0.7693382319994271 seconds 
+
+finished two_var_scatterplot 1.3848634999594651 seconds 
+
+finished two_var_line_graph 2.7601151250419207 seconds 
+
+finished two_var_line_graph 3.138145782984793 seconds 
+
+finished two_var_line_graph 3.5302998700062744 seconds 
+
+finished double_bar 1.5730318540008739 seconds 
+
+finished two_var_line_graph 2.5714029780356213 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  12.137353268975858 seconds 
+
+END OF PROGRAM
+total runtime: 31711.4730989933 seconds
+
+ 
+
+finished line_graph 0.7656529250089079 seconds 
+
+finished line_graph 0.7264188500121236 seconds 
+
+finished two_var_line_graph 1.3769811909878626 seconds 
+
+finished line_graph 0.7100657140254043 seconds 
+
+finished two_var_scatterplot 1.4949032090371475 seconds 
+
+finished two_var_line_graph 1.8318090490065515 seconds 
+
+finished two_var_line_graph 1.7871093529975042 seconds 
+
+finished two_var_line_graph 1.5096612690249458 seconds 
+
+finished double_bar 1.0411319010308944 seconds 
+
+finished two_var_line_graph 1.3612744549755007 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.512348799034953 seconds 
+
+END OF PROGRAM
+total runtime: 31723.677134037018 seconds
+
+ 
+
+finished line_graph 1.0155374909518287 seconds 
+
+finished line_graph 0.8289416649495251 seconds 
+
+finished two_var_line_graph 1.514060416026041 seconds 
+
+finished line_graph 0.7831500350148417 seconds 
+
+finished two_var_scatterplot 1.5540715989773162 seconds 
+
+finished two_var_line_graph 2.3056058610090986 seconds 
+
+finished two_var_line_graph 2.2507268189801835 seconds 
+
+finished two_var_line_graph 2.129680292971898 seconds 
+
+finished double_bar 0.9994627069681883 seconds 
+
+finished two_var_line_graph 1.4474125219858252 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  13.585972061031498 seconds 
+
+END OF PROGRAM
+total runtime: 31743.614856004715 seconds
+
+ 
+
+finished line_graph 0.7644903600448743 seconds 
+
+finished line_graph 0.8101901990012266 seconds 
+
+finished line_graph 0.9667790370294824 seconds 
+
+finished two_var_line_graph 1.7347436450072564 seconds 
+
+finished two_var_scatterplot 1.5944079990149476 seconds 
+
+finished two_var_line_graph 1.7773480039904825 seconds 
+
+finished two_var_line_graph 1.674355101014953 seconds 
+
+finished two_var_line_graph 1.5914486509864219 seconds 
+
+finished double_bar 0.9902040680171922 seconds 
+
+finished two_var_line_graph 1.2977929399930872 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.154495661030523 seconds 
+
+END OF PROGRAM
+total runtime: 31756.24787211418 seconds
+
+ 
+
+finished line_graph 2.240352053020615 seconds 
+
+finished line_graph 2.023087436973583 seconds 
+
+finished two_var_line_graph 3.078238513029646 seconds 
+
+finished line_graph 0.8833375140093267 seconds 
+
+finished two_var_scatterplot 1.4154956509592012 seconds 
+
+finished two_var_line_graph 1.4813596270396374 seconds 
+
+finished two_var_line_graph 1.5993206040002406 seconds 
+
+finished two_var_line_graph 1.5313976999605075 seconds 
+
+finished double_bar 1.0147798989783041 seconds 
+
+finished two_var_line_graph 1.4040546820033342 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  10.4206341720419 seconds 
+
+END OF PROGRAM
+total runtime: 31789.56946516037 seconds
+
+ 
+
+finished line_graph 1.304978761007078 seconds 
+
+finished line_graph 1.3455220269970596 seconds 
+
+finished two_var_line_graph 1.951119799981825 seconds 
+
+finished line_graph 0.8008389709866606 seconds 
+
+finished two_var_scatterplot 1.3074211970088072 seconds 
+
+finished two_var_line_graph 1.4749306380399503 seconds 
+
+finished two_var_line_graph 1.5928209979902022 seconds 
+
+finished two_var_line_graph 1.4054491220158525 seconds 
+
+finished double_bar 0.8514295169734396 seconds 
+
+finished two_var_line_graph 1.2744132080115378 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.352032600960229 seconds 
+
+END OF PROGRAM
+total runtime: 31801.031692028046 seconds
+
+ 
+
+finished line_graph 0.762670012016315 seconds 
+
+finished line_graph 0.7398906270391308 seconds 
+
+finished two_var_line_graph 1.3522835740004666 seconds 
+
+finished line_graph 0.7163829390192404 seconds 
+
+finished two_var_scatterplot 1.2417003519949503 seconds 
+
+finished two_var_line_graph 1.5011768409749493 seconds 
+
+finished two_var_line_graph 1.5646334260236472 seconds 
+
+finished two_var_line_graph 1.423176012991462 seconds 
+
+finished double_bar 0.8750016979756765 seconds 
+
+finished two_var_line_graph 1.2023574259947054 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.75287428800948 seconds 
+
+END OF PROGRAM
+total runtime: 31811.81729888916 seconds
+
+ 
+
+finished line_graph 0.7416667790384963 seconds 
+
+finished line_graph 0.7136701769777574 seconds 
+
+finished two_var_line_graph 1.3807913470081985 seconds 
+
+finished line_graph 0.7189170839847066 seconds 
+
+finished two_var_scatterplot 1.238258442026563 seconds 
+
+finished two_var_line_graph 1.421376119949855 seconds 
+
+finished two_var_line_graph 1.5895125420065597 seconds 
+
+finished two_var_line_graph 1.387701902014669 seconds 
+
+finished double_bar 0.8591822439921089 seconds 
+
+finished two_var_line_graph 1.2451933930278756 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.5394554330268875 seconds 
+
+END OF PROGRAM
+total runtime: 31822.308369874954 seconds
+
+ 
+
+finished line_graph 0.7843362449784763 seconds 
+
+finished line_graph 0.7421787669882178 seconds 
+
+finished two_var_line_graph 1.4399106700439006 seconds 
+
+finished line_graph 0.6896624710061587 seconds 
+
+finished two_var_scatterplot 1.232196789002046 seconds 
+
+finished two_var_line_graph 1.4323654269683175 seconds 
+
+finished two_var_line_graph 1.5829685810022056 seconds 
+
+finished two_var_line_graph 1.4181823310209438 seconds 
+
+finished double_bar 1.0247417670325376 seconds 
+
+finished two_var_line_graph 1.3623347399989143 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.713775482028723 seconds 
+
+END OF PROGRAM
+total runtime: 31931.035454034805 seconds
+
+ 
+
+finished line_graph 0.7110932089854032 seconds 
+
+finished line_graph 0.728079840017017 seconds 
+
+finished two_var_line_graph 1.3876494279829785 seconds 
+
+finished line_graph 0.7185428030206822 seconds 
+
+finished two_var_scatterplot 1.2640331989969127 seconds 
+
+finished two_var_line_graph 1.5170537939993665 seconds 
+
+finished two_var_line_graph 1.5500147030106746 seconds 
+
+finished two_var_line_graph 1.3439716579741798 seconds 
+
+finished double_bar 1.0286151680047624 seconds 
+
+finished two_var_line_graph 1.3666043109842576 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.738047724007629 seconds 
+
+END OF PROGRAM
+total runtime: 31941.646087884903 seconds
+
+ 
+
+finished line_graph 0.7426569189992733 seconds 
+
+finished line_graph 0.7745282230316661 seconds 
+
+finished line_graph 0.7169322919799015 seconds 
+
+finished two_var_line_graph 1.520808186964132 seconds 
+
+finished two_var_scatterplot 1.2174934719805606 seconds 
+
+finished two_var_line_graph 1.483167577011045 seconds 
+
+finished two_var_line_graph 1.5631051890086383 seconds 
+
+finished two_var_line_graph 1.41564931999892 seconds 
+
+finished double_bar 0.984281926008407 seconds 
+
+finished two_var_line_graph 1.301754633022938 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.618635059974622 seconds 
+
+END OF PROGRAM
+total runtime: 31952.126351118088 seconds
+
+ 
+
+finished line_graph 0.7489168909960426 seconds 
+
+finished line_graph 0.7641657629865222 seconds 
+
+finished two_var_line_graph 1.3784162490046583 seconds 
+
+finished line_graph 0.7242643070057966 seconds 
+
+finished two_var_scatterplot 1.2812354920315556 seconds 
+
+finished two_var_line_graph 1.4864279450266622 seconds 
+
+finished two_var_line_graph 1.6393044919823296 seconds 
+
+finished two_var_line_graph 1.5288725799764507 seconds 
+
+finished double_bar 0.9728629490127787 seconds 
+
+finished two_var_line_graph 1.3553045089938678 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.665680717967916 seconds 
+
+END OF PROGRAM
+total runtime: 31962.657251119614 seconds
+
+ 
+
+finished line_graph 0.9110577719984576 seconds 
+
+finished line_graph 0.8345578699954785 seconds 
+
+finished two_var_line_graph 1.519281087035779 seconds 
+
+finished line_graph 0.8060714830062352 seconds 
+
+finished two_var_scatterplot 1.331347499974072 seconds 
+
+finished two_var_line_graph 1.4647492240183055 seconds 
+
+finished two_var_line_graph 1.6030504700029269 seconds 
+
+finished two_var_line_graph 1.4507477820152417 seconds 
+
+finished double_bar 0.9772501410334371 seconds 
+
+finished two_var_line_graph 1.415528170997277 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  8.080155423958786 seconds 
+
+END OF PROGRAM
+total runtime: 32035.855705022812 seconds
+
+ 
+
+finished line_graph 0.7293784909998067 seconds 
+
+finished line_graph 0.7283630300080404 seconds 
+
+finished two_var_line_graph 1.3311277000466362 seconds 
+
+finished line_graph 0.7494774109800346 seconds 
+
+finished two_var_scatterplot 1.2683861259720288 seconds 
+
+finished two_var_line_graph 1.4532747939811088 seconds 
+
+finished two_var_line_graph 1.5114016539882869 seconds 
+
+finished two_var_line_graph 1.3472483289660886 seconds 
+
+finished double_bar 0.9997370679629967 seconds 
+
+finished two_var_line_graph 1.3518097570049576 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.6588917810004205 seconds 
+
+END OF PROGRAM
+total runtime: 32046.39551305771 seconds
+
+ 
+
+finished line_graph 0.7647776660160162 seconds 
+
+finished line_graph 0.7177995830425061 seconds 
+
+finished two_var_line_graph 1.369888948975131 seconds 
+
+finished line_graph 0.7325438680127263 seconds 
+
+finished two_var_scatterplot 1.2579303429811262 seconds 
+
+finished two_var_line_graph 1.5227133970474824 seconds 
+
+finished two_var_line_graph 1.5908973169862293 seconds 
+
+finished two_var_line_graph 1.3390173449879512 seconds 
+
+finished double_bar 0.944428123999387 seconds 
+
+finished two_var_line_graph 1.2636402340140194 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.64610576198902 seconds 
+
+END OF PROGRAM
+total runtime: 32056.912881851196 seconds
+
+ 
+
+finished line_graph 0.7535417859908193 seconds 
+
+finished line_graph 0.7372250580228865 seconds 
+
+finished two_var_line_graph 1.3434932999662124 seconds 
+
+finished line_graph 0.7126569609972648 seconds 
+
+finished two_var_scatterplot 1.2463890789658763 seconds 
+
+finished two_var_line_graph 1.4194813230424188 seconds 
+
+finished two_var_line_graph 1.605122520995792 seconds 
+
+finished two_var_line_graph 1.358151096967049 seconds 
+
+finished double_bar 0.9653435670188628 seconds 
+
+finished two_var_line_graph 1.3667626249953173 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.683139520988334 seconds 
+
+END OF PROGRAM
+total runtime: 32067.470095157623 seconds
+
+ 
+
+finished line_graph 0.7601250449661165 seconds 
+
+finished line_graph 0.7279338399530388 seconds 
+
+finished two_var_line_graph 1.4012637480045669 seconds 
+
+finished line_graph 0.7440419080085121 seconds 
+
+finished two_var_scatterplot 1.2323419049498625 seconds 
+
+finished two_var_line_graph 1.4386830040020868 seconds 
+
+finished two_var_line_graph 1.597233354987111 seconds 
+
+finished two_var_line_graph 1.3874555199872702 seconds 
+
+finished double_bar 0.902149340021424 seconds 
+
+finished two_var_line_graph 1.300251283973921 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.867626072023995 seconds 
+
+END OF PROGRAM
+total runtime: 32217.347921848297 seconds
+
+ 
+
+finished line_graph 0.8360376540222205 seconds 
+
+finished line_graph 0.8538397999946028 seconds 
+
+finished two_var_line_graph 1.6577067500329576 seconds 
+
+finished line_graph 0.9522671870072372 seconds 
+
+finished two_var_scatterplot 1.6849892379832454 seconds 
+
+finished two_var_line_graph 1.8521131940069608 seconds 
+
+finished two_var_line_graph 1.85985307500232 seconds 
+
+finished two_var_line_graph 1.4749679090455174 seconds 
+
+finished double_bar 1.0324669720139354 seconds 
+
+finished two_var_line_graph 1.4934951199684292 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  9.599274931009859 seconds 
+
+END OF PROGRAM
+total runtime: 32229.74898004532 seconds
+
+ 
+
+finished line_graph 1.502414770948235 seconds 
+
+finished line_graph 1.375091282010544 seconds 
+
+finished two_var_line_graph 2.486287324980367 seconds 
+
+finished line_graph 1.240486875991337 seconds 
+
+finished two_var_scatterplot 1.8348974069813266 seconds 
+
+finished two_var_line_graph 1.7579276619944721 seconds 
+
+finished two_var_line_graph 1.7121128420112655 seconds 
+
+finished two_var_line_graph 1.4718631949508563 seconds 
+
+finished double_bar 0.8996215419610962 seconds 
+
+finished two_var_line_graph 1.2546210110303946 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  12.242044697981328 seconds 
+
+END OF PROGRAM
+total runtime: 32247.846463918686 seconds
+
+ 
+
+finished line_graph 0.8552073269966058 seconds 
+
+finished line_graph 0.792569231998641 seconds 
+
+finished two_var_line_graph 1.535763701016549 seconds 
+
+finished line_graph 0.7974775460315868 seconds 
+
+finished two_var_scatterplot 1.3044501830008812 seconds 
+
+finished two_var_line_graph 1.4589340449892916 seconds 
+
+finished two_var_line_graph 1.6327454400015995 seconds 
+
+finished two_var_line_graph 1.4508268989739008 seconds 
+
+finished double_bar 0.8570538929780014 seconds 
+
+finished two_var_line_graph 1.23800242098514 seconds 
+ 
+Total time to process data 
+Elapsed runtime:  7.871105647995137 seconds 
+
+END OF PROGRAM
+total runtime: 32258.671756982803 seconds
+
+ 

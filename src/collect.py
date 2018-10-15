@@ -78,15 +78,15 @@ def main2():
                  "2x Distribution of Social Returns Invested\nBased on Idea Quality\n", "trend"],
 
                 ["two_var_line_graph", age_effort_length, "Investment Style of Idea\n(Short-Term ----> Long-Term)",
-                 "Effort Invested By All Scientists", "Effort Invested Into Idea Based on Investment Style",
+                 "Average Effort Invested By All Scientists", "Effort Invested Into Idea Based on Investment Style",
                  "age_effort_magnitude"],
 
                 ["two_var_line_graph", age_effort_time, "Age of Idea\n(in TP's since idea's discovery)",
-                 "Effort Invested By All Scientists", "Effort Invested Given Idea Age",
+                 "Average Effort Invested By All Scientists", "Effort Invested Given Idea Age",
                  "age_effort_time"],
 
                 ["two_var_line_graph", age_effort_past, "Age of Idea\n(Based on Amount of Past Investment)",
-                 "Effort Invested By All Scientists", "Effort Invested Given Idea Age",
+                 "Average Effort Invested By All Scientists", "Effort Invested Given Idea Age",
                  "age_effort_past"],
 
                 ["two_var_line_graph", prop_idea_age, "Age of Idea\n(in TP's since idea's discovery)", "Proportion of Scientists Working on the Idea",

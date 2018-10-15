@@ -443,6 +443,8 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
         plt.scatter(x_var, y_2, color='blue')
         plt.xlim(min_x, max_x)
         plt.ylim(min_y, max_y)
+        ax = plt.gca()
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         # plt.scatter(data[0], data[1], color='red')
         # plt.scatter(data[0], data[2], color='blue')
         plt.legend()
@@ -458,6 +460,8 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
         plt.ylim(min_y, max_y)
         # plt.scatter(data[3], data[4], color='red')
         # plt.scatter(data[3], data[5], color='blue')
+        ax = plt.gca()
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     elif len(data) == 6:
         mm = 2
         # with funding
@@ -479,8 +483,11 @@ def two_var_line_graph(data, x_label, y_label, title, linear, in_tmp, step):
         y_4 = process_bin(data[5], len(data[5])//20, 20)
 
         # set axes
-        min_y = -20 + min([min(y_1), min(y_2), min(y_3), min(y_4)])
         max_y = 1.1 * max([max(y_1), max(y_2), max(y_3), max(y_4)])
+        if linear == "age_effort_magnitude":
+            min_y = 0.9 * min([min(y_1), min(y_2), min(y_3), min(y_4)])
+        else:
+            min_y = -0.1 * max_y
         min_x = -10 + min([min(x_var), min(x_var2)])
         max_x = 10 + max([max(x_var), max(x_var2)])
 

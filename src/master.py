@@ -104,7 +104,7 @@ def generate_html(folder_list):
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # collect()
-    # collect(simple=False)
+    collect(simple=False)
     # main(simple=True)
