@@ -21,7 +21,7 @@ def main(simple=False):
         print('changing working directory from', os.getcwd(), 'to', path)
         os.chdir(path + '/src')
 
-    if simple:
+    if simple:  # simple refers to limited parameters fed into run.py, 2 refers to
         s.call('python3 run.py master True '+str(2)+' False', shell=True)
         copy_contents("funding")
         return
@@ -104,7 +104,7 @@ def generate_html(folder_list):
 
 
 if __name__ == '__main__':
-    # main()
+    main()
     # collect()
     collect(simple=False)
     # main(simple=True)

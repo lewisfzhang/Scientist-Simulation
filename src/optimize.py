@@ -12,7 +12,7 @@ import warnings as w
 def investing_helper(scientist, lock):
     # temp df for ideas scientist has invested in
     temp_df = pd.DataFrame(columns=['Idea Choice', 'Max Return', 'ID'])
-    copy_total_start_effort(scientist, lock[0])
+    copy_total_start_effort(scientist, lock[0])  # initiates scientist.total_effort_start --> see store.py
 
     # Scientists continue to invest in ideas until they run out of
     # available effort, or there are no more ideas to invest in
